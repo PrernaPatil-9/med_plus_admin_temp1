@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
   <link rel="stylesheet" href="../../css/style.css" />
   <link rel="stylesheet" href="../../css/theme.css" />
   <style>
@@ -16,56 +17,45 @@
     .admin-sidebar a { transition: all 0.2s; border-left: 3px solid transparent; display: block; padding: 0.75rem 1rem; color: rgba(255,255,255,0.7); text-decoration: none; }
     .admin-sidebar a:hover, .admin-sidebar a.active { background: #1a3a5e; border-left-color: #ec4899; color: white; }
     .card-admin { background: white; border-radius: 1.5rem; box-shadow: 0 8px 30px rgba(0,0,0,0.04); padding: 1.5rem; transition: 0.2s; }
+    .card-admin:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.06); }
     .badge-soft { background: #f1f5f9; color: #0f2b4b; padding: 0.2rem 0.8rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 500; }
-    .tab-btn { padding: 0.5rem 1.25rem; border-radius: 2rem; font-weight: 500; transition: 0.2s; background: transparent; color: #64748b; border: none; cursor: pointer; }
-    .tab-btn.active { background: #0f2b4b; color: white; }
-    .tab-btn:hover:not(.active) { background: #eef2f6; }
+    .btn-primary { background: #0f2b4b; color: white; border-radius: 2rem; padding: 0.6rem 1.8rem; font-weight: 500; border: none; cursor: pointer; transition: 0.2s; }
+    .btn-primary:hover { background: #1a3a5e; }
+    .btn-pink { background: #ec4899; color: white; border-radius: 2rem; padding: 0.6rem 1.8rem; font-weight: 500; border: none; cursor: pointer; transition: 0.2s; }
+    .btn-pink:hover { background: #db2777; }
+    .btn-ghost { background: white; color: #0f2b4b; border-radius: 2rem; padding: 0.5rem 1.2rem; font-weight: 500; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.2s; font-size: 0.8rem; }
+    .btn-ghost:hover { border-color: #0f2b4b; }
+    .btn-danger { background: #fff1f2; color: #e11d48; border-radius: 2rem; padding: 0.45rem 1rem; font-weight: 500; border: none; cursor: pointer; transition: 0.2s; font-size: 0.75rem; }
+    .btn-danger:hover { background: #ffe4e6; }
     input, select, textarea { border-radius: 0.75rem; border: 1px solid #e2e8f0; padding: 0.6rem 1rem; width: 100%; transition: 0.2s; font-size: 0.875rem; }
     input:focus, select:focus, textarea:focus { border-color: #0f2b4b; outline: none; box-shadow: 0 0 0 3px rgba(15,43,75,0.08); }
-    input[type="color"] { padding: 0.25rem; height: 2.6rem; cursor: pointer; }
-    input[type="file"] { padding: 0.4rem; }
-    .section-item { border: 1px solid #eef2f6; border-radius: 1rem; padding: 1rem; margin-bottom: 0.75rem; background: white; transition: 0.2s; cursor: grab; }
-    .section-item:hover { border-color: #ec4899; }
-    .section-item.dragging { opacity: 0.4; }
-    .section-item .drag-handle { cursor: grab; color: #94a3b8; }
-    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
-    .stat-mini { background: #f8fafc; border-radius: 1rem; padding: 0.75rem 1rem; border: 1px solid #eef2f6; }
-    .field-block { border: 1px solid #f1f5f9; border-radius: 1rem; padding: 1.25rem; margin-bottom: 1rem; }
-    .field-block h5 { font-weight: 600; color: #374151; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.95rem; }
-    .field-label { display: block; font-size: 0.75rem; font-weight: 500; color: #6b7280; margin-bottom: 0.2rem; }
-    .sub-item { border: 1px solid #f1f5f9; border-radius: 0.9rem; padding: 0.9rem; margin-bottom: 0.6rem; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.02); position: relative; }
-    .sub-item-index { font-size: 0.68rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 0.5rem; }
-    .sub-item-remove { position: absolute; top: 0.75rem; right: 0.75rem; color: #fb7185; cursor: pointer; font-size: 0.8rem; }
-    .sub-item-remove:hover { color: #e11d48; }
-    .icon-btn { width: 1.9rem; height: 1.9rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 9999px; color: #94a3b8; border: 1px solid #eef2f6; background: white; font-size: 0.72rem; cursor: pointer; transition: 0.2s; }
-    .icon-btn:hover { background: #eef2f6; color: #0f2b4b; }
-    .icon-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-    .icon-btn.danger:hover { color: #e11d48; background: #fff1f2; }
-    .icon-btn.success { color: #10b981; }
-    .icon-btn.success:hover { background: #d1fae5; color: #059669; }
-    .library-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.75rem; }
-    .library-card { border: 1px solid #eef2f6; border-radius: 1rem; padding: 1rem; background: #f8fafc; cursor: pointer; transition: 0.2s; text-align: left; }
-    .library-card:hover { border-color: #ec4899; background: white; box-shadow: 0 8px 20px rgba(0,0,0,0.05); transform: translateY(-2px); }
-    .library-card i { color: #0f2b4b; font-size: 1.2rem; margin-bottom: 0.5rem; display: block; }
-    .library-card .lib-label { font-weight: 600; font-size: 0.85rem; color: #1f2937; }
-    .library-card .lib-desc { font-size: 0.72rem; color: #94a3b8; margin-top: 0.15rem; }
-    .link-action { font-size: 0.85rem; font-weight: 500; color: #db2777; background: none; border: none; cursor: pointer; }
-    .link-action:hover { text-decoration: underline; }
-    .theme-swatch { width: 100%; height: 3.5rem; border-radius: 0.75rem; border: 1px solid #eef2f6; }
-    .banner-preview { width: 100%; height: 120px; object-fit: cover; border-radius: 0.5rem; border: 1px solid #eef2f6; }
-    .image-thumb { width: 80px; height: 80px; object-fit: cover; border-radius: 0.5rem; border: 1px solid #eef2f6; }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    .modal-content { background: white; border-radius: 1.5rem; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 2rem; }
-    .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.75rem; }
-    .image-grid-item { border: 1px solid #eef2f6; border-radius: 0.75rem; padding: 0.5rem; text-align: center; cursor: pointer; transition: 0.2s; }
-    .image-grid-item:hover { border-color: #ec4899; background: #fdf2f8; }
-    .image-grid-item img { width: 100%; height: 80px; object-fit: cover; border-radius: 0.4rem; }
-    .image-grid-item .img-name { font-size: 0.65rem; color: #6b7280; margin-top: 0.3rem; word-break: break-all; }
+    label.field-label { display: block; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; color: #64748b; margin-bottom: 0.35rem; }
+    .field { margin-bottom: 0.9rem; }
+    .subtab-btn { padding: 0.55rem 1.1rem; border-radius: 0.85rem; font-size: 0.83rem; font-weight: 500; color: #475569; cursor: pointer; transition: 0.15s; white-space: nowrap; }
+    .subtab-btn:hover { background: #f1f5f9; }
+    .subtab-btn.active { background: #0f2b4b; color: white; }
+    .drag-handle { cursor: grab; color: #94a3b8; }
+    .drag-handle:active { cursor: grabbing; }
+    .sortable-ghost { opacity: 0.35; }
+    .sortable-drag { box-shadow: 0 12px 30px rgba(0,0,0,0.15); }
+    .mini-preview { width: 100%; height: 90px; object-fit: cover; border-radius: 0.6rem; background: #f1f5f9; border: 1px solid #e2e8f0; }
+    .upload-btn { flex-shrink: 0; width: 2.6rem; height: 2.6rem; border-radius: 0.75rem; border: 1px solid #e2e8f0; background: white; color: #0f2b4b; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+    .upload-btn:hover { border-color: #0f2b4b; background: #f8fafc; }
+    .img-field-row { display: flex; gap: 0.5rem; align-items: stretch; }
+    .img-field-row input[type="text"] { flex: 1; }
+    .swatch { width: 1.6rem; height: 1.6rem; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 0 1px #e2e8f0; cursor: pointer; }
+    .swatch.selected { box-shadow: 0 0 0 2px #0f2b4b; }
+    .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: #0f2b4b; color: white; padding: 0.7rem 1.4rem; border-radius: 0.85rem; font-size: 0.85rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 100; opacity: 0; transform: translateY(10px); transition: 0.25s; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .section-panel { display: none; }
+    .section-panel.active { display: block; }
+    .order-item { background: white; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 0.9rem 1.1rem; display: flex; align-items: center; gap: 0.9rem; margin-bottom: 0.6rem; }
+    .order-item.locked { background: #f8fafc; }
   </style>
 </head>
 <body>
   <div class="flex min-h-screen">
-    <!-- Sidebar -->
+    <!-- Sidebar (unchanged) -->
     <aside class="admin-sidebar w-72 flex-shrink-0 text-white p-6">
       <div class="flex items-center gap-3 pb-6 border-b border-white/10">
         <div class="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
@@ -73,7 +63,7 @@
         <span class="ml-auto text-[10px] uppercase bg-pink-600/30 px-2 py-0.5 rounded-full text-pink-200">CMS</span>
       </div>
       <nav class="mt-6 space-y-1">
-        <a href="/index.html"><i class="fas fa-th-large w-5"></i> Dashboard</a>
+        <a href="../../index.html"><i class="fas fa-th-large w-5"></i> Dashboard</a>
         <a href="home.html" class="active"><i class="fas fa-home w-5"></i> Home Page</a>
         <a href="../about/about.html"><i class="fas fa-info-circle w-5"></i> About Page</a>
         <a href="../services/services.html"><i class="fas fa-concierge-bell w-5"></i> Services Page</a>
@@ -90,809 +80,708 @@
     <!-- Main Content -->
     <main class="flex-1 p-6 md:p-10 overflow-y-auto">
       <!-- Header row -->
-      <div class="flex items-center justify-between mb-8">
-        <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
-          <i class="fas fa-home text-pink-600"></i>
-          Home Page Manager
-        </h2>
+      <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+            <i class="fas fa-home text-pink-600"></i> Home Page
+          </h2>
+          <p class="text-sm text-gray-400 mt-1">Manage every section of the public home page — no code required.</p>
+        </div>
         <div class="flex items-center gap-3">
-          <span class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> <span id="liveTime"></span></span>
-          <button onclick="saveData()" class="text-sm bg-emerald-50 text-emerald-600 px-4 py-1.5 rounded-full hover:bg-emerald-100 transition">
-            <i class="fas fa-save"></i> Save
-          </button>
+          <span class="text-xs text-gray-400"><i class="fas fa-sync-alt mr-1"></i>Saved <span id="lastSavedTime">just now</span></span>
+          <a href="../preview/preview.html" class="btn-ghost"><i class="fas fa-eye mr-1"></i> Preview</a>
+          <button onclick="resetHomeData()" class="btn-ghost text-rose-600"><i class="fas fa-undo-alt mr-1"></i> Reset</button>
+          <button onclick="saveAll(true)" class="btn-pink"><i class="fas fa-save mr-1"></i> Save Changes</button>
         </div>
       </div>
 
-      <!-- Stats row -->
-      <div class="stat-grid mb-6">
-        <div class="stat-mini flex items-center gap-3"><div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600"><i class="fas fa-file-alt"></i></div><div><p class="text-xs text-gray-400">Sections</p><p class="font-bold text-gray-800" id="sectionCount">8</p></div></div>
-        <div class="stat-mini flex items-center gap-3"><div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-600"><i class="fas fa-pen-fancy"></i></div><div><p class="text-xs text-gray-400">Content fields</p><p class="font-bold text-gray-800" id="fieldCount">14</p></div></div>
-        <div class="stat-mini flex items-center gap-3"><div class="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center text-pink-600"><i class="fas fa-image"></i></div><div><p class="text-xs text-gray-400">Media refs</p><p class="font-bold text-gray-800" id="mediaCount">5</p></div></div>
-        <div class="stat-mini flex items-center gap-3"><div class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600"><i class="fas fa-check-circle"></i></div><div><p class="text-xs text-gray-400">Status</p><p class="font-bold text-emerald-600">Published</p></div></div>
+      <!-- Section tabs -->
+      <div class="card-admin !p-3 mb-6 flex items-center gap-1 overflow-x-auto">
+        <div class="subtab-btn active" data-tab="hero" onclick="switchTab('hero')"><i class="fas fa-images mr-1.5"></i>Hero Banner</div>
+        <div class="subtab-btn" data-tab="features" onclick="switchTab('features')"><i class="fas fa-th-large mr-1.5"></i>Features</div>
+        <div class="subtab-btn" data-tab="partners" onclick="switchTab('partners')"><i class="fas fa-handshake mr-1.5"></i>Partners</div>
+        <div class="subtab-btn" data-tab="about" onclick="switchTab('about')"><i class="fas fa-info-circle mr-1.5"></i>About</div>
+        <div class="subtab-btn" data-tab="counters" onclick="switchTab('counters')"><i class="fas fa-sort-numeric-up mr-1.5"></i>Counters</div>
+        <div class="subtab-btn" data-tab="services" onclick="switchTab('services')"><i class="fas fa-briefcase-medical mr-1.5"></i>Services</div>
+        <div class="subtab-btn" data-tab="appointment" onclick="switchTab('appointment')"><i class="fas fa-calendar-check mr-1.5"></i>Appointment Form</div>
+        <div class="subtab-btn" data-tab="order" onclick="switchTab('order')"><i class="fas fa-arrows-alt-v mr-1.5"></i>Section Order</div>
       </div>
 
-      <!-- Main card -->
-      <div class="card-admin">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="font-bold text-lg">Home Page Content</h3>
-          <span class="badge-soft" id="sectionBadge">8 sections</span>
+      <!-- ===================== HERO BANNER ===================== -->
+      <div class="section-panel active" id="panel-hero">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-gray-700 text-lg">Hero Banner <span class="badge-soft ml-1">3 slides</span></h3>
+          <span class="text-xs text-gray-400">Each banner has its own image and text — edited independently.</span>
         </div>
-
-        <div class="mb-6 flex flex-wrap gap-2 border-b border-gray-200 pb-4">
-          <button class="tab-btn active" onclick="switchTab('content')"><i class="fas fa-pen-fancy mr-1"></i> Content</button>
-          <button class="tab-btn" onclick="switchTab('sections')"><i class="fas fa-layer-group mr-1"></i> Sections</button>
-          <button class="tab-btn" onclick="switchTab('theme')"><i class="fas fa-palette mr-1"></i> Theme</button>
-          <button class="tab-btn" onclick="switchTab('media')"><i class="fas fa-image mr-1"></i> Media</button>
-          <button class="tab-btn" onclick="switchTab('banners')"><i class="fas fa-images mr-1"></i> Banners</button>
-        </div>
-
-        <div id="tabContent"></div>
+        <div id="heroBannersWrap" class="grid grid-cols-1 xl:grid-cols-3 gap-5"></div>
       </div>
+
+      <!-- ===================== FEATURES ===================== -->
+      <div class="section-panel" id="panel-features">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-gray-700 text-lg">Features Section <span class="badge-soft ml-1">3 cards</span></h3>
+          <span class="text-xs text-gray-400"><i class="fas fa-arrows-alt-v mr-1"></i>Drag the handle to reorder cards</span>
+        </div>
+        <div id="featuresWrap" class="space-y-4"></div>
+      </div>
+
+      <!-- ===================== PARTNERS ===================== -->
+      <div class="section-panel" id="panel-partners">
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+          <h3 class="font-semibold text-gray-700 text-lg">Partners Section</h3>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-gray-400"><i class="fas fa-arrows-alt-v mr-1"></i>Drag to reorder logos</span>
+            <button class="btn-pink !py-2 !px-4 text-sm" onclick="addPartner()"><i class="fas fa-plus mr-1"></i>Add Logo</button>
+          </div>
+        </div>
+        <p class="text-xs text-gray-400 mb-4"><i class="fas fa-info-circle mr-1"></i>To move this whole section elsewhere on the page, use the <a href="#" onclick="switchTab('order');return false;" class="text-pink-600 font-medium">Section Order</a> tab.</p>
+        <div id="partnersWrap" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </div>
+
+      <!-- ===================== ABOUT ===================== -->
+      <div class="section-panel" id="panel-about">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-gray-700 text-lg">About Section</h3>
+          <span class="text-xs text-gray-400"><i class="fas fa-info-circle mr-1"></i>Position managed in <a href="#" onclick="switchTab('order');return false;" class="text-pink-600 font-medium">Section Order</a></span>
+        </div>
+        <div class="card-admin grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div>
+            <p class="field-label mb-2">Images</p>
+            <div class="grid grid-cols-2 gap-3 mb-3">
+              <div>
+                <img id="aboutImg1Preview" class="mini-preview mb-2" src="">
+                <div class="img-field-row">
+                  <input id="aboutImg1" type="text" placeholder="Top image URL" oninput="onAboutInput('image1', this.value, 'aboutImg1Preview')">
+                  <label class="upload-btn" title="Upload image from your device">
+                    <i class="fas fa-upload"></i>
+                    <input type="file" accept="image/*" class="hidden" onchange="uploadAboutImage('image1', this)">
+                  </label>
+                </div>
+              </div>
+              <div>
+                <img id="aboutImg2Preview" class="mini-preview mb-2" src="">
+                <div class="img-field-row">
+                  <input id="aboutImg2" type="text" placeholder="Bottom image URL" oninput="onAboutInput('image2', this.value, 'aboutImg2Preview')">
+                  <label class="upload-btn" title="Upload image from your device">
+                    <i class="fas fa-upload"></i>
+                    <input type="file" accept="image/*" class="hidden" onchange="uploadAboutImage('image2', this)">
+                  </label>
+                </div>
+              </div>
+            </div>
+            <img id="aboutMainPreview" class="mini-preview mb-2" style="height:140px" src="">
+            <div class="img-field-row">
+              <input id="aboutMainImg" type="text" placeholder="Main image URL" oninput="onAboutInput('mainImage', this.value, 'aboutMainPreview')">
+              <label class="upload-btn" title="Upload image from your device">
+                <i class="fas fa-upload"></i>
+                <input type="file" accept="image/*" class="hidden" onchange="uploadAboutImage('mainImage', this)">
+              </label>
+            </div>
+          </div>
+          <div>
+            <div class="field"><label class="field-label">Heading (line 1)</label><input id="aboutHeading" oninput="onAboutInput('heading', this.value)"></div>
+            <div class="field"><label class="field-label">Heading (highlighted line)</label><input id="aboutHeadingAccent" oninput="onAboutInput('headingAccent', this.value)"></div>
+            <div class="field"><label class="field-label">Body text</label><textarea id="aboutText" rows="4" oninput="onAboutInput('text', this.value)"></textarea></div>
+            <div class="field"><label class="field-label">Button label</label><input id="aboutButton" oninput="onAboutInput('buttonText', this.value)"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== COUNTERS ===================== -->
+      <div class="section-panel" id="panel-counters">
+        <h3 class="font-semibold text-gray-700 text-lg mb-4">Counters Section</h3>
+        <div class="card-admin flex items-center gap-6 flex-wrap">
+          <div class="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl"><i class="fas fa-sort-numeric-up"></i></div>
+          <div class="flex-1 min-w-[240px]">
+            <p class="text-sm text-gray-600">This section only supports repositioning — its statistics (Happy People, Surgeries, Doctors, Branches) are fixed. Use the button below to move it above or below other sections.</p>
+          </div>
+          <button class="btn-primary" onclick="switchTab('order')"><i class="fas fa-arrows-alt-v mr-2"></i>Go to Section Order</button>
+        </div>
+      </div>
+
+      <!-- ===================== SERVICES ===================== -->
+      <div class="section-panel" id="panel-services">
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+          <h3 class="font-semibold text-gray-700 text-lg">Services Section</h3>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-gray-400"><i class="fas fa-arrows-alt-v mr-1"></i>Drag to reorder</span>
+            <button class="btn-pink !py-2 !px-4 text-sm" onclick="addService()"><i class="fas fa-plus mr-1"></i>Add Service</button>
+          </div>
+        </div>
+        <p class="text-xs text-gray-400 mb-4"><i class="fas fa-info-circle mr-1"></i>To move the whole section, use the <a href="#" onclick="switchTab('order');return false;" class="text-pink-600 font-medium">Section Order</a> tab.</p>
+        <div id="servicesWrap" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+      </div>
+
+      <!-- ===================== APPOINTMENT FORM ===================== -->
+      <div class="section-panel" id="panel-appointment">
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+          <h3 class="font-semibold text-gray-700 text-lg">Appointment Form Fields</h3>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-gray-400"><i class="fas fa-arrows-alt-v mr-1"></i>Drag to reorder</span>
+            <button class="btn-pink !py-2 !px-4 text-sm" onclick="addField()"><i class="fas fa-plus mr-1"></i>Add Field</button>
+          </div>
+        </div>
+        <div id="fieldsWrap" class="space-y-3"></div>
+      </div>
+
+      <!-- ===================== SECTION ORDER ===================== -->
+      <div class="section-panel" id="panel-order">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-gray-700 text-lg">Home Page Section Order</h3>
+          <span class="text-xs text-gray-400"><i class="fas fa-arrows-alt-v mr-1"></i>Drag any section to rearrange the page</span>
+        </div>
+        <div class="card-admin">
+          <div id="orderWrap"></div>
+        </div>
+      </div>
+
     </main>
   </div>
 
+  <div class="toast" id="toast">Saved</div>
+
   <script>
-    // ========================================================
-    // SECTION LIBRARY
-    // ========================================================
-    const SECTION_LIBRARY = {
+    // ============================================================
+    // DATA MODEL — persisted under the shared novena_cms_data key
+    // ============================================================
+    const STORAGE_KEY = 'novena_cms_data';
+
+    const SECTION_LABELS = {
+      hero: { label: 'Hero Banner', icon: 'fa-images', locked: false },
+      features: { label: 'Features Section', icon: 'fa-th-large', locked: false },
+      partners: { label: 'Partners Section', icon: 'fa-handshake', locked: false },
+      about: { label: 'About Section', icon: 'fa-info-circle', locked: false },
+      counters: { label: 'Counters Section', icon: 'fa-sort-numeric-up', locked: false },
+      services: { label: 'Services Section', icon: 'fa-briefcase-medical', locked: false },
+      appointment: { label: 'Appointment Section', icon: 'fa-calendar-check', locked: false },
+      testimonials: { label: 'Testimonials (fixed content)', icon: 'fa-star', locked: true }
+    };
+
+    const defaultHomeContent = {
       hero: {
-        label: 'Hero Banner', icon: 'fa-star', iconColor: 'text-yellow-500', grad: 'from-blue-50/50 to-white', desc: 'Full-bleed rotating slides',
-        defaultData: () => ({ slides: [
-          { tag: 'New Slide', heading: 'Placeholder headline', headingAccent: 'goes here', paragraph: 'Placeholder paragraph text for this slide.', buttonText: 'Learn More', buttonLink: '#', bgImage: '/images/placeholder-banner.jpg' }
-        ] })
+        banners: [
+          { image: '/images/b_1.jpg', badge: 'Total health care solution', heading: 'Your most trusted', headingAccent: 'health partner', subheading: 'A repudiandae ipsam labore ipsa voluptatum quidem quae laudantium.', buttonText: 'Make Appointment' },
+          { image: '/images/b_2.jpg', badge: 'Expert medical care', heading: 'Advanced', headingAccent: 'health solutions', subheading: 'We provide best leading medical service with modern technology.', buttonText: 'Learn More' },
+          { image: '/images/b_3.jpg', badge: '24/7 Emergency', heading: 'We care', headingAccent: 'about your health', subheading: 'Get all time support for emergency. We have introduced the principle of family medicine.', buttonText: 'Contact Now' }
+        ]
       },
       features: {
-        label: 'Feature Cards', icon: 'fa-th-list', iconColor: 'text-blue-500', grad: 'from-purple-50/50 to-white', desc: '3-up highlight cards',
-        defaultData: () => ({ cards: [
-          { title: 'New Feature', desc: 'Placeholder description text.', icon: 'fa-star', color: 'blue' }
-        ] })
+        cards: [
+          { type: 'text', icon: 'fa-user-md', label: '24 Hours Service', title: 'Online Appointment', text: 'Get all time support for emergency. We have introduced the principle of family medicine.', bg: '#dbeafe', border: '#93c5fd' },
+          { type: 'hours', icon: 'fa-clock', label: 'Timing Schedule', title: 'Working Hours', bg: '#ccfbf1', border: '#5eead4', hours: [ { day: 'Sun – Wed', time: '8:00 – 17:00' }, { day: 'Thu – Fri', time: '9:00 – 17:00' }, { day: 'Sat – Sun', time: '10:00 – 17:00' } ] },
+          { type: 'phone', icon: 'fa-phone-alt', label: 'Emergency Cases', title: '+91 98765 43210', text: 'Get all time support for emergency. We have introduced the principle of family medicine.', bg: '#ffe4e6', border: '#fda4af' }
+        ]
       },
       partners: {
-        label: 'Partner Logos', icon: 'fa-handshake', iconColor: 'text-teal-500', grad: 'from-cyan-50/50 to-white', desc: 'Auto-sliding logo marquee',
-        defaultData: () => ({ heading: 'Placeholder heading', subheading: 'Placeholder subheading text.', logos: [
-          { image: '/images/placeholder-logo.png', alt: 'Partner' }
-        ] })
+        logos: [
+          { img: '/images/p_1.avif', alt: 'Partner 1' },
+          { img: '/images/p_2.avif', alt: 'Partner 2' },
+          { img: '/images/p_1.avif', alt: 'Partner 3' },
+          { img: '/images/p_2.avif', alt: 'Partner 4' },
+          { img: '/images/p_1.avif', alt: 'Partner 5' },
+          { img: '/images/p_2.avif', alt: 'Partner 6' }
+        ]
       },
       about: {
-        label: 'About / Story', icon: 'fa-info-circle', iconColor: 'text-green-500', grad: 'from-emerald-50/50 to-white', desc: 'Image + copy block',
-        defaultData: () => ({ heading: 'Placeholder heading', headingAccent: 'goes here', paragraph: 'Placeholder paragraph describing the practice.', buttonText: 'Learn More', images: ['/images/placeholder-1.jpg', '/images/placeholder-2.jpg', '/images/placeholder-3.jpg'] })
-      },
-      counters: {
-        label: 'Stat Counters', icon: 'fa-chart-bar', iconColor: 'text-orange-500', grad: 'from-amber-50/50 to-white', desc: 'Animated number strip',
-        defaultData: () => ({ stats: [
-          { icon: 'fa-user-md', target: 1000, suffix: '', label: 'Placeholder Stat' }
-        ] })
+        image1: '/images/a_1.webp',
+        image2: '/images/b_2.jpg',
+        mainImage: '/images/a_2.avif',
+        heading: 'Personal care',
+        headingAccent: '& healthy living',
+        text: 'We provide best leading medical service. Nulla perferendis veniam deleniti ipsum officia dolores repellat laudantium obcaecati neque.',
+        buttonText: 'Services'
       },
       services: {
-        label: 'Service Grid', icon: 'fa-briefcase-medical', iconColor: 'text-indigo-500', grad: 'from-indigo-50/50 to-white', desc: 'Image cards grid',
-        defaultData: () => ({ heading: 'Placeholder heading', headingAccent: 'goes here', subheading: 'Placeholder subheading text.', cards: [
-          { title: 'New Service', desc: 'Placeholder description.', icon: 'fa-flask', image: '/images/placeholder-service.jpg', badge: 'Placeholder', color: 'blue' }
-        ] })
+        cards: [
+          { icon: 'fa-flask', badge: 'Advanced Testing', badgeColor: '#1e3a6f', title: 'Laboratory Services', text: 'Saepe nulla praesentium eaque omnis perferendis a doloremque.', image: 'https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=600&h=400&fit=crop', accent: '#1e3a6f' },
+          { icon: 'fa-heartbeat', badge: 'Cardiac Care', badgeColor: '#f43f5e', title: 'Heart Disease', text: 'Saepe nulla praesentium eaque omnis perferendis a doloremque.', image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&h=400&fit=crop', accent: '#f43f5e' },
+          { icon: 'fa-tooth', badge: 'Oral Health', badgeColor: '#06b6d4', title: 'Dental Care', text: 'Saepe nulla praesentium eaque omnis perferendis a doloremque.', image: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=600&h=400&fit=crop', accent: '#06b6d4' },
+          { icon: 'fa-crutch', badge: 'Surgical Excellence', badgeColor: '#10b981', title: 'Body Surgery', text: 'Saepe nulla praesentium eaque omnis perferendis a doloremque.', image: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=600&h=400&fit=crop', accent: '#10b981' },
+          { icon: 'fa-brain', badge: 'Brain & Spine', badgeColor: '#a855f7', title: 'Neurology Surgery', text: 'Saepe nulla praesentium eaque omnis perferendis a doloremque.', image: 'https://images.unsplash.com/photo-1559757175-5700dde675bc?w=600&h=400&fit=crop', accent: '#a855f7' },
+          { icon: 'fa-dna', badge: "Women's Health", badgeColor: '#ec4899', title: 'Gynecology', text: 'Saepe nulla praesentium eaque omnis perferendis a doloremque.', image: '/images/s_1.jpg', accent: '#ec4899' }
+        ]
       },
       appointment: {
-        label: 'Appointment / Booking', icon: 'fa-calendar-check', iconColor: 'text-pink-500', grad: 'from-pink-50/50 to-white', desc: 'Form + image panel',
-        defaultData: () => ({ heading: 'Placeholder heading', subheading: 'Placeholder subheading text.', phone: '+00 00000 00000', whatsappNumber: '910000000000', happyPatients: '0+', satisfaction: '0%', image: '/images/placeholder-appointment.jpg' })
-      },
-      testimonials: {
-        label: 'Testimonials', icon: 'fa-quote-right', iconColor: 'text-rose-500', grad: 'from-rose-50/50 to-white', desc: 'Patient review cards',
-        defaultData: () => ({ heading: 'Placeholder', headingAccent: 'Heading', subheading: 'Placeholder subheading text.', cards: [
-          { name: 'Placeholder Name', role: 'Placeholder Role', quote: 'Placeholder testimonial text.', rating: 5, colorFrom: '#1e3a6f', colorTo: '#2d5a9e' }
-        ] })
+        fields: [
+          { label: 'Department', type: 'select', placeholder: 'Choose Department', required: true, options: 'Cardiology, Neurology, Dental, Gynecology, Laboratory' },
+          { label: 'Doctor', type: 'select', placeholder: 'Select Doctors', required: true, options: 'Dr. John Smith, Dr. Sarah Johnson, Dr. Michael Brown, Dr. Emily Davis' },
+          { label: 'Date', type: 'date', placeholder: '', required: true, options: '' },
+          { label: 'Time', type: 'time', placeholder: '', required: true, options: '' },
+          { label: 'Name', type: 'text', placeholder: 'Full Name', required: true, options: '' },
+          { label: 'Phone', type: 'tel', placeholder: 'Phone Number', required: true, options: '' },
+          { label: 'Message', type: 'textarea', placeholder: 'Your Message (optional)', required: false, options: '' },
+          { label: 'Terms & Conditions', type: 'checkbox', placeholder: '', required: true, options: '' }
+        ]
       }
     };
 
-    // ===== DATA =====
-    const defaultData = {
-      theme: { primary: '#1e3a6f', accent: '#ec4899', accentSoft: '#fbcfe8' },
-      sections: { home: [
-        { id: 'sec_hero', type: 'hero' },
-        { id: 'sec_features', type: 'features' },
-        { id: 'sec_partners', type: 'partners' },
-        { id: 'sec_about', type: 'about' },
-        { id: 'sec_counters', type: 'counters' },
-        { id: 'sec_services', type: 'services' },
-        { id: 'sec_appointment', type: 'appointment' },
-        { id: 'sec_testimonials', type: 'testimonials' }
-      ] },
-      content: { home: {
-        sec_hero: { slides: [
-          { tag: 'Total health care solution', heading: 'Your most trusted', headingAccent: 'health partner', paragraph: 'A repudiandae ipsam labore ipsa voluptatum quidem quae laudantium.', buttonText: 'Make Appointment', buttonLink: '#', bgImage: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1200&h=600&fit=crop' },
-          { tag: 'Expert medical care', heading: 'Advanced', headingAccent: 'health solutions', paragraph: 'We provide best leading medical service with modern technology.', buttonText: 'Learn More', buttonLink: '#', bgImage: 'https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=1200&h=600&fit=crop' },
-          { tag: '24/7 Emergency', heading: 'We care', headingAccent: 'about your health', paragraph: 'Get all time support for emergency. We have introduced the principle of family medicine.', buttonText: 'Contact Now', buttonLink: '#', bgImage: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=1200&h=600&fit=crop' }
-        ] },
-        sec_features: { cards: [
-          { title: 'Online Appointment', desc: 'Get all time support for emergency.', icon: 'fa-user-md', color: 'blue' },
-          { title: 'Working Hours', desc: 'Sun – Wed 8:00 – 17:00', icon: 'fa-clock', color: 'teal' },
-          { title: 'Emergency Cases', desc: '+91 98765 43210', icon: 'fa-phone-alt', color: 'rose' }
-        ] },
-        sec_partners: { heading: 'Partners who support us', subheading: 'Placeholder subheading text about trusted partners.', logos: [
-          { image: 'https://via.placeholder.com/150x60/0f2b4b/ffffff?text=Partner+1', alt: 'Partner 1' },
-          { image: 'https://via.placeholder.com/150x60/1a3a5e/ffffff?text=Partner+2', alt: 'Partner 2' },
-          { image: 'https://via.placeholder.com/150x60/2d4a6e/ffffff?text=Partner+3', alt: 'Partner 3' },
-          { image: 'https://via.placeholder.com/150x60/3b5a7e/ffffff?text=Partner+4', alt: 'Partner 4' },
-          { image: 'https://via.placeholder.com/150x60/ec4899/ffffff?text=Partner+5', alt: 'Partner 5' },
-          { image: 'https://via.placeholder.com/150x60/f472b6/ffffff?text=Partner+6', alt: 'Partner 6' }
-        ] },
-        sec_about: { heading: 'Personal care', headingAccent: '& healthy living', paragraph: 'We provide best leading medical service. Nulla perferendis veniam deleniti ipsum officia dolores repellat laudantium obcaecati neque.', buttonText: 'Services', images: ['https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=300&fit=crop', 'https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=400&h=300&fit=crop', 'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=400&h=300&fit=crop'] },
-        sec_counters: { stats: [
-          { icon: 'fa-user-md', target: 45000, suffix: '', label: 'Happy People' },
-          { icon: 'fa-flag', target: 700, suffix: '+', label: 'Surgery Completed' },
-          { icon: 'fa-user-md', target: 45, suffix: '+', label: 'Expert Doctors' },
-          { icon: 'fa-globe', target: 20, suffix: '', label: 'Worldwide Branch' }
-        ] },
-        sec_services: { heading: 'Award winning', headingAccent: 'patient care', subheading: 'Placeholder subheading about the compassionate care provided to every patient.', cards: [
-          { title: 'Laboratory Services', desc: 'Saepe nulla praesentium eaque omnis perferendis a doloremque.', icon: 'fa-flask', image: 'https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=600&h=400&fit=crop', badge: 'Advanced Testing', color: 'blue' },
-          { title: 'Heart Disease', desc: 'Saepe nulla praesentium eaque omnis perferendis a doloremque.', icon: 'fa-heartbeat', image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&h=400&fit=crop', badge: 'Cardiac Care', color: 'rose' },
-          { title: 'Dental Care', desc: 'Saepe nulla praesentium eaque omnis perferendis a doloremque.', icon: 'fa-tooth', image: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=600&h=400&fit=crop', badge: 'Oral Health', color: 'cyan' },
-          { title: 'Body Surgery', desc: 'Saepe nulla praesentium eaque omnis perferendis a doloremque.', icon: 'fa-crutch', image: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=600&h=400&fit=crop', badge: 'Surgical Excellence', color: 'emerald' },
-          { title: 'Neurology Surgery', desc: 'Saepe nulla praesentium eaque omnis perferendis a doloremque.', icon: 'fa-brain', image: 'https://images.unsplash.com/photo-1559757175-5700dde675bc?w=600&h=400&fit=crop', badge: 'Brain & Spine', color: 'purple' },
-          { title: 'Gynecology', desc: 'Saepe nulla praesentium eaque omnis perferendis a doloremque.', icon: 'fa-dna', image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&h=400&fit=crop', badge: "Women's Health", color: 'pink' }
-        ] },
-        sec_appointment: { heading: 'Book an Appointment', subheading: 'Fill in the details below and our team will get back to you within 24 hours.', phone: '+91 98765 43210', whatsappNumber: '919876543210', happyPatients: '500+', satisfaction: '98%', image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&h=600&fit=crop' },
-        sec_testimonials: { heading: 'What Our', headingAccent: 'Patients Say', subheading: 'Hear from our patients about their experience with compassionate care, trusted medical services, and dedicated healthcare professionals.', cards: [
-          { name: 'John Partho', role: 'CEO, Tech Company', quote: 'They provide great service facility consectetur adipisicing elit. Itaque rem, praesentium voluptates incidunt molestias nostrum laudantium.', rating: 5, colorFrom: '#1e3a6f', colorTo: '#2d5a9e' },
-          { name: 'Mullar Sarth', role: 'Marketing Manager', quote: 'They provide great service facility consectetur adipisicing elit. Itaque rem, praesentium voluptates incidunt molestias nostrum laudantium.', rating: 5, colorFrom: '#be123c', colorTo: '#e11d48' },
-          { name: 'Kolis Mullar', role: 'Business Owner', quote: 'They provide great service facility consectetur adipisicing elit. Itaque rem, praesentium voluptates incidunt molestias nostrum laudantium.', rating: 5, colorFrom: '#047857', colorTo: '#059669' }
-        ] }
-      } },
-      media: { logos: { main: 'M', text: 'Med Plus' } },
-      banners: [
-        { id: 'b1', name: 'Hero Banner 1', url: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1200&h=400&fit=crop', alt: 'Medical team' },
-        { id: 'b2', name: 'Hero Banner 2', url: 'https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=1200&h=400&fit=crop', alt: 'Surgery room' },
-        { id: 'b3', name: 'Hero Banner 3', url: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=1200&h=400&fit=crop', alt: 'Doctor consultation' },
-        { id: 'b4', name: 'Hero Banner 4', url: 'https://images.unsplash.com/photo-1559757175-5700dde675bc?w=1200&h=400&fit=crop', alt: 'Neurology' }
-      ]
-    };
+    const defaultOrder = ['hero', 'features', 'partners', 'about', 'counters', 'services', 'appointment', 'testimonials'];
 
     let appData = {};
-    let currentTab = 'content';
-    let pickerOpen = false;
-    let replaceTargetId = null;
-    let showingBannerPreview = null;
 
-    function uid() { return 'sec_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
-    function bid() { return 'b_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+    function uid() { return 'id' + Math.random().toString(36).slice(2, 9); }
+
+    function ensureIds(list) { list.forEach(item => { if (!item.id) item.id = uid(); }); return list; }
+
+    // Recursively fills in any keys missing from `target` using `source` as
+    // the template. Needed because other admin pages (e.g. the Dashboard)
+    // already write a partial `content.home` object into the same
+    // localStorage key — without this, required arrays like
+    // `hero.banners` or whole sub-objects like `features` could be
+    // undefined even though `content.home` itself exists.
+    function deepMerge(target, source) {
+      Object.keys(source).forEach(key => {
+        const srcVal = source[key];
+        if (Array.isArray(srcVal)) {
+          if (!Array.isArray(target[key])) target[key] = JSON.parse(JSON.stringify(srcVal));
+        } else if (srcVal && typeof srcVal === 'object') {
+          if (!target[key] || typeof target[key] !== 'object' || Array.isArray(target[key])) target[key] = {};
+          deepMerge(target[key], srcVal);
+        } else if (!(key in target)) {
+          target[key] = srcVal;
+        }
+      });
+      return target;
+    }
 
     function loadData() {
-      const stored = localStorage.getItem('novena_cms_data');
-      if (stored) {
-        try { appData = JSON.parse(stored); } catch(e) { appData = JSON.parse(JSON.stringify(defaultData)); }
-      } else { appData = JSON.parse(JSON.stringify(defaultData)); }
-      if (!appData.theme) appData.theme = defaultData.theme;
-      if (!appData.content || !appData.content.home) appData.content = defaultData.content;
-      if (!appData.sections || !appData.sections.home) appData.sections = defaultData.sections;
-      if (!appData.media) appData.media = defaultData.media;
-      if (!appData.banners) appData.banners = defaultData.banners;
-      saveData();
-      renderTab();
-      updateStats();
+      const stored = localStorage.getItem(STORAGE_KEY);
+      try { appData = stored ? JSON.parse(stored) : {}; } catch (e) { appData = {}; }
+      if (!appData.content || typeof appData.content !== 'object') appData.content = {};
+      if (!appData.content.home || typeof appData.content.home !== 'object') appData.content.home = {};
+      deepMerge(appData.content.home, defaultHomeContent);
+      if (!appData.sectionOrder || typeof appData.sectionOrder !== 'object') appData.sectionOrder = {};
+      if (!Array.isArray(appData.sectionOrder.home) || !appData.sectionOrder.home.length) appData.sectionOrder.home = [...defaultOrder];
+      const h = appData.content.home;
+      ensureIds(h.partners.logos);
+      ensureIds(h.services.cards);
+      ensureIds(h.appointment.fields);
+      ensureIds(h.features.cards);
+      save(false);
     }
 
-    function saveData() {
-      localStorage.setItem('novena_cms_data', JSON.stringify(appData));
-      updateStats();
+    let saveTimer = null;
+    function save(showToast = true) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      document.getElementById('lastSavedTime').textContent = new Date().toLocaleTimeString();
+      if (showToast) toast('Saved');
     }
-
-    function updateStats() {
-      const count = appData.sections.home?.length || 0;
-      document.getElementById('sectionCount').textContent = count;
-      document.getElementById('sectionBadge').textContent = count + ' sections';
-      const json = JSON.stringify(appData.content.home || {});
-      const fields = (json.match(/":/g) || []).length;
-      const media = (json.match(/"(bgImage|image|images|logo|logos)"\s*:/gi) || []).length;
-      document.getElementById('fieldCount').textContent = fields;
-      document.getElementById('mediaCount').textContent = media + (appData.banners?.length || 0);
+    function debounceSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => save(false), 500);
     }
+    function saveAll() { save(true); }
 
-    function switchTab(tab) {
-      currentTab = tab;
-      pickerOpen = false; replaceTargetId = null;
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(b => {
-        if (b.textContent.toLowerCase().includes(tab)) b.classList.add('active');
-      });
-      renderTab();
-    }
-
-    function renderTab() {
-      const container = document.getElementById('tabContent');
-      if (currentTab === 'content') renderContent(container);
-      else if (currentTab === 'sections') renderSections(container);
-      else if (currentTab === 'theme') renderTheme(container);
-      else if (currentTab === 'media') renderMedia(container);
-      else if (currentTab === 'banners') renderBanners(container);
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toast._t);
+      toast._t = setTimeout(() => t.classList.remove('show'), 1600);
     }
 
     // ============================================================
-    // CONTENT TAB
+    // IMAGE UPLOAD (reads a local file and stores it as a data URL —
+    // no backend required; everything still lives in localStorage)
     // ============================================================
-    function renderContent(container) {
-      const order = appData.sections.home;
-      if (!order.length) {
-        container.innerHTML = `<p class="text-sm text-gray-400">No sections yet. Add one from the <button class="link-action" onclick="switchTab('sections')">Sections</button> tab.</p>`;
+    const MAX_UPLOAD_MB = 3;
+    function readFileAsDataURL(fileInput, cb) {
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) { alert('Please choose an image file.'); fileInput.value = ''; return; }
+      if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
+        alert(`That image is larger than ${MAX_UPLOAD_MB}MB. Please choose a smaller file, or paste a hosted image URL instead.`);
+        fileInput.value = '';
         return;
       }
-      container.innerHTML = `<div class="space-y-6">${order.map(sec => renderSectionEditor(sec)).join('')}</div>`;
+      const reader = new FileReader();
+      reader.onload = e => cb(e.target.result);
+      reader.onerror = () => alert('Could not read that file. Please try again.');
+      reader.readAsDataURL(file);
+      fileInput.value = '';
     }
-
-    function renderSectionEditor(sec) {
-      const lib = SECTION_LIBRARY[sec.type];
-      const data = appData.content.home[sec.id] || {};
-      let body = '';
-      switch (sec.type) {
-        case 'hero': body = editorHero(sec.id, data); break;
-        case 'features': body = editorFeatures(sec.id, data); break;
-        case 'partners': body = editorPartners(sec.id, data); break;
-        case 'about': body = editorAbout(sec.id, data); break;
-        case 'counters': body = editorCounters(sec.id, data); break;
-        case 'services': body = editorServices(sec.id, data); break;
-        case 'appointment': body = editorAppointment(sec.id, data); break;
-        case 'testimonials': body = editorTestimonials(sec.id, data); break;
-        default: body = `<p class="text-sm text-gray-400">Unknown section type.</p>`;
-      }
-      const grad = lib ? lib.grad : 'from-gray-50/50 to-white';
-      const icon = lib ? lib.icon : 'fa-cube';
-      const iconColor = lib ? lib.iconColor : 'text-gray-400';
-      const label = lib ? lib.label : sec.type;
-      return `
-        <div class="border rounded-xl p-5 bg-gradient-to-br ${grad}">
-          <h5><i class="fas ${icon} ${iconColor}"></i>${label}</h5>
-          ${body}
-        </div>
-      `;
+    function uploadHeroImage(i, fileInput) {
+      readFileAsDataURL(fileInput, dataUrl => onHeroInput(i, 'image', dataUrl, true));
     }
-
-    // ---- field helpers ----
-    function textField(label, value, onchange, extra) {
-      return `<div class="${extra||''}"><label class="field-label">${label}</label><input type="text" value="${escAttr(value || '')}" onchange="${onchange}" class="mt-1" /></div>`;
+    function uploadPartnerImage(i, fileInput) {
+      readFileAsDataURL(fileInput, dataUrl => onPartnerInput(i, 'img', dataUrl, true));
     }
-    function textareaField(label, value, onchange, rows) {
-      return `<div class="md:col-span-2"><label class="field-label">${label}</label><textarea rows="${rows || 2}" onchange="${onchange}" class="mt-1">${escHtml(value || '')}</textarea></div>`;
+    function uploadServiceImage(i, fileInput) {
+      readFileAsDataURL(fileInput, dataUrl => onServiceInput(i, 'image', dataUrl, true));
     }
-    function escAttr(s) { return String(s).replace(/"/g, '&quot;'); }
-    function escHtml(s) { return String(s).replace(/</g, '&lt;'); }
-
-    // ---- HERO ----
-    function editorHero(id, data) {
-      const slides = data.slides || [];
-      return `
-        <div class="flex items-center justify-between mb-3">
-          <p class="text-xs text-gray-400">${slides.length} slide(s) in rotation</p>
-          <button class="link-action" onclick="addArrayItem('${id}','slides',{tag:'New Slide',heading:'Placeholder headline',headingAccent:'goes here',paragraph:'Placeholder paragraph text.',buttonText:'Learn More',buttonLink:'#',bgImage:'/images/placeholder-banner.jpg'})"><i class="fas fa-plus mr-1"></i> Add slide</button>
-        </div>
-        ${slides.map((s, i) => `
-          <div class="sub-item">
-            <span class="sub-item-index">Slide ${i+1}</span>
-            ${slides.length > 1 ? `<span class="sub-item-remove" onclick="removeArrayItem('${id}','slides',${i})"><i class="fas fa-times"></i></span>` : ''}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              ${textField('Eyebrow tag', s.tag, `updateArrayItem('${id}','slides',${i},'tag',this.value)`)}
-              ${textField('Heading', s.heading, `updateArrayItem('${id}','slides',${i},'heading',this.value)`)}
-              ${textField('Heading accent', s.headingAccent, `updateArrayItem('${id}','slides',${i},'headingAccent',this.value)`)}
-              ${textField('Button text', s.buttonText, `updateArrayItem('${id}','slides',${i},'buttonText',this.value)`)}
-              ${textField('Button link', s.buttonLink, `updateArrayItem('${id}','slides',${i},'buttonLink',this.value)`)}
-              ${textField('Background image', s.bgImage, `updateArrayItem('${id}','slides',${i},'bgImage',this.value)`)}
-              ${textareaField('Paragraph', s.paragraph, `updateArrayItem('${id}','slides',${i},'paragraph',this.value)`)}
-            </div>
-          </div>
-        `).join('')}
-      `;
-    }
-
-    // ---- FEATURES ----
-    function editorFeatures(id, data) {
-      const cards = data.cards || [];
-      return `
-        <div class="flex items-center justify-end mb-3">
-          <button class="link-action" onclick="addArrayItem('${id}','cards',{title:'New Feature',desc:'Placeholder description.',icon:'fa-star',color:'blue'})"><i class="fas fa-plus mr-1"></i> Add</button>
-        </div>
-        ${cards.map((c, i) => `
-          <div class="grid grid-cols-1 md:grid-cols-5 gap-2 mb-2 p-3 bg-white rounded-lg border shadow-sm items-center">
-            <input type="text" value="${escAttr(c.title)}" placeholder="Title" onchange="updateArrayItem('${id}','cards',${i},'title',this.value)" />
-            <input type="text" value="${escAttr(c.desc)}" placeholder="Description" onchange="updateArrayItem('${id}','cards',${i},'desc',this.value)" />
-            <input type="text" value="${escAttr(c.icon)}" placeholder="Icon class" onchange="updateArrayItem('${id}','cards',${i},'icon',this.value)" />
-            <select onchange="updateArrayItem('${id}','cards',${i},'color',this.value)">
-              ${['blue','teal','rose','purple','green','orange'].map(cl => `<option value="${cl}" ${c.color===cl?'selected':''}>${cl}</option>`).join('')}
-            </select>
-            <button class="icon-btn danger" onclick="removeArrayItem('${id}','cards',${i})" title="Remove"><i class="fas fa-trash-alt"></i></button>
-          </div>
-        `).join('')}
-      `;
-    }
-
-    // ---- PARTNERS ----
-    function editorPartners(id, data) {
-      const logos = data.logos || [];
-      return `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-          ${textField('Heading', data.heading, `updateContent('${id}','heading',this.value)`)}
-          ${textField('Subheading', data.subheading, `updateContent('${id}','subheading',this.value)`)}
-        </div>
-        <div class="flex items-center justify-between mb-2">
-          <p class="text-xs text-gray-400">${logos.length} logo(s)</p>
-          <button class="link-action" onclick="addArrayItem('${id}','logos',{image:'/images/placeholder-logo.png',alt:'Partner'})"><i class="fas fa-plus mr-1"></i> Add logo</button>
-        </div>
-        ${logos.map((l, i) => `
-          <div class="grid grid-cols-1 md:grid-cols-5 gap-2 mb-2 p-3 bg-white rounded-lg border shadow-sm items-center">
-            <input class="md:col-span-3" type="text" value="${escAttr(l.image)}" placeholder="Image URL" onchange="updateArrayItem('${id}','logos',${i},'image',this.value)" />
-            <input type="text" value="${escAttr(l.alt)}" placeholder="Alt text" onchange="updateArrayItem('${id}','logos',${i},'alt',this.value)" />
-            <button class="icon-btn danger" onclick="removeArrayItem('${id}','logos',${i})" title="Remove"><i class="fas fa-trash-alt"></i></button>
-          </div>
-        `).join('')}
-      `;
-    }
-
-    // ---- ABOUT ----
-    function editorAbout(id, data) {
-      const images = data.images || ['', '', ''];
-      return `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          ${textField('Heading', data.heading, `updateContent('${id}','heading',this.value)`)}
-          ${textField('Heading accent', data.headingAccent, `updateContent('${id}','headingAccent',this.value)`)}
-          ${textField('Button text', data.buttonText, `updateContent('${id}','buttonText',this.value)`)}
-          <div></div>
-          ${textareaField('Paragraph', data.paragraph, `updateContent('${id}','paragraph',this.value)`, 3)}
-        </div>
-        <p class="field-label mt-3 mb-1">Images</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <input type="text" value="${escAttr(images[0]||'')}" placeholder="Image 1" onchange="updateArrayIndex('${id}','images',0,this.value)" />
-          <input type="text" value="${escAttr(images[1]||'')}" placeholder="Image 2" onchange="updateArrayIndex('${id}','images',1,this.value)" />
-          <input type="text" value="${escAttr(images[2]||'')}" placeholder="Main image" onchange="updateArrayIndex('${id}','images',2,this.value)" />
-        </div>
-      `;
-    }
-
-    // ---- COUNTERS ----
-    function editorCounters(id, data) {
-      const stats = data.stats || [];
-      return `
-        <div class="flex items-center justify-end mb-3">
-          <button class="link-action" onclick="addArrayItem('${id}','stats',{icon:'fa-star',target:100,suffix:'',label:'Placeholder Stat'})"><i class="fas fa-plus mr-1"></i> Add stat</button>
-        </div>
-        ${stats.map((s, i) => `
-          <div class="grid grid-cols-1 md:grid-cols-5 gap-2 mb-2 p-3 bg-white rounded-lg border shadow-sm items-center">
-            <input type="text" value="${escAttr(s.icon)}" placeholder="Icon class" onchange="updateArrayItem('${id}','stats',${i},'icon',this.value)" />
-            <input type="number" value="${s.target}" placeholder="Target number" onchange="updateArrayItem('${id}','stats',${i},'target',parseInt(this.value)||0)" />
-            <input type="text" value="${escAttr(s.suffix||'')}" placeholder="Suffix e.g. +" onchange="updateArrayItem('${id}','stats',${i},'suffix',this.value)" />
-            <input type="text" value="${escAttr(s.label)}" placeholder="Label" onchange="updateArrayItem('${id}','stats',${i},'label',this.value)" />
-            <button class="icon-btn danger" onclick="removeArrayItem('${id}','stats',${i})" title="Remove"><i class="fas fa-trash-alt"></i></button>
-          </div>
-        `).join('')}
-      `;
-    }
-
-    // ---- SERVICES ----
-    function editorServices(id, data) {
-      const cards = data.cards || [];
-      return `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-          ${textField('Heading', data.heading, `updateContent('${id}','heading',this.value)`)}
-          ${textField('Heading accent', data.headingAccent, `updateContent('${id}','headingAccent',this.value)`)}
-          ${textareaField('Subheading', data.subheading, `updateContent('${id}','subheading',this.value)`)}
-        </div>
-        <div class="flex items-center justify-between mb-2">
-          <p class="text-xs text-gray-400">${cards.length} service(s)</p>
-          <button class="link-action" onclick="addArrayItem('${id}','cards',{title:'New Service',desc:'Placeholder description.',icon:'fa-flask',image:'/images/placeholder-service.jpg',badge:'Placeholder',color:'blue'})"><i class="fas fa-plus mr-1"></i> Add service</button>
-        </div>
-        ${cards.map((c, i) => `
-          <div class="sub-item">
-            <span class="sub-item-index">Service ${i+1}</span>
-            <span class="sub-item-remove" onclick="removeArrayItem('${id}','cards',${i})"><i class="fas fa-times"></i></span>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              ${textField('Title', c.title, `updateArrayItem('${id}','cards',${i},'title',this.value)`)}
-              ${textField('Badge', c.badge, `updateArrayItem('${id}','cards',${i},'badge',this.value)`)}
-              ${textField('Icon class', c.icon, `updateArrayItem('${id}','cards',${i},'icon',this.value)`)}
-              <div><label class="field-label">Accent color</label>
-                <select onchange="updateArrayItem('${id}','cards',${i},'color',this.value)" class="mt-1">
-                  ${['blue','rose','cyan','emerald','purple','pink'].map(cl => `<option value="${cl}" ${c.color===cl?'selected':''}>${cl}</option>`).join('')}
-                </select></div>
-              ${textField('Image URL', c.image, `updateArrayItem('${id}','cards',${i},'image',this.value)`)}
-              ${textareaField('Description', c.desc, `updateArrayItem('${id}','cards',${i},'desc',this.value)`)}
-            </div>
-          </div>
-        `).join('')}
-      `;
-    }
-
-    // ---- APPOINTMENT ----
-    function editorAppointment(id, data) {
-      return `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          ${textField('Heading', data.heading, `updateContent('${id}','heading',this.value)`)}
-          ${textField('Phone number', data.phone, `updateContent('${id}','phone',this.value)`)}
-          ${textField('WhatsApp number (digits only)', data.whatsappNumber, `updateContent('${id}','whatsappNumber',this.value)`)}
-          ${textField('Image', data.image, `updateContent('${id}','image',this.value)`)}
-          ${textField('Happy patients stat', data.happyPatients, `updateContent('${id}','happyPatients',this.value)`)}
-          ${textField('Satisfaction stat', data.satisfaction, `updateContent('${id}','satisfaction',this.value)`)}
-          ${textareaField('Subheading', data.subheading, `updateContent('${id}','subheading',this.value)`)}
-        </div>
-      `;
-    }
-
-    // ---- TESTIMONIALS ----
-    function editorTestimonials(id, data) {
-      const cards = data.cards || [];
-      return `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-          ${textField('Heading', data.heading, `updateContent('${id}','heading',this.value)`)}
-          ${textField('Heading accent', data.headingAccent, `updateContent('${id}','headingAccent',this.value)`)}
-          ${textareaField('Subheading', data.subheading, `updateContent('${id}','subheading',this.value)`)}
-        </div>
-        <div class="flex items-center justify-between mb-2">
-          <p class="text-xs text-gray-400">${cards.length} testimonial(s)</p>
-          <button class="link-action" onclick="addArrayItem('${id}','cards',{name:'Placeholder Name',role:'Placeholder Role',quote:'Placeholder testimonial text.',rating:5,colorFrom:'#1e3a6f',colorTo:'#2d5a9e'})"><i class="fas fa-plus mr-1"></i> Add testimonial</button>
-        </div>
-        ${cards.map((c, i) => `
-          <div class="sub-item">
-            <span class="sub-item-index">Review ${i+1}</span>
-            <span class="sub-item-remove" onclick="removeArrayItem('${id}','cards',${i})"><i class="fas fa-times"></i></span>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              ${textField('Name', c.name, `updateArrayItem('${id}','cards',${i},'name',this.value)`)}
-              ${textField('Role', c.role, `updateArrayItem('${id}','cards',${i},'role',this.value)`)}
-              <div><label class="field-label">Rating (1-5)</label><input class="mt-1" type="number" min="1" max="5" value="${c.rating}" onchange="updateArrayItem('${id}','cards',${i},'rating',parseInt(this.value)||5)" /></div>
-              <div class="grid grid-cols-2 gap-2">
-                <div><label class="field-label">Color from</label><input type="color" value="${c.colorFrom}" onchange="updateArrayItem('${id}','cards',${i},'colorFrom',this.value)" /></div>
-                <div><label class="field-label">Color to</label><input type="color" value="${c.colorTo}" onchange="updateArrayItem('${id}','cards',${i},'colorTo',this.value)" /></div>
-              </div>
-              ${textareaField('Quote', c.quote, `updateArrayItem('${id}','cards',${i},'quote',this.value)`)}
-            </div>
-          </div>
-        `).join('')}
-      `;
-    }
-
-    // ============================================================
-    // SECTIONS TAB
-    // ============================================================
-    function renderSections(container) {
-      const order = appData.sections.home || [];
-      container.innerHTML = `
-        <div>
-          <p class="text-sm text-gray-500 mb-4 flex items-center gap-2"><i class="fas fa-arrows-alt text-pink-400"></i> Drag to reorder, or use the arrows. Order here is the order on the live page.</p>
-          <div class="space-y-2" id="sectionList">
-            ${order.map((sec, idx) => {
-              const lib = SECTION_LIBRARY[sec.type];
-              return `
-              <div class="section-item flex items-center justify-between" draggable="true" data-index="${idx}">
-                <div class="flex items-center gap-3">
-                  <span class="drag-handle"><i class="fas fa-grip-vertical"></i></span>
-                  <i class="fas ${lib ? lib.icon : 'fa-cube'} text-pink-500"></i>
-                  <span class="font-medium">${lib ? lib.label : sec.type}</span>
-                  <span class="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">${idx+1}</span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <button class="icon-btn" onclick="moveSection(${idx},-1)" ${idx===0?'disabled':''} title="Move up"><i class="fas fa-chevron-up"></i></button>
-                  <button class="icon-btn" onclick="moveSection(${idx},1)" ${idx===order.length-1?'disabled':''} title="Move down"><i class="fas fa-chevron-down"></i></button>
-                  <button class="icon-btn" onclick="openReplacePicker('${sec.id}')" title="Replace section type"><i class="fas fa-sync-alt"></i></button>
-                  <button class="icon-btn danger" onclick="removeSection(${idx})" title="Remove"><i class="fas fa-trash-alt"></i></button>
-                </div>
-              </div>
-            `; }).join('') || `<p class="text-sm text-gray-400">No sections yet — add one below.</p>`}
-          </div>
-
-          <button onclick="openAddPicker()" class="mt-4 text-sm text-pink-600 hover:underline">
-            <i class="fas fa-plus mr-1"></i> Add Section
-          </button>
-
-          ${pickerOpen ? renderLibraryPicker() : ''}
-        </div>
-      `;
-      // Drag-drop
-      document.querySelectorAll('.section-item').forEach(el => {
-        el.addEventListener('dragstart', function(e) { this.classList.add('dragging'); });
-        el.addEventListener('dragend', function(e) { this.classList.remove('dragging'); });
-        el.addEventListener('dragover', function(e) { e.preventDefault(); });
-        el.addEventListener('drop', function(e) {
-          e.preventDefault();
-          const from = parseInt(document.querySelector('.dragging')?.dataset.index);
-          const to = parseInt(this.dataset.index);
-          if (from !== undefined && from !== to) {
-            const sections = appData.sections.home;
-            const [removed] = sections.splice(from, 1);
-            sections.splice(to, 0, removed);
-            saveData();
-            renderSections(container);
-          }
-        });
+    function uploadAboutImage(key, fileInput) {
+      const previewMap = { image1: 'aboutImg1Preview', image2: 'aboutImg2Preview', mainImage: 'aboutMainPreview' };
+      const inputMap = { image1: 'aboutImg1', image2: 'aboutImg2', mainImage: 'aboutMainImg' };
+      readFileAsDataURL(fileInput, dataUrl => {
+        onAboutInput(key, dataUrl, previewMap[key]);
+        document.getElementById(inputMap[key]).value = dataUrl;
       });
     }
 
-    function renderLibraryPicker() {
-      return `
-        <div class="border rounded-xl p-5 bg-gray-50 mt-4">
+    function resetHomeData() {
+      if (!confirm('Reset the Home Page content to defaults? This cannot be undone.')) return;
+      appData.content.home = JSON.parse(JSON.stringify(defaultHomeContent));
+      appData.sectionOrder.home = [...defaultOrder];
+      const h = appData.content.home;
+      ensureIds(h.partners.logos); ensureIds(h.services.cards); ensureIds(h.appointment.fields); ensureIds(h.features.cards);
+      save(true);
+      renderAll();
+    }
+
+    // ============================================================
+    // TABS
+    // ============================================================
+    function switchTab(tab) {
+      document.querySelectorAll('.subtab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+      document.querySelectorAll('.section-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tab));
+    }
+
+    // ============================================================
+    // HERO BANNERS
+    // ============================================================
+    function renderHero() {
+      const wrap = document.getElementById('heroBannersWrap');
+      const banners = appData.content.home.hero.banners;
+      wrap.innerHTML = banners.map((b, i) => `
+        <div class="card-admin">
           <div class="flex items-center justify-between mb-3">
-            <h5 class="font-semibold text-gray-700 text-sm">${replaceTargetId ? 'Choose a new type — its content will reset to placeholder data.' : 'Choose a section type to add to the page.'}</h5>
-            <button class="icon-btn" onclick="closePicker()" title="Cancel"><i class="fas fa-times"></i></button>
+            <span class="badge-soft">Slide ${i + 1}</span>
           </div>
-          <div class="library-grid">
-            ${Object.keys(SECTION_LIBRARY).map(type => {
-              const lib = SECTION_LIBRARY[type];
-              return `
-              <button class="library-card" onclick="pickType('${type}')">
-                <i class="fas ${lib.icon}"></i>
-                <div class="lib-label">${lib.label}</div>
-                <div class="lib-desc">${lib.desc}</div>
-              </button>`;
-            }).join('')}
+          <img class="mini-preview mb-3" style="height:140px" src="${esc(b.image)}" onerror="this.src='https://placehold.co/600x300?text=Banner'">
+          <div class="field"><label class="field-label">Banner Image</label>
+            <div class="img-field-row">
+              <input type="text" value="${esc(b.image)}" placeholder="Image URL, or upload →" oninput="onHeroInput(${i},'image',this.value,true)">
+              <label class="upload-btn" title="Upload image from your device">
+                <i class="fas fa-upload"></i>
+                <input type="file" accept="image/*" class="hidden" onchange="uploadHeroImage(${i}, this)">
+              </label>
+            </div>
+          </div>
+          <div class="field"><label class="field-label">Eyebrow Badge Text</label>
+            <input value="${esc(b.badge)}" oninput="onHeroInput(${i},'badge',this.value)">
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="field"><label class="field-label">Heading Line</label>
+              <input value="${esc(b.heading)}" oninput="onHeroInput(${i},'heading',this.value)">
+            </div>
+            <div class="field"><label class="field-label">Highlighted Line</label>
+              <input value="${esc(b.headingAccent)}" oninput="onHeroInput(${i},'headingAccent',this.value)">
+            </div>
+          </div>
+          <div class="field"><label class="field-label">Subheading Paragraph</label>
+            <textarea rows="2" oninput="onHeroInput(${i},'subheading',this.value)">${esc(b.subheading)}</textarea>
+          </div>
+          <div class="field"><label class="field-label">Button Label</label>
+            <input value="${esc(b.buttonText)}" oninput="onHeroInput(${i},'buttonText',this.value)">
           </div>
         </div>
-      `;
+      `).join('');
     }
-
-    function openAddPicker() { pickerOpen = true; replaceTargetId = null; renderSections(document.getElementById('tabContent')); }
-    function openReplacePicker(id) { pickerOpen = true; replaceTargetId = id; renderSections(document.getElementById('tabContent')); }
-    function closePicker() { pickerOpen = false; replaceTargetId = null; renderSections(document.getElementById('tabContent')); }
-
-    function pickType(type) {
-      const lib = SECTION_LIBRARY[type];
-      if (replaceTargetId) {
-        if (!confirm(`Replace this section with "${lib.label}"? Its current content will be reset to placeholder data.`)) return;
-        const sec = appData.sections.home.find(s => s.id === replaceTargetId);
-        sec.type = type;
-        appData.content.home[replaceTargetId] = lib.defaultData();
-      } else {
-        const id = uid();
-        appData.sections.home.push({ id, type });
-        appData.content.home[id] = lib.defaultData();
-      }
-      pickerOpen = false; replaceTargetId = null;
-      saveData();
-      renderTab();
-    }
-
-    function moveSection(idx, dir) {
-      const arr = appData.sections.home;
-      const to = idx + dir;
-      if (to < 0 || to >= arr.length) return;
-      [arr[idx], arr[to]] = [arr[to], arr[idx]];
-      saveData();
-      renderSections(document.getElementById('tabContent'));
-    }
-
-    function removeSection(index) {
-      if (confirm('Remove this section? Its content will be deleted.')) {
-        const [removed] = appData.sections.home.splice(index, 1);
-        delete appData.content.home[removed.id];
-        saveData();
-        renderTab();
-      }
+    function onHeroInput(i, key, val, rerenderImg) {
+      appData.content.home.hero.banners[i][key] = val;
+      debounceSave();
+      if (rerenderImg) renderHero();
     }
 
     // ============================================================
-    // THEME TAB
+    // FEATURES
     // ============================================================
-    function renderTheme(container) {
-      const t = appData.theme;
-      container.innerHTML = `
-        <div class="space-y-6">
-          <p class="text-sm text-gray-500">These colors drive the brand palette across the entire home page — headings, buttons, backgrounds and highlights.</p>
-          <div class="border rounded-xl p-5 bg-gradient-to-br from-blue-50/50 to-white">
-            <h5><i class="fas fa-palette text-pink-500"></i>Brand Colors</h5>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    const colorPresets = ['#dbeafe', '#ccfbf1', '#ffe4e6', '#fef9c3', '#ede9fe', '#dcfce7'];
+    function renderFeatures() {
+      const wrap = document.getElementById('featuresWrap');
+      const cards = appData.content.home.features.cards;
+      wrap.innerHTML = cards.map((c, i) => `
+        <div class="card-admin" data-id="${c.id}">
+          <div class="flex items-start gap-4">
+            <i class="fas fa-grip-vertical drag-handle mt-2"></i>
+            <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="field-label">Primary (navy)</label>
-                <div class="theme-swatch mb-2" style="background:${t.primary};"></div>
-                <input type="color" value="${t.primary}" onchange="updateTheme('primary',this.value)" />
-              </div>
-              <div>
-                <label class="field-label">Accent (pink)</label>
-                <div class="theme-swatch mb-2" style="background:${t.accent};"></div>
-                <input type="color" value="${t.accent}" onchange="updateTheme('accent',this.value)" />
-              </div>
-              <div>
-                <label class="field-label">Accent — soft</label>
-                <div class="theme-swatch mb-2" style="background:${t.accentSoft};"></div>
-                <input type="color" value="${t.accentSoft}" onchange="updateTheme('accentSoft',this.value)" />
-              </div>
-            </div>
-          </div>
-          <div class="border rounded-xl p-5 bg-gradient-to-br from-purple-50/50 to-white">
-            <h5><i class="fas fa-eye text-purple-500"></i>Preview</h5>
-            <div class="rounded-xl overflow-hidden border">
-              <div class="p-6 text-white" style="background:${t.primary};">
-                <span class="text-xs uppercase tracking-widest font-semibold px-3 py-1 rounded-full inline-block" style="background:${t.accent}b3;">Total health care solution</span>
-                <h3 class="text-2xl font-bold mt-3">Your most trusted health partner</h3>
-                <button class="mt-3 px-5 py-2 rounded-full font-medium text-sm" style="background:white; color:${t.primary};">Make Appointment</button>
-              </div>
-            </div>
-          </div>
-          <button class="link-action" onclick="resetTheme()"><i class="fas fa-undo mr-1"></i> Reset to default theme</button>
-        </div>
-      `;
-    }
-
-    function updateTheme(key, value) {
-      appData.theme[key] = value;
-      saveData();
-      renderTheme(document.getElementById('tabContent'));
-    }
-
-    function resetTheme() {
-      if (confirm('Reset theme colors to the site default?')) {
-        appData.theme = JSON.parse(JSON.stringify(defaultData.theme));
-        saveData();
-        renderTheme(document.getElementById('tabContent'));
-      }
-    }
-
-    // ============================================================
-    // MEDIA TAB
-    // ============================================================
-    function renderMedia(container) {
-      const m = appData.media;
-      container.innerHTML = `
-        <div class="space-y-4">
-          <p class="text-sm text-gray-500 mb-2">Section-specific images (hero banners, service photos, etc.) are edited inside each section on the <button class="link-action" onclick="switchTab('content')">Content</button> tab. This is just the shared site branding.</p>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="border rounded-xl p-4 bg-gray-50">
-              <label class="block text-sm font-medium text-gray-700">Logo Mark</label>
-              <input type="text" value="${escAttr(m.logos.main)}" maxlength="2" onchange="updateLogo('main',this.value)" class="mt-1" />
-            </div>
-            <div class="border rounded-xl p-4 bg-gray-50">
-              <label class="block text-sm font-medium text-gray-700">Site Name</label>
-              <input type="text" value="${escAttr(m.logos.text)}" onchange="updateLogo('text',this.value)" class="mt-1" />
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function updateLogo(key, value) {
-      appData.media.logos[key] = value;
-      saveData();
-    }
-
-    // ============================================================
-    // BANNERS TAB — Full CRUD: add, edit, delete, view, reorder
-    // ============================================================
-    function renderBanners(container) {
-      const banners = appData.banners || [];
-      container.innerHTML = `
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <p class="text-sm text-gray-500">${banners.length} banner(s) in library. Drag to reorder.</p>
-            <button class="link-action" onclick="showAddBannerModal()"><i class="fas fa-plus mr-1"></i> Add Banner</button>
-          </div>
-          <div class="space-y-3" id="bannerList">
-            ${banners.map((b, idx) => `
-              <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border hover:border-pink-200 transition cursor-grab" draggable="true" data-banner-index="${idx}">
-                <span class="text-gray-400 cursor-grab"><i class="fas fa-grip-vertical"></i></span>
-                <img src="${b.url}" alt="${b.alt}" class="banner-preview w-32 h-20 object-cover rounded-lg" />
-                <div class="flex-1 min-w-0">
-                  <p class="font-medium text-gray-800">${escHtml(b.name)}</p>
-                  <p class="text-xs text-gray-400 truncate">${escHtml(b.url)}</p>
-                  <p class="text-xs text-gray-400">${escHtml(b.alt)}</p>
+                <div class="field"><label class="field-label">Icon (Font Awesome class)</label>
+                  <input value="${esc(c.icon)}" oninput="onFeatureInput(${i},'icon',this.value)" placeholder="fa-user-md">
                 </div>
-                <div class="flex items-center gap-1.5">
-                  <button class="icon-btn success" onclick="viewBanner('${b.id}')" title="View"><i class="fas fa-eye"></i></button>
-                  <button class="icon-btn" onclick="editBanner('${b.id}')" title="Edit"><i class="fas fa-pen"></i></button>
-                  <button class="icon-btn danger" onclick="deleteBanner('${b.id}')" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                <div class="field"><label class="field-label">Eyebrow Label</label>
+                  <input value="${esc(c.label)}" oninput="onFeatureInput(${i},'label',this.value)">
                 </div>
+                <div class="field"><label class="field-label">Title ${c.type === 'phone' ? '(phone number)' : ''}</label>
+                  <input value="${esc(c.title)}" oninput="onFeatureInput(${i},'title',this.value)">
+                </div>
+                ${c.type !== 'hours' ? `
+                <div class="field"><label class="field-label">Body Text</label>
+                  <textarea rows="2" oninput="onFeatureInput(${i},'text',this.value)">${esc(c.text || '')}</textarea>
+                </div>` : `
+                <div class="field"><label class="field-label">Schedule Rows</label>
+                  <div class="space-y-2">
+                    ${c.hours.map((h, hi) => `
+                      <div class="flex gap-2">
+                        <input class="flex-1" value="${esc(h.day)}" placeholder="Days" oninput="onFeatureHourInput(${i},${hi},'day',this.value)">
+                        <input class="flex-1" value="${esc(h.time)}" placeholder="Time" oninput="onFeatureHourInput(${i},${hi},'time',this.value)">
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>`}
               </div>
-            `).join('') || `<p class="text-sm text-gray-400">No banners yet. Click "Add Banner" to upload one.</p>`}
-          </div>
-        </div>
-        ${showingBannerPreview ? renderBannerPreview() : ''}
-      `;
-      // Drag-drop for banners
-      document.querySelectorAll('#bannerList > div').forEach(el => {
-        el.addEventListener('dragstart', function(e) { this.classList.add('dragging'); });
-        el.addEventListener('dragend', function(e) { this.classList.remove('dragging'); });
-        el.addEventListener('dragover', function(e) { e.preventDefault(); });
-        el.addEventListener('drop', function(e) {
-          e.preventDefault();
-          const from = parseInt(document.querySelector('#bannerList .dragging')?.dataset.bannerIndex);
-          const to = parseInt(this.dataset.bannerIndex);
-          if (from !== undefined && from !== to) {
-            const banners = appData.banners;
-            const [removed] = banners.splice(from, 1);
-            banners.splice(to, 0, removed);
-            saveData();
-            renderBanners(container);
-          }
-        });
-      });
-    }
-
-    function renderBannerPreview() {
-      const b = appData.banners.find(b => b.id === showingBannerPreview);
-      if (!b) return '';
-      return `
-        <div class="modal-overlay" onclick="closeBannerPreview(event)">
-          <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="flex items-center justify-between mb-4">
-              <h4 class="font-bold text-lg">${escHtml(b.name)}</h4>
-              <button class="icon-btn" onclick="closeBannerPreview()"><i class="fas fa-times"></i></button>
+              <div>
+                <p class="field-label mb-2">Card Background Color</p>
+                <div class="flex items-center gap-2 mb-4">
+                  ${colorPresets.map(hex => `<span class="swatch ${c.bg === hex ? 'selected' : ''}" style="background:${hex}" onclick="onFeatureInput(${i},'bg','${hex}',true)"></span>`).join('')}
+                  <input type="color" value="${c.bg}" style="width:2.2rem;height:2.2rem;padding:0;border-radius:50%;" oninput="onFeatureInput(${i},'bg',this.value,true)">
+                </div>
+                <p class="field-label mb-2">Border Color</p>
+                <input type="color" value="${c.border}" style="width:2.2rem;height:2.2rem;padding:0;border-radius:50%;" oninput="onFeatureInput(${i},'border',this.value,true)">
+              </div>
             </div>
-            <img src="${b.url}" alt="${b.alt}" class="w-full rounded-lg" style="max-height: 400px; object-fit: contain;" />
-            <p class="text-sm text-gray-500 mt-3"><strong>URL:</strong> ${escHtml(b.url)}</p>
-            <p class="text-sm text-gray-500"><strong>Alt text:</strong> ${escHtml(b.alt)}</p>
           </div>
         </div>
-      `;
+      `).join('');
+      new Sortable(wrap, { handle: '.drag-handle', animation: 150, onEnd: onFeatureReorder });
     }
-
-    function viewBanner(id) {
-      showingBannerPreview = id;
-      renderBanners(document.getElementById('tabContent'));
+    function onFeatureInput(i, key, val, rerender) {
+      appData.content.home.features.cards[i][key] = val;
+      debounceSave();
+      if (rerender) renderFeatures();
     }
-
-    function closeBannerPreview(e) {
-      if (e && e.target !== e.currentTarget) return;
-      showingBannerPreview = null;
-      renderBanners(document.getElementById('tabContent'));
+    function onFeatureHourInput(i, hi, key, val) {
+      appData.content.home.features.cards[i].hours[hi][key] = val;
+      debounceSave();
     }
-
-    function showAddBannerModal() {
-      const name = prompt('Enter banner name:');
-      if (!name) return;
-      const url = prompt('Enter image URL (or upload below):');
-      if (!url) return;
-      const alt = prompt('Enter alt text:') || name;
-      appData.banners.push({ id: bid(), name, url, alt });
-      saveData();
-      renderBanners(document.getElementById('tabContent'));
-    }
-
-    function editBanner(id) {
-      const b = appData.banners.find(b => b.id === id);
-      if (!b) return;
-      const name = prompt('Banner name:', b.name);
-      if (name !== null && name !== '') b.name = name;
-      const url = prompt('Image URL:', b.url);
-      if (url !== null && url !== '') b.url = url;
-      const alt = prompt('Alt text:', b.alt);
-      if (alt !== null && alt !== '') b.alt = alt;
-      saveData();
-      renderBanners(document.getElementById('tabContent'));
-    }
-
-    function deleteBanner(id) {
-      if (!confirm('Delete this banner?')) return;
-      appData.banners = appData.banners.filter(b => b.id !== id);
-      saveData();
-      renderBanners(document.getElementById('tabContent'));
+    function onFeatureReorder(evt) {
+      const cards = appData.content.home.features.cards;
+      const moved = cards.splice(evt.oldIndex, 1)[0];
+      cards.splice(evt.newIndex, 0, moved);
+      save(true);
+      renderFeatures();
     }
 
     // ============================================================
-    // generic mutation helpers
+    // PARTNERS
     // ============================================================
-    function updateContent(sectionId, field, value) {
-      if (!appData.content.home[sectionId]) appData.content.home[sectionId] = {};
-      appData.content.home[sectionId][field] = value;
-      saveData();
+    function renderPartners() {
+      const wrap = document.getElementById('partnersWrap');
+      const logos = appData.content.home.partners.logos;
+      wrap.innerHTML = logos.map((l, i) => `
+        <div class="card-admin !p-4" data-id="${l.id}">
+          <div class="flex items-center gap-2 mb-2">
+            <i class="fas fa-grip-vertical drag-handle"></i>
+            <span class="text-xs text-gray-400 flex-1">Logo ${i + 1}</span>
+            <button class="btn-danger" onclick="removePartner(${i})"><i class="fas fa-trash"></i></button>
+          </div>
+          <img class="mini-preview mb-2" src="${esc(l.img)}" onerror="this.src='https://placehold.co/200x100?text=Logo'">
+          <div class="field !mb-2">
+            <div class="img-field-row">
+              <input type="text" value="${esc(l.img)}" placeholder="Image URL, or upload →" oninput="onPartnerInput(${i},'img',this.value,true)">
+              <label class="upload-btn" title="Upload logo from your device">
+                <i class="fas fa-upload"></i>
+                <input type="file" accept="image/*" class="hidden" onchange="uploadPartnerImage(${i}, this)">
+              </label>
+            </div>
+          </div>
+          <div class="field !mb-0"><input value="${esc(l.alt)}" placeholder="Alt text" oninput="onPartnerInput(${i},'alt',this.value)"></div>
+        </div>
+      `).join('');
+      new Sortable(wrap, { handle: '.drag-handle', animation: 150, onEnd: onPartnerReorder });
+    }
+    function onPartnerInput(i, key, val, rerender) {
+      appData.content.home.partners.logos[i][key] = val;
+      debounceSave();
+      if (rerender) renderPartners();
+    }
+    function addPartner() {
+      appData.content.home.partners.logos.push({ id: uid(), img: '', alt: 'New Partner' });
+      save(true);
+      renderPartners();
+    }
+    function removePartner(i) {
+      if (!confirm('Remove this logo?')) return;
+      appData.content.home.partners.logos.splice(i, 1);
+      save(true);
+      renderPartners();
+    }
+    function onPartnerReorder(evt) {
+      const logos = appData.content.home.partners.logos;
+      const moved = logos.splice(evt.oldIndex, 1)[0];
+      logos.splice(evt.newIndex, 0, moved);
+      save(true);
+      renderPartners();
     }
 
-    function updateArrayItem(sectionId, arrayKey, index, field, value) {
-      appData.content.home[sectionId][arrayKey][index][field] = value;
-      saveData();
+    // ============================================================
+    // ABOUT
+    // ============================================================
+    function renderAbout() {
+      const a = appData.content.home.about;
+      document.getElementById('aboutImg1').value = a.image1;
+      document.getElementById('aboutImg1Preview').src = a.image1;
+      document.getElementById('aboutImg2').value = a.image2;
+      document.getElementById('aboutImg2Preview').src = a.image2;
+      document.getElementById('aboutMainImg').value = a.mainImage;
+      document.getElementById('aboutMainPreview').src = a.mainImage;
+      document.getElementById('aboutHeading').value = a.heading;
+      document.getElementById('aboutHeadingAccent').value = a.headingAccent;
+      document.getElementById('aboutText').value = a.text;
+      document.getElementById('aboutButton').value = a.buttonText;
+    }
+    function onAboutInput(key, val, previewId) {
+      appData.content.home.about[key] = val;
+      debounceSave();
+      if (previewId) document.getElementById(previewId).src = val;
     }
 
-    function updateArrayIndex(sectionId, arrayKey, index, value) {
-      appData.content.home[sectionId][arrayKey][index] = value;
-      saveData();
+    // ============================================================
+    // SERVICES
+    // ============================================================
+    function renderServices() {
+      const wrap = document.getElementById('servicesWrap');
+      const cards = appData.content.home.services.cards;
+      wrap.innerHTML = cards.map((c, i) => `
+        <div class="card-admin" data-id="${c.id}">
+          <div class="flex items-center gap-2 mb-2">
+            <i class="fas fa-grip-vertical drag-handle"></i>
+            <span class="text-xs text-gray-400 flex-1">Service ${i + 1}</span>
+            <button class="btn-danger" onclick="removeService(${i})"><i class="fas fa-trash"></i></button>
+          </div>
+          <img class="mini-preview mb-3" src="${esc(c.image)}" onerror="this.src='https://placehold.co/400x200?text=Service'">
+          <div class="grid grid-cols-2 gap-2">
+            <div class="field"><label class="field-label">Icon Class</label><input value="${esc(c.icon)}" oninput="onServiceInput(${i},'icon',this.value)"></div>
+            <div class="field"><label class="field-label">Accent Color</label><input type="color" value="${c.accent}" style="height:2.4rem" oninput="onServiceInput(${i},'accent',this.value)"></div>
+          </div>
+          <div class="field"><label class="field-label">Badge Text</label><input value="${esc(c.badge)}" oninput="onServiceInput(${i},'badge',this.value)"></div>
+          <div class="field"><label class="field-label">Title</label><input value="${esc(c.title)}" oninput="onServiceInput(${i},'title',this.value)"></div>
+          <div class="field"><label class="field-label">Description</label><textarea rows="2" oninput="onServiceInput(${i},'text',this.value)">${esc(c.text)}</textarea></div>
+          <div class="field !mb-0"><label class="field-label">Image</label>
+            <div class="img-field-row">
+              <input type="text" value="${esc(c.image)}" placeholder="Image URL, or upload →" oninput="onServiceInput(${i},'image',this.value,true)">
+              <label class="upload-btn" title="Upload image from your device">
+                <i class="fas fa-upload"></i>
+                <input type="file" accept="image/*" class="hidden" onchange="uploadServiceImage(${i}, this)">
+              </label>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      new Sortable(wrap, { handle: '.drag-handle', animation: 150, onEnd: onServiceReorder });
+    }
+    function onServiceInput(i, key, val, rerender) {
+      appData.content.home.services.cards[i][key] = val;
+      debounceSave();
+      if (rerender) renderServices();
+    }
+    function addService() {
+      appData.content.home.services.cards.push({ id: uid(), icon: 'fa-stethoscope', badge: 'New Service', badgeColor: '#0f2b4b', title: 'New Service', text: 'Describe this service.', image: '', accent: '#0f2b4b' });
+      save(true);
+      renderServices();
+    }
+    function removeService(i) {
+      if (!confirm('Remove this service card?')) return;
+      appData.content.home.services.cards.splice(i, 1);
+      save(true);
+      renderServices();
+    }
+    function onServiceReorder(evt) {
+      const cards = appData.content.home.services.cards;
+      const moved = cards.splice(evt.oldIndex, 1)[0];
+      cards.splice(evt.newIndex, 0, moved);
+      save(true);
+      renderServices();
     }
 
-    function addArrayItem(sectionId, arrayKey, template) {
-      if (!appData.content.home[sectionId][arrayKey]) appData.content.home[sectionId][arrayKey] = [];
-      appData.content.home[sectionId][arrayKey].push(template);
-      saveData();
-      renderTab();
+    // ============================================================
+    // APPOINTMENT FORM BUILDER
+    // ============================================================
+    const FIELD_TYPES = ['text', 'email', 'tel', 'date', 'time', 'select', 'textarea', 'checkbox'];
+    function renderFields() {
+      const wrap = document.getElementById('fieldsWrap');
+      const fields = appData.content.home.appointment.fields;
+      wrap.innerHTML = fields.map((f, i) => `
+        <div class="card-admin !p-4" data-id="${f.id}">
+          <div class="flex items-start gap-3">
+            <i class="fas fa-grip-vertical drag-handle mt-3"></i>
+            <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-3">
+              <div class="field !mb-0"><label class="field-label">Field Label</label><input value="${esc(f.label)}" oninput="onFieldInput(${i},'label',this.value)"></div>
+              <div class="field !mb-0"><label class="field-label">Type</label>
+                <select onchange="onFieldInput(${i},'type',this.value,true)">
+                  ${FIELD_TYPES.map(t => `<option value="${t}" ${f.type === t ? 'selected' : ''}>${t}</option>`).join('')}
+                </select>
+              </div>
+              ${f.type !== 'checkbox' ? `<div class="field !mb-0"><label class="field-label">Placeholder</label><input value="${esc(f.placeholder)}" oninput="onFieldInput(${i},'placeholder',this.value)"></div>` : `<div class="field !mb-0"><label class="field-label">Placeholder</label><input value="" disabled placeholder="n/a"></div>`}
+              <div class="field !mb-0 flex items-end gap-2">
+                <label class="flex items-center gap-2 text-sm text-gray-600 mb-2"><input type="checkbox" style="width:auto" ${f.required ? 'checked' : ''} onchange="onFieldInput(${i},'required',this.checked)"> Required</label>
+                <button class="btn-danger ml-auto" onclick="removeField(${i})"><i class="fas fa-trash"></i></button>
+              </div>
+              ${f.type === 'select' ? `<div class="field !mb-0 md:col-span-4"><label class="field-label">Options (comma separated)</label><input value="${esc(f.options)}" oninput="onFieldInput(${i},'options',this.value)"></div>` : ''}
+            </div>
+          </div>
+        </div>
+      `).join('');
+      new Sortable(wrap, { handle: '.drag-handle', animation: 150, onEnd: onFieldReorder });
+    }
+    function onFieldInput(i, key, val, rerender) {
+      appData.content.home.appointment.fields[i][key] = val;
+      debounceSave();
+      if (rerender) renderFields();
+    }
+    function addField() {
+      appData.content.home.appointment.fields.push({ id: uid(), label: 'New Field', type: 'text', placeholder: '', required: false, options: '' });
+      save(true);
+      renderFields();
+    }
+    function removeField(i) {
+      if (!confirm('Delete this field?')) return;
+      appData.content.home.appointment.fields.splice(i, 1);
+      save(true);
+      renderFields();
+    }
+    function onFieldReorder(evt) {
+      const fields = appData.content.home.appointment.fields;
+      const moved = fields.splice(evt.oldIndex, 1)[0];
+      fields.splice(evt.newIndex, 0, moved);
+      save(true);
+      renderFields();
     }
 
-    function removeArrayItem(sectionId, arrayKey, index) {
-      appData.content.home[sectionId][arrayKey].splice(index, 1);
-      saveData();
-      renderTab();
+    // ============================================================
+    // SECTION ORDER
+    // ============================================================
+    function renderOrder() {
+      const wrap = document.getElementById('orderWrap');
+      const order = appData.sectionOrder.home;
+      wrap.innerHTML = order.map((key, i) => {
+        const meta = SECTION_LABELS[key];
+        return `
+        <div class="order-item ${meta.locked ? 'locked' : ''}" data-key="${key}">
+          <i class="fas fa-grip-vertical drag-handle"></i>
+          <div class="w-10 h-10 rounded-xl bg-slate-50 text-slate-500 flex items-center justify-center"><i class="fas ${meta.icon}"></i></div>
+          <div class="flex-1">
+            <p class="text-sm font-semibold text-gray-700">${meta.label}</p>
+            <p class="text-xs text-gray-400">Position ${i + 1}${meta.locked ? ' · content not editable here' : ''}</p>
+          </div>
+          ${!meta.locked ? `<button class="btn-ghost" onclick="switchTab('${key === 'appointment' ? 'appointment' : key}')">Edit content</button>` : ''}
+        </div>`;
+      }).join('');
+      new Sortable(wrap, { handle: '.drag-handle', animation: 150, onEnd: onOrderReorder });
+    }
+    function onOrderReorder(evt) {
+      const order = appData.sectionOrder.home;
+      const moved = order.splice(evt.oldIndex, 1)[0];
+      order.splice(evt.newIndex, 0, moved);
+      save(true);
+      renderOrder();
     }
 
-    function updateClock() {
-      document.getElementById('liveTime').textContent = new Date().toLocaleTimeString();
+    // ============================================================
+    // UTIL
+    // ============================================================
+    function esc(str) {
+      if (str === undefined || str === null) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
-    setInterval(updateClock, 1000);
-    updateClock();
+
+    function renderAll() {
+      [renderHero, renderFeatures, renderPartners, renderAbout, renderServices, renderFields, renderOrder]
+        .forEach(fn => { try { fn(); } catch (e) { console.error('Render failed:', fn.name, e); } });
+    }
 
     loadData();
+    renderAll();
   </script>
 </body>
 </html>
