@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin · Theme Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f4f7fc; margin: 0; height: 100vh; overflow: hidden; }
+        
+        /* Container fills viewport and prevents page scroll */
+        .admin-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Sidebar stays fixed/sticky */
+        .admin-sidebar {
+            background: #0f2b4b;
+            width: 18rem;
+            flex-shrink: 0;
+            height: 100vh;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+        }
+        
+        /* Main content scrolls independently */
+        .admin-main {
+            flex: 1;
+            overflow-y: auto;
+            height: 100vh;
+            padding: 1.5rem 2.5rem;
+        }
+        
+        .admin-sidebar a { transition: all 0.2s; border-left: 3px solid transparent; display: block; padding: 0.75rem 1rem; color: rgba(255,255,255,0.7); text-decoration: none; }
+        .admin-sidebar a:hover, .admin-sidebar a.active { background: #1a3a5e; border-left-color: #ec4899; color: white; }
+        .card-admin { background: white; border-radius: 1.5rem; box-shadow: 0 8px 30px rgba(0,0,0,0.04); padding: 1.5rem; transition: 0.2s; }
+        input[type="color"] { width: 50px; height: 40px; padding: 2px; border-radius: 0.5rem; border: 1px solid #e2e8f0; cursor: pointer; }
+        input[type="text"] { border-radius: 0.75rem; border: 1px solid #e2e8f0; padding: 0.6rem 1rem; width: 100%; transition: 0.2s; }
+        input:focus { border-color: #0f2b4b; outline: none; box-shadow: 0 0 0 3px rgba(15,43,75,0.08); }
+        .theme-preview-box { width: 100px; height: 60px; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 0.75rem; }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar - sticky -->
+        <aside class="admin-sidebar text-white p-6">
+            <div class="flex items-center gap-3 pb-6 border-b border-white/10">
+                <div class="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
+                <span class="text-2xl font-bold tracking-tight">Med Plus</span>
+                <span class="ml-auto text-[10px] uppercase bg-pink-600/30 px-2 py-0.5 rounded-full text-pink-200">CMS</span>
+            </div>
+            <nav class="mt-6 space-y-1">
+                <a href="../../index.html"><i class="fas fa-th-large w-5"></i> Dashboard</a>
+                <a href="../home/home.html"><i class="fas fa-home w-5"></i> Home Page</a>
+                <a href="../about/about.html"><i class="fas fa-info-circle w-5"></i> About Page</a>
+                <a href="../services/services.html"><i class="fas fa-concierge-bell w-5"></i> Services Page</a>
+                <a href="../contact/contact.html"><i class="fas fa-envelope w-5"></i> Contact Page</a>
+                <a href="theme.html" class="active"><i class="fas fa-palette w-5"></i> Theme Manager</a>
+                <a href="../settings/settings.html"><i class="fas fa-cog w-5"></i> Settings</a>
+                <a href="../preview/preview.html"><i class="fas fa-eye w-5"></i> Preview & Save</a>
+            </nav>
+            <div class="pt-6 mt-6 border-t border-white/10 text-xs text-white/40">
+                <i class="fas fa-database mr-1"></i> Local Storage
+            </div>
+        </aside>
+
+        <!-- Main Content - scrollable -->
+        <main class="admin-main">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                    <i class="fas fa-palette text-pink-600"></i>
+                    Theme Manager
+                </h2>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> <span id="liveTime"></span></span>
+                    <button onclick="saveData()" class="text-sm bg-emerald-50 text-emerald-600 px-4 py-1.5 rounded-full hover:bg-emerald-100 transition">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-admin" id="themeContainer"></div>
+        </main>
+    </div>
+
+    <script>
+        const defaultData = {
+            theme: {
+                primary: '#0f2b4b',
+                secondary: '#1a3a5e',
+                accent: '#ec4899',
+                text: '#1e293b',
+                heading: '#0f172a',
+                background: '#ffffff',
+                cardBg: '#ffffff',
+                border: '#e2e8f0',
+                buttonBg: '#0f2b4b',
+                buttonText: '#ffffff',
+                hoverBg: '#1a3a5e',
+                gradientStart: '#fce7f3',
+                gradientEnd: '#eef2ff',
+                shadow: '0 8px 30px rgba(0,0,0,0.04)'
+            }
+        };
+
+        let appData = {};
+
+        function loadData() {
+            const stored = localStorage.getItem('novena_cms_data');
+            if (stored) {
+                try { appData = JSON.parse(stored); } catch(e) { appData = JSON.parse(JSON.stringify(defaultData)); }
+            } else { appData = JSON.parse(JSON.stringify(defaultData)); }
+            if (!appData.theme) appData.theme = defaultData.theme;
+            saveData();
+            renderTheme();
+        }
+
+        function saveData() {
+            localStorage.setItem('novena_cms_data', JSON.stringify(appData));
+        }
+
+        function renderTheme() {
+            const container = document.getElementById('themeContainer');
+            const theme = appData.theme;
+            
+            let html = `
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="font-bold text-lg">Theme Customization</h3>
+                    <div class="flex gap-2">
+                        <button onclick="exportTheme()" class="text-sm bg-blue-50 text-blue-600 px-3 py-1 rounded-full hover:bg-blue-100 transition">
+                            <i class="fas fa-download mr-1"></i> Export
+                        </button>
+                        <button onclick="importTheme()" class="text-sm bg-green-50 text-green-600 px-3 py-1 rounded-full hover:bg-green-100 transition">
+                            <i class="fas fa-upload mr-1"></i> Import
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    ${renderColorGroup('Primary Colors', ['primary', 'secondary', 'accent'], theme)}
+                    ${renderColorGroup('Text Colors', ['text', 'heading', 'background'], theme)}
+                    ${renderColorGroup('UI Elements', ['cardBg', 'border', 'shadow'], theme)}
+                    ${renderColorGroup('Buttons', ['buttonBg', 'buttonText', 'hoverBg'], theme)}
+                    ${renderColorGroup('Gradients', ['gradientStart', 'gradientEnd'], theme)}
+                </div>
+                
+                <div class="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                    <h5 class="font-semibold text-gray-700 mb-3">Live Preview</h5>
+                    <div class="flex flex-wrap gap-4">
+                        <div class="theme-preview-box" style="background:${theme.primary}; color:${theme.buttonText}">Primary</div>
+                        <div class="theme-preview-box" style="background:${theme.secondary}; color:${theme.buttonText}">Secondary</div>
+                        <div class="theme-preview-box" style="background:${theme.accent}; color:${theme.buttonText}">Accent</div>
+                        <div class="theme-preview-box border" style="background:${theme.background}; color:${theme.text}">Background</div>
+                        <div class="theme-preview-box" style="background:${theme.buttonBg}; color:${theme.buttonText}">Button</div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 text-xs text-gray-400 flex justify-between">
+                    <span><i class="fas fa-info-circle mr-1"></i> Theme tokens as CSS variables</span>
+                    <span>${Object.keys(theme).length} tokens</span>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        function renderColorGroup(title, keys, theme) {
+            let html = `
+                <div class="border rounded-xl p-4 bg-gray-50">
+                    <h5 class="font-semibold text-gray-700 mb-3">${title}</h5>
+                    <div class="space-y-3">
+            `;
+            
+            keys.forEach(key => {
+                if (theme[key] !== undefined) {
+                    html += `
+                        <div>
+                            <label class="block text-xs font-medium text-gray-500 capitalize">${key.replace(/([A-Z])/g, ' $1')}</label>
+                            <div class="flex items-center gap-2">
+                                <input type="color" value="${theme[key]}" onchange="updateTheme('${key}', this.value)" />
+                                <input type="text" value="${theme[key]}" onchange="updateTheme('${key}', this.value)" class="flex-1 text-sm" />
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            
+            html += `</div></div>`;
+            return html;
+        }
+
+        function updateTheme(key, value) {
+            appData.theme[key] = value;
+            saveData();
+            renderTheme();
+        }
+
+        function exportTheme() {
+            const json = JSON.stringify(appData.theme, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `theme-${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importTheme() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const theme = JSON.parse(event.target.result);
+                        appData.theme = { ...appData.theme, ...theme };
+                        saveData();
+                        renderTheme();
+                        alert('Theme imported successfully!');
+                    } catch (err) {
+                        alert('Invalid theme file.');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function updateClock() {
+            document.getElementById('liveTime').textContent = new Date().toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        loadData();
+    </script>
+</body>
+</html>

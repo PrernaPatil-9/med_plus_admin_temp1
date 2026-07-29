@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin · Services Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f4f7fc; margin: 0; height: 100vh; overflow: hidden; }
+        
+        /* Container fills viewport and prevents page scroll */
+        .admin-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Sidebar stays fixed/sticky */
+        .admin-sidebar {
+            background: #0f2b4b;
+            width: 18rem;
+            flex-shrink: 0;
+            height: 100vh;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+        }
+        
+        /* Main content scrolls independently */
+        .admin-main {
+            flex: 1;
+            overflow-y: auto;
+            height: 100vh;
+            padding: 1.5rem 2.5rem;
+        }
+        
+        .admin-sidebar a { transition: all 0.2s; border-left: 3px solid transparent; display: block; padding: 0.75rem 1rem; color: rgba(255,255,255,0.7); text-decoration: none; }
+        .admin-sidebar a:hover, .admin-sidebar a.active { background: #1a3a5e; border-left-color: #ec4899; color: white; }
+        .card-admin { background: white; border-radius: 1.5rem; box-shadow: 0 8px 30px rgba(0,0,0,0.04); padding: 1.5rem; transition: 0.2s; }
+        .badge-soft { background: #f1f5f9; color: #0f2b4b; padding: 0.2rem 0.8rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 500; }
+        .tab-btn { padding: 0.5rem 1.25rem; border-radius: 2rem; font-weight: 500; transition: 0.2s; background: transparent; color: #64748b; border: none; cursor: pointer; }
+        .tab-btn.active { background: #0f2b4b; color: white; }
+        .tab-btn:hover:not(.active) { background: #eef2f6; }
+        input, select, textarea { border-radius: 0.75rem; border: 1px solid #e2e8f0; padding: 0.6rem 1rem; width: 100%; transition: 0.2s; }
+        input:focus, select:focus, textarea:focus { border-color: #0f2b4b; outline: none; box-shadow: 0 0 0 3px rgba(15,43,75,0.08); }
+        label.field-label { display: block; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; color: #64748b; margin-bottom: 0.35rem; }
+        .field { margin-bottom: 0.9rem; }
+        .btn-pink { background: #ec4899; color: white; border-radius: 2rem; padding: 0.55rem 1.4rem; font-weight: 500; border: none; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
+        .btn-pink:hover { background: #db2777; }
+        .btn-danger { background: #fff1f2; color: #e11d48; border-radius: 2rem; padding: 0.4rem 0.9rem; font-weight: 500; border: none; cursor: pointer; transition: 0.2s; font-size: 0.75rem; }
+        .btn-danger:hover { background: #ffe4e6; }
+        .drag-handle { cursor: grab; color: #94a3b8; }
+        .drag-handle:active { cursor: grabbing; }
+        .sortable-ghost { opacity: 0.35; }
+        .sortable-drag { box-shadow: 0 12px 30px rgba(0,0,0,0.15); }
+        .mini-preview { width: 100%; height: 120px; object-fit: cover; border-radius: 0.6rem; background: #f1f5f9; border: 1px solid #e2e8f0; }
+        .upload-btn { flex-shrink: 0; width: 2.6rem; height: 2.6rem; border-radius: 0.75rem; border: 1px solid #e2e8f0; background: white; color: #0f2b4b; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .upload-btn:hover { border-color: #0f2b4b; background: #f8fafc; }
+        .img-field-row { display: flex; gap: 0.5rem; align-items: stretch; }
+        .img-field-row input[type="text"] { flex: 1; }
+        .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: #0f2b4b; color: white; padding: 0.7rem 1.4rem; border-radius: 0.85rem; font-size: 0.85rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 100; opacity: 0; transform: translateY(10px); transition: 0.25s; pointer-events: none; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar - sticky -->
+        <aside class="admin-sidebar text-white p-6">
+            <div class="flex items-center gap-3 pb-6 border-b border-white/10">
+                <div class="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
+                <span class="text-2xl font-bold tracking-tight">Med Plus</span>
+                <span class="ml-auto text-[10px] uppercase bg-pink-600/30 px-2 py-0.5 rounded-full text-pink-200">CMS</span>
+            </div>
+            <nav class="mt-6 space-y-1">
+                <a href="../../index.html"><i class="fas fa-th-large w-5"></i> Dashboard</a>
+                <a href="../home/home.html"><i class="fas fa-home w-5"></i> Home Page</a>
+                <a href="../about/about.html"><i class="fas fa-info-circle w-5"></i> About Page</a>
+                <a href="services.html" class="active"><i class="fas fa-concierge-bell w-5"></i> Services Page</a>
+                <a href="../contact/contact.html"><i class="fas fa-envelope w-5"></i> Contact Page</a>
+                <a href="../theme/theme.html"><i class="fas fa-palette w-5"></i> Theme Manager</a>
+                <a href="../settings/settings.html"><i class="fas fa-cog w-5"></i> Settings</a>
+                <a href="../preview/preview.html"><i class="fas fa-eye w-5"></i> Preview & Save</a>
+            </nav>
+            <div class="pt-6 mt-6 border-t border-white/10 text-xs text-white/40">
+                <i class="fas fa-database mr-1"></i> Local Storage
+            </div>
+        </aside>
+
+        <!-- Main Content - scrollable -->
+        <main class="admin-main">
+            <div class="flex items-center justify-between mb-8 flex-wrap gap-3">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                    <i class="fas fa-concierge-bell text-pink-600"></i>
+                    Services Page Manager
+                </h2>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> <span id="liveTime"></span></span>
+                    <button onclick="resetData()" class="text-sm bg-rose-50 text-rose-600 px-4 py-1.5 rounded-full hover:bg-rose-100 transition">
+                        <i class="fas fa-undo-alt"></i> Reset
+                    </button>
+                    <button onclick="saveData(true)" class="text-sm bg-emerald-50 text-emerald-600 px-4 py-1.5 rounded-full hover:bg-emerald-100 transition">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-admin">
+                <div class="flex items-center justify-between mb-6 flex-wrap gap-2">
+                    <h3 class="font-bold text-lg">Services Page Content</h3>
+                    <span class="badge-soft" id="sectionCount">0 service cards</span>
+                </div>
+
+                <div class="mb-6 flex flex-wrap gap-2 border-b border-gray-200 pb-4">
+                    <button class="tab-btn active" data-tab="hero" onclick="switchTab('hero')"><i class="fas fa-image mr-1"></i> Hero Banner</button>
+                    <button class="tab-btn" data-tab="grid" onclick="switchTab('grid')"><i class="fas fa-th-large mr-1"></i> Services Grid</button>
+                </div>
+
+                <div id="tabContent"></div>
+            </div>
+        </main>
+    </div>
+
+    <div class="toast" id="toast">Saved</div>
+
+    <script>
+        // ============================================================
+        // DATA MODEL — persisted under the shared novena_cms_data key
+        // (matches the key/shape already used by index.html, home.html,
+        // and about.html)
+        // ============================================================
+        const defaultServicesContent = {
+            hero: {
+                image: '/images/b_1.jpg',
+                badge: 'Our services',
+                heading: 'What',
+                headingAccent: 'We Do',
+                subheading: 'Comprehensive healthcare solutions tailored to your needs.'
+            },
+            grid: {
+                badge: 'Expert care',
+                heading: 'Our medical services',
+                description: 'We offer a wide range of healthcare services designed to keep you and your family healthy.',
+                cards: [
+                    { title: 'Child Care', desc: 'Our pediatric care services provide compassionate medical attention for infants and children, supporting healthy growth and wellbeing.', tagline: 'Child-focused medical support', image: '/images/s_11.webp' },
+                    { title: 'Personal Care', desc: 'Personalized healthcare assistance designed to improve comfort, independence, and quality of life with dedicated support.', tagline: 'Individualized care plans', image: '/images/s_2.jpg' },
+                    { title: 'CT Scan', desc: 'Advanced CT imaging services using modern technology to help doctors identify conditions accurately and quickly.', tagline: 'Advanced diagnostic imaging', image: '/images/s_3.webp' },
+                    { title: 'Joint Replacement', desc: 'Specialized orthopedic treatments that help restore mobility, reduce pain, and improve everyday movement.', tagline: 'Expert orthopedic care', image: '/images/s_4.webp' },
+                    { title: 'Examination & Diagnosis', desc: 'Comprehensive health examinations and accurate diagnostic services for early detection and effective treatment.', tagline: 'Accurate health assessment', image: '/images/s_5.webp' },
+                    { title: "Alzheimer's Disease", desc: 'Dedicated neurological care and support services focused on improving patient comfort and quality of life.', tagline: 'Specialized neurological support', image: '/images/s_6.jpg' }
+                ]
+            }
+        };
+
+        const defaultOrder = ['hero', 'services-grid'];
+
+        let appData = {};
+        let currentTab = 'hero';
+
+        function uid() { return 'id' + Math.random().toString(36).slice(2, 9); }
+        function ensureIds(list) { (list || []).forEach(item => { if (!item.id) item.id = uid(); }); return list; }
+
+        // Recursively fills in any keys missing from `target` using `source`
+        // as the template — protects against another admin page (e.g. the
+        // Dashboard) having already written a partial `content.services`
+        // object into the same shared localStorage key.
+        function deepMerge(target, source) {
+            Object.keys(source).forEach(key => {
+                const srcVal = source[key];
+                if (Array.isArray(srcVal)) {
+                    if (!Array.isArray(target[key])) target[key] = JSON.parse(JSON.stringify(srcVal));
+                } else if (srcVal && typeof srcVal === 'object') {
+                    if (!target[key] || typeof target[key] !== 'object' || Array.isArray(target[key])) target[key] = {};
+                    deepMerge(target[key], srcVal);
+                } else if (!(key in target)) {
+                    target[key] = srcVal;
+                }
+            });
+            return target;
+        }
+
+        function loadData() {
+            const stored = localStorage.getItem('novena_cms_data');
+            try { appData = stored ? JSON.parse(stored) : {}; } catch (e) { appData = {}; }
+            if (!appData.content || typeof appData.content !== 'object') appData.content = {};
+            if (!appData.content.services || typeof appData.content.services !== 'object') appData.content.services = {};
+            deepMerge(appData.content.services, defaultServicesContent);
+            if (!appData.sections || typeof appData.sections !== 'object') appData.sections = {};
+            if (!Array.isArray(appData.sections.services) || !appData.sections.services.length) appData.sections.services = [...defaultOrder];
+            ensureIds(appData.content.services.grid.cards);
+            saveData(false);
+            renderTab();
+        }
+
+        let saveTimer = null;
+        function saveData(showToast) {
+            localStorage.setItem('novena_cms_data', JSON.stringify(appData));
+            document.getElementById('sectionCount').textContent = appData.content.services.grid.cards.length + ' service cards';
+            if (showToast) toast('Saved');
+        }
+        function debounceSave() {
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(() => saveData(false), 500);
+        }
+
+        function toast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            clearTimeout(toast._t);
+            toast._t = setTimeout(() => t.classList.remove('show'), 1600);
+        }
+
+        function resetData() {
+            if (!confirm('Reset the Services Page content to defaults? This cannot be undone.')) return;
+            appData.content.services = JSON.parse(JSON.stringify(defaultServicesContent));
+            appData.sections.services = [...defaultOrder];
+            ensureIds(appData.content.services.grid.cards);
+            saveData(true);
+            renderTab();
+        }
+
+        // ============================================================
+        // IMAGE UPLOAD (reads a local file and stores it as a data URL —
+        // no backend required; everything still lives in localStorage)
+        // ============================================================
+        const MAX_UPLOAD_MB = 3;
+        function readFileAsDataURL(fileInput, cb) {
+            const file = fileInput.files && fileInput.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) { alert('Please choose an image file.'); fileInput.value = ''; return; }
+            if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
+                alert(`That image is larger than ${MAX_UPLOAD_MB}MB. Please choose a smaller file, or paste a hosted image URL instead.`);
+                fileInput.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = e => cb(e.target.result);
+            reader.onerror = () => alert('Could not read that file. Please try again.');
+            reader.readAsDataURL(file);
+            fileInput.value = '';
+        }
+
+        // ============================================================
+        // TABS
+        // ============================================================
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+            renderTab();
+        }
+
+        function renderTab() {
+            const container = document.getElementById('tabContent');
+            try {
+                if (currentTab === 'hero') renderHero(container);
+                else if (currentTab === 'grid') renderGrid(container);
+            } catch (e) {
+                console.error('Render failed:', currentTab, e);
+                container.innerHTML = `<p class="text-sm text-rose-500">Something went wrong rendering this tab. Try Reset if the problem continues.</p>`;
+            }
+        }
+
+        // ============================================================
+        // HERO BANNER
+        // ============================================================
+        function renderHero(container) {
+            const hero = appData.content.services.hero;
+            container.innerHTML = `
+                <div class="border rounded-xl p-5 bg-gray-50">
+                    <h5 class="font-semibold text-gray-700 mb-4"><i class="fas fa-image text-pink-500 mr-2"></i>Banner Image</h5>
+                    <img id="heroImgPreview" class="mini-preview mb-2" style="height:160px" src="${esc(hero.image)}" onerror="this.src='https://placehold.co/900x300?text=Services+Hero'">
+                    <div class="img-field-row mb-6">
+                        <input id="heroImgInput" type="text" value="${esc(hero.image)}" placeholder="Image URL, or upload →" oninput="updateHero('image', this.value, true)">
+                        <label class="upload-btn" title="Upload image from your device">
+                            <i class="fas fa-upload"></i>
+                            <input type="file" accept="image/*" class="hidden" onchange="uploadHeroImage(this)">
+                        </label>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="field"><label class="field-label">Eyebrow Badge Text</label>
+                            <input type="text" value="${esc(hero.badge)}" oninput="updateHero('badge', this.value)"></div>
+                        <div></div>
+                        <div class="field"><label class="field-label">Heading (line 1)</label>
+                            <input type="text" value="${esc(hero.heading)}" oninput="updateHero('heading', this.value)"></div>
+                        <div class="field"><label class="field-label">Highlighted Line</label>
+                            <input type="text" value="${esc(hero.headingAccent)}" oninput="updateHero('headingAccent', this.value)"></div>
+                        <div class="field md:col-span-2"><label class="field-label">Subheading / Description</label>
+                            <textarea rows="3" oninput="updateHero('subheading', this.value)">${esc(hero.subheading)}</textarea></div>
+                    </div>
+                </div>
+            `;
+        }
+        function updateHero(field, value, isImage) {
+            appData.content.services.hero[field] = value;
+            debounceSave();
+            if (isImage) document.getElementById('heroImgPreview').src = value;
+        }
+        function uploadHeroImage(fileInput) {
+            readFileAsDataURL(fileInput, dataUrl => {
+                appData.content.services.hero.image = dataUrl;
+                debounceSave();
+                document.getElementById('heroImgInput').value = dataUrl;
+                document.getElementById('heroImgPreview').src = dataUrl;
+            });
+        }
+
+        // ============================================================
+        // SERVICES GRID
+        // ============================================================
+        function renderGrid(container) {
+            const grid = appData.content.services.grid;
+            container.innerHTML = `
+                <div class="border rounded-xl p-5 bg-gray-50 mb-5">
+                    <h5 class="font-semibold text-gray-700 mb-4"><i class="fas fa-heading text-pink-500 mr-2"></i>Section Header</h5>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="field"><label class="field-label">Eyebrow Badge Text</label>
+                            <input type="text" value="${esc(grid.badge)}" oninput="updateGrid('badge', this.value)"></div>
+                        <div class="field"><label class="field-label">Heading</label>
+                            <input type="text" value="${esc(grid.heading)}" oninput="updateGrid('heading', this.value)"></div>
+                        <div class="field md:col-span-2"><label class="field-label">Description</label>
+                            <textarea rows="2" oninput="updateGrid('description', this.value)">${esc(grid.description)}</textarea></div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400"><i class="fas fa-arrows-alt-v mr-1"></i>Drag the handle to reorder cards</span>
+                    <button class="btn-pink" onclick="addCard()"><i class="fas fa-plus mr-1"></i>Add Service Card</button>
+                </div>
+                <div id="cardsWrap" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+            `;
+            renderCards();
+        }
+        function updateGrid(field, value) {
+            appData.content.services.grid[field] = value;
+            debounceSave();
+        }
+
+        function renderCards() {
+            const wrap = document.getElementById('cardsWrap');
+            const cards = appData.content.services.grid.cards;
+            wrap.innerHTML = cards.map((c, i) => `
+                <div class="card-admin" data-id="${c.id}">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fas fa-grip-vertical drag-handle"></i>
+                        <span class="text-xs text-gray-400 flex-1">Service ${i + 1}</span>
+                        <button class="btn-danger" onclick="removeCard(${i})"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <img class="mini-preview mb-3" src="${esc(c.image)}" onerror="this.src='https://placehold.co/400x200?text=Service'">
+                    <div class="img-field-row mb-3">
+                        <input type="text" value="${esc(c.image)}" placeholder="Image URL, or upload →" oninput="updateCard(${i},'image',this.value,true)">
+                        <label class="upload-btn" title="Upload image from your device">
+                            <i class="fas fa-upload"></i>
+                            <input type="file" accept="image/*" class="hidden" onchange="uploadCardImage(${i}, this)">
+                        </label>
+                    </div>
+                    <div class="field"><label class="field-label">Title</label>
+                        <input type="text" value="${esc(c.title)}" oninput="updateCard(${i},'title',this.value)"></div>
+                    <div class="field"><label class="field-label">Description</label>
+                        <textarea rows="3" oninput="updateCard(${i},'desc',this.value)">${esc(c.desc)}</textarea></div>
+                    <div class="field !mb-0"><label class="field-label">Tagline (small highlighted line)</label>
+                        <input type="text" value="${esc(c.tagline)}" oninput="updateCard(${i},'tagline',this.value)"></div>
+                </div>
+            `).join('');
+            new Sortable(wrap, { handle: '.drag-handle', animation: 150, onEnd: onCardReorder });
+        }
+        function updateCard(i, field, value, isImage) {
+            appData.content.services.grid.cards[i][field] = value;
+            debounceSave();
+            if (isImage) renderCards();
+        }
+        function uploadCardImage(i, fileInput) {
+            readFileAsDataURL(fileInput, dataUrl => {
+                appData.content.services.grid.cards[i].image = dataUrl;
+                saveData(false);
+                renderCards();
+            });
+        }
+        function addCard() {
+            appData.content.services.grid.cards.push({ id: uid(), title: 'New Service', desc: 'Describe this service.', tagline: 'Key benefit', image: '' });
+            saveData(true);
+            renderCards();
+            document.getElementById('sectionCount').textContent = appData.content.services.grid.cards.length + ' service cards';
+        }
+        function removeCard(i) {
+            if (!confirm('Remove this service card?')) return;
+            appData.content.services.grid.cards.splice(i, 1);
+            saveData(true);
+            renderCards();
+            document.getElementById('sectionCount').textContent = appData.content.services.grid.cards.length + ' service cards';
+        }
+        function onCardReorder(evt) {
+            const cards = appData.content.services.grid.cards;
+            const moved = cards.splice(evt.oldIndex, 1)[0];
+            cards.splice(evt.newIndex, 0, moved);
+            saveData(true);
+            renderCards();
+        }
+
+        // ============================================================
+        // UTIL
+        // ============================================================
+        function esc(str) {
+            if (str === undefined || str === null) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function updateClock() {
+            document.getElementById('liveTime').textContent = new Date().toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        loadData();
+    </script>
+</body>
+</html>

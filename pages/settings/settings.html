@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin · Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f4f7fc; }
+        .admin-sidebar { background: #0f2b4b; min-height: 100vh; }
+        .admin-sidebar a { transition: all 0.2s; border-left: 3px solid transparent; display: block; padding: 0.75rem 1rem; color: rgba(255,255,255,0.7); text-decoration: none; }
+        .admin-sidebar a:hover, .admin-sidebar a.active { background: #1a3a5e; border-left-color: #ec4899; color: white; }
+        .card-admin { background: white; border-radius: 1.5rem; box-shadow: 0 8px 30px rgba(0,0,0,0.04); padding: 1.5rem; transition: 0.2s; }
+        .tab-btn { padding: 0.5rem 1.25rem; border-radius: 2rem; font-weight: 500; transition: 0.2s; background: transparent; color: #64748b; border: none; cursor: pointer; }
+        .tab-btn.active { background: #0f2b4b; color: white; }
+        .tab-btn:hover:not(.active) { background: #eef2f6; }
+        input, select, textarea { border-radius: 0.75rem; border: 1px solid #e2e8f0; padding: 0.6rem 1rem; width: 100%; transition: 0.2s; }
+        input:focus, select:focus, textarea:focus { border-color: #0f2b4b; outline: none; box-shadow: 0 0 0 3px rgba(15,43,75,0.08); }
+    </style>
+</head>
+<body>
+    <div class="flex min-h-screen">
+        <aside class="admin-sidebar w-72 flex-shrink-0 text-white p-6">
+            <div class="flex items-center gap-3 pb-6 border-b border-white/10">
+                <div class="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
+                <span class="text-2xl font-bold tracking-tight">Med Plus</span>
+                <span class="ml-auto text-[10px] uppercase bg-pink-600/30 px-2 py-0.5 rounded-full text-pink-200">CMS</span>
+            </div>
+            <nav class="mt-6 space-y-1">
+                <a href="../../index.html"><i class="fas fa-th-large w-5"></i> Dashboard</a>
+                <a href="../home/home.html"><i class="fas fa-home w-5"></i> Home Page</a>
+                <a href="../about/about.html"><i class="fas fa-info-circle w-5"></i> About Page</a>
+                <a href="../services/services.html"><i class="fas fa-concierge-bell w-5"></i> Services Page</a>
+                <a href="../contact/contact.html"><i class="fas fa-envelope w-5"></i> Contact Page</a>
+                <a href="../theme/theme.html"><i class="fas fa-palette w-5"></i> Theme Manager</a>
+                <a href="settings.html" class="active"><i class="fas fa-cog w-5"></i> Settings</a>
+                <a href="../preview/preview.html"><i class="fas fa-eye w-5"></i> Preview & Save</a>
+            </nav>
+            <div class="pt-6 mt-6 border-t border-white/10 text-xs text-white/40">
+                <i class="fas fa-database mr-1"></i> Local Storage
+            </div>
+        </aside>
+
+        <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                    <i class="fas fa-cog text-pink-600"></i>
+                    Settings
+                </h2>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> <span id="liveTime"></span></span>
+                    <button onclick="saveData()" class="text-sm bg-emerald-50 text-emerald-600 px-4 py-1.5 rounded-full hover:bg-emerald-100 transition">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-admin">
+                <div class="mb-6 flex flex-wrap gap-2 border-b border-gray-200 pb-4">
+                    <button class="tab-btn active" onclick="switchTab('general')"><i class="fas fa-globe mr-1"></i> General</button>
+                    <button class="tab-btn" onclick="switchTab('header')"><i class="fas fa-header mr-1"></i> Header</button>
+                    <button class="tab-btn" onclick="switchTab('footer')"><i class="fas fa-copyright mr-1"></i> Footer</button>
+                    <button class="tab-btn" onclick="switchTab('responsive')"><i class="fas fa-mobile-alt mr-1"></i> Responsive</button>
+                    <button class="tab-btn" onclick="switchTab('backup')"><i class="fas fa-database mr-1"></i> Backup</button>
+                </div>
+                <div id="tabContent"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const defaultData = {
+            global: { siteName: 'Novena · Health & Care', favicon: '', email: 'contact@mail.com', phone: '+91 98765 43210', address: '123, MG Road, New Delhi, India' },
+            header: { logoText: 'Med Plus', menu: ['Home', 'About', 'Services', 'Contact'], cta: 'Book Appointment' },
+            footer: { copyright: 'Med Plus', social: ['facebook', 'twitter', 'instagram', 'linkedin', 'youtube'], contact: { phone: '+91 98765 43210', email: 'Support@email.com', address: '123, MG Road, New Delhi' } },
+            responsive: { desktop: { fontSize: '16px', spacing: '1.5rem' }, tablet: { fontSize: '14px', spacing: '1rem' }, mobile: { fontSize: '12px', spacing: '0.75rem' } }
+        };
+
+        let appData = {};
+        let currentTab = 'general';
+
+        function loadData() {
+            const stored = localStorage.getItem('novena_cms_data');
+            if (stored) {
+                try { appData = JSON.parse(stored); } catch(e) { appData = JSON.parse(JSON.stringify(defaultData)); }
+            } else { appData = JSON.parse(JSON.stringify(defaultData)); }
+            if (!appData.global) appData.global = defaultData.global;
+            if (!appData.header) appData.header = defaultData.header;
+            if (!appData.footer) appData.footer = defaultData.footer;
+            if (!appData.responsive) appData.responsive = defaultData.responsive;
+            saveData();
+            renderTab();
+        }
+
+        function saveData() {
+            localStorage.setItem('novena_cms_data', JSON.stringify(appData));
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                if (b.textContent.toLowerCase().includes(tab)) b.classList.add('active');
+            });
+            renderTab();
+        }
+
+        function renderTab() {
+            const container = document.getElementById('tabContent');
+            if (currentTab === 'general') renderGeneral(container);
+            else if (currentTab === 'header') renderHeader(container);
+            else if (currentTab === 'footer') renderFooter(container);
+            else if (currentTab === 'responsive') renderResponsive(container);
+            else if (currentTab === 'backup') renderBackup(container);
+        }
+
+        function renderGeneral(container) {
+            const g = appData.global;
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label class="block text-sm font-medium text-gray-700">Site Name</label>
+                        <input type="text" value="${g.siteName || ''}" onchange="updateGlobal('siteName',this.value)" class="mt-1" /></div>
+                    <div><label class="block text-sm font-medium text-gray-700">Favicon URL</label>
+                        <input type="text" value="${g.favicon || ''}" onchange="updateGlobal('favicon',this.value)" class="mt-1" /></div>
+                    <div><label class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="text" value="${g.email || ''}" onchange="updateGlobal('email',this.value)" class="mt-1" /></div>
+                    <div><label class="block text-sm font-medium text-gray-700">Phone</label>
+                        <input type="text" value="${g.phone || ''}" onchange="updateGlobal('phone',this.value)" class="mt-1" /></div>
+                    <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Address</label>
+                        <input type="text" value="${g.address || ''}" onchange="updateGlobal('address',this.value)" class="mt-1" /></div>
+                </div>
+            `;
+        }
+
+        function renderHeader(container) {
+            const h = appData.header;
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label class="block text-sm font-medium text-gray-700">Logo Text</label>
+                        <input type="text" value="${h.logoText || ''}" onchange="updateHeader('logoText',this.value)" class="mt-1" /></div>
+                    <div><label class="block text-sm font-medium text-gray-700">CTA Button</label>
+                        <input type="text" value="${h.cta || ''}" onchange="updateHeader('cta',this.value)" class="mt-1" /></div>
+                    <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Menu (comma separated)</label>
+                        <input type="text" value="${(h.menu || []).join(', ')}" onchange="updateHeader('menu',this.value.split(',').map(s=>s.trim()))" class="mt-1" /></div>
+                </div>
+            `;
+        }
+
+        function renderFooter(container) {
+            const f = appData.footer;
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label class="block text-sm font-medium text-gray-700">Copyright</label>
+                        <input type="text" value="${f.copyright || ''}" onchange="updateFooter('copyright',this.value)" class="mt-1" /></div>
+                    <div><label class="block text-sm font-medium text-gray-700">Social (comma)</label>
+                        <input type="text" value="${(f.social || []).join(', ')}" onchange="updateFooter('social',this.value.split(',').map(s=>s.trim()))" class="mt-1" /></div>
+                    <div><label class="block text-sm font-medium text-gray-700">Phone</label>
+                        <input type="text" value="${f.contact?.phone || ''}" onchange="updateFooterContact('phone',this.value)" class="mt-1" /></div>
+                    <div><label class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="text" value="${f.contact?.email || ''}" onchange="updateFooterContact('email',this.value)" class="mt-1" /></div>
+                    <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700">Address</label>
+                        <input type="text" value="${f.contact?.address || ''}" onchange="updateFooterContact('address',this.value)" class="mt-1" /></div>
+                </div>
+            `;
+        }
+
+        function renderResponsive(container) {
+            const r = appData.responsive;
+            let html = ``;
+            for (let device in r) {
+                html += `
+                    <div class="border rounded-xl p-4 bg-gray-50 mb-4">
+                        <h5 class="font-semibold capitalize text-gray-700 mb-3">
+                            <i class="fas ${device==='desktop'?'fa-desktop':device==='tablet'?'fa-tablet':'fa-mobile'} mr-2"></i>${device}
+                        </h5>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            ${Object.keys(r[device]).map(prop => `
+                                <div><label class="block text-xs font-medium text-gray-500 capitalize">${prop}</label>
+                                    <input type="text" value="${r[device][prop]}" onchange="updateResponsive('${device}','${prop}',this.value)" class="mt-1 text-sm" /></div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        function renderBackup(container) {
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <button onclick="exportAll()" class="bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700 transition">
+                            <i class="fas fa-download mr-2"></i> Export Data
+                        </button>
+                        <button onclick="importAll()" class="bg-pink-600 text-white py-2 rounded-full hover:bg-pink-700 transition">
+                            <i class="fas fa-upload mr-2"></i> Import Data
+                        </button>
+                        <button onclick="resetAll()" class="bg-rose-100 text-rose-600 py-2 rounded-full hover:bg-rose-200 transition">
+                            <i class="fas fa-undo-alt mr-2"></i> Reset All
+                        </button>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-xl border">
+                        <h5 class="font-semibold text-gray-700 mb-2">Storage Info</h5>
+                        <div class="text-sm text-gray-500">
+                            <p><i class="fas fa-hdd mr-2"></i> Storage: LocalStorage</p>
+                            <p><i class="fas fa-file mr-2"></i> Data Size: ~${JSON.stringify(appData).length} bytes</p>
+                            <p><i class="fas fa-clock mr-2"></i> Updated: ${new Date().toLocaleString()}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateGlobal(key, value) { appData.global[key] = value; saveData(); }
+        function updateHeader(key, value) { appData.header[key] = value; saveData(); }
+        function updateFooter(key, value) { appData.footer[key] = value; saveData(); }
+        function updateFooterContact(key, value) { if (!appData.footer.contact) appData.footer.contact = {}; appData.footer.contact[key] = value; saveData(); }
+        function updateResponsive(device, prop, value) { appData.responsive[device][prop] = value; saveData(); }
+
+        function exportAll() {
+            const json = JSON.stringify(appData, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `novena-backup-${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importAll() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const imported = JSON.parse(event.target.result);
+                        appData = imported;
+                        saveData();
+                        renderTab();
+                        alert('Data imported!');
+                    } catch(err) { alert('Invalid file.'); }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function resetAll() {
+            if (confirm('Reset all data?')) {
+                appData = JSON.parse(JSON.stringify(defaultData));
+                saveData();
+                renderTab();
+                alert('Data reset!');
+            }
+        }
+
+        function updateClock() {
+            document.getElementById('liveTime').textContent = new Date().toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        loadData();
+    </script>
+</body>
+</html>

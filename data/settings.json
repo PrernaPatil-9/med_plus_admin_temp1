@@ -1,0 +1,21 @@
+{
+    "siteName": "Novena · Health & Care",
+    "favicon": "",
+    "email": "contact@mail.com",
+    "phone": "+91 98765 43210",
+    "address": "123, MG Road, New Delhi, India",
+    "header": {
+        "logoText": "Med Plus",
+        "menu": ["Home", "About", "Services", "Contact"],
+        "cta": "Book Appointment"
+    },
+    "footer": {
+        "copyright": "Med Plus",
+        "social": ["facebook", "twitter", "instagram", "linkedin", "youtube"],
+        "contact": {
+            "phone": "+91 98765 43210",
+            "email": "Support@email.com",
+            "address": "123, MG Road, New Delhi"
+        }
+    }
+}

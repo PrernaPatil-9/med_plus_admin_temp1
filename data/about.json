@@ -1,0 +1,14 @@
+{
+    "sections": ["hero", "intro", "features", "awards", "team", "testimonials"],
+    "content": {
+        "hero": {
+            "heading": "Caring beyond boundaries",
+            "subheading": "About us",
+            "paragraph": "We are a team of dedicated professionals committed to your health and well-being."
+        },
+        "intro": {
+            "heading": "Personal Care for Your Healthy Living",
+            "paragraph": "Dr. Maya Malhotra is a dedicated healthcare professional with 45 years of experience..."
+        }
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "sections": ["hero", "services-grid"],
+    "content": {
+        "hero": {
+            "heading": "What We Do",
+            "subheading": "Our services",
+            "paragraph": "Comprehensive healthcare solutions tailored to your needs."
+        },
+        "grid": {
+            "heading": "Our medical services",
+            "subheading": "Expert care",
+            "description": "We offer a wide range of healthcare services designed to keep you and your family healthy."
+        }
+    }
+}

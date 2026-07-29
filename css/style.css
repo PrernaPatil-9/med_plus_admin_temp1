@@ -1,0 +1,129 @@
+* { font-family: 'Inter', sans-serif; }
+body { background: #f4f7fc; }
+
+/* Sidebar */
+.admin-sidebar { background: #0f2b4b; }
+.admin-sidebar a {
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+}
+.admin-sidebar a:hover,
+.admin-sidebar a.active {
+    background: #1a3a5e;
+    border-left-color: #ec4899;
+    color: white;
+}
+
+/* Cards */
+.card-admin {
+    background: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+    transition: 0.2s;
+}
+.card-admin:hover {
+    box-shadow: 0 12px 40px rgba(0,0,0,0.06);
+}
+
+/* Section Items */
+.section-item {
+    border: 1px solid #eef2f6;
+    border-radius: 1rem;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    background: white;
+    transition: 0.2s;
+    cursor: grab;
+}
+.section-item:hover {
+    border-color: #ec4899;
+    box-shadow: 0 4px 12px rgba(236,72,153,0.08);
+}
+.section-item.dragging { opacity: 0.5; border-style: dashed; }
+.section-item .drag-handle { cursor: grab; color: #94a3b8; }
+.section-item .drag-handle:hover { color: #0f2b4b; }
+
+/* Theme Tokens */
+.theme-token {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: 2px solid #e2e8f0;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+/* Preview */
+.preview-iframe {
+    width: 100%;
+    height: 600px;
+    border: none;
+    border-radius: 1.5rem;
+    background: white;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+}
+
+/* Tabs */
+.tab-btn {
+    padding: 0.5rem 1.25rem;
+    border-radius: 2rem;
+    font-weight: 500;
+    transition: 0.2s;
+    background: transparent;
+    color: #64748b;
+}
+.tab-btn.active {
+    background: #0f2b4b;
+    color: white;
+}
+.tab-btn:hover:not(.active) { background: #eef2f6; }
+
+/* Form Elements */
+input, select, textarea {
+    border-radius: 0.75rem;
+    border: 1px solid #e2e8f0;
+    padding: 0.6rem 1rem;
+    width: 100%;
+    transition: 0.2s;
+}
+input:focus, select:focus, textarea:focus {
+    border-color: #0f2b4b;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(15,43,75,0.08);
+}
+
+/* Buttons */
+.btn-primary {
+    background: #0f2b4b;
+    color: white;
+    border-radius: 2rem;
+    padding: 0.6rem 1.8rem;
+    font-weight: 500;
+    transition: 0.2s;
+}
+.btn-primary:hover { background: #1a3a5e; }
+
+.btn-pink {
+    background: #ec4899;
+    color: white;
+    border-radius: 2rem;
+    padding: 0.6rem 1.8rem;
+    font-weight: 500;
+    transition: 0.2s;
+}
+.btn-pink:hover { background: #db2777; }
+
+.badge-soft {
+    background: #f1f5f9;
+    color: #0f2b4b;
+    padding: 0.2rem 0.8rem;
+    border-radius: 2rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-sidebar { display: none; }
+}

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin · Preview & Save</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f4f7fc; }
+        .admin-sidebar { background: #0f2b4b; min-height: 100vh; }
+        .admin-sidebar a { transition: all 0.2s; border-left: 3px solid transparent; display: block; padding: 0.75rem 1rem; color: rgba(255,255,255,0.7); text-decoration: none; }
+        .admin-sidebar a:hover, .admin-sidebar a.active { background: #1a3a5e; border-left-color: #ec4899; color: white; }
+        .card-admin { background: white; border-radius: 1.5rem; box-shadow: 0 8px 30px rgba(0,0,0,0.04); padding: 1.5rem; transition: 0.2s; }
+        .preview-iframe { width: 100%; height: 600px; border: none; border-radius: 1.5rem; background: white; box-shadow: 0 8px 30px rgba(0,0,0,0.04); }
+        .btn-primary { background: #0f2b4b; color: white; border-radius: 2rem; padding: 0.6rem 1.8rem; font-weight: 500; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-primary:hover { background: #1a3a5e; }
+        .btn-pink { background: #ec4899; color: white; border-radius: 2rem; padding: 0.6rem 1.8rem; font-weight: 500; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-pink:hover { background: #db2777; }
+    </style>
+</head>
+<body>
+    <div class="flex min-h-screen">
+        <aside class="admin-sidebar w-72 flex-shrink-0 text-white p-6">
+            <div class="flex items-center gap-3 pb-6 border-b border-white/10">
+                <div class="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
+                <span class="text-2xl font-bold tracking-tight">Med Plus</span>
+                <span class="ml-auto text-[10px] uppercase bg-pink-600/30 px-2 py-0.5 rounded-full text-pink-200">CMS</span>
+            </div>
+            <nav class="mt-6 space-y-1">
+                <a href="../../index.html"><i class="fas fa-th-large w-5"></i> Dashboard</a>
+                <a href="../home/home.html"><i class="fas fa-home w-5"></i> Home Page</a>
+                <a href="../about/about.html"><i class="fas fa-info-circle w-5"></i> About Page</a>
+                <a href="../services/services.html"><i class="fas fa-concierge-bell w-5"></i> Services Page</a>
+                <a href="../contact/contact.html"><i class="fas fa-envelope w-5"></i> Contact Page</a>
+                <a href="../theme/theme.html"><i class="fas fa-palette w-5"></i> Theme Manager</a>
+                <a href="../settings/settings.html"><i class="fas fa-cog w-5"></i> Settings</a>
+                <a href="preview.html" class="active"><i class="fas fa-eye w-5"></i> Preview & Save</a>
+            </nav>
+            <div class="pt-6 mt-6 border-t border-white/10 text-xs text-white/40">
+                <i class="fas fa-database mr-1"></i> Local Storage
+            </div>
+        </aside>
+
+        <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                    <i class="fas fa-eye text-pink-600"></i>
+                    Preview & Save
+                </h2>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> <span id="liveTime"></span></span>
+                </div>
+            </div>
+
+            <div class="card-admin">
+                <div class="flex flex-wrap gap-4 mb-6">
+                    <button onclick="generatePreview()" class="btn-primary">
+                        <i class="fas fa-play mr-2"></i> Generate Preview
+                    </button>
+                    <button onclick="saveAllData()" class="btn-pink">
+                        <i class="fas fa-save mr-2"></i> Save All
+                    </button>
+                    <button onclick="resetAllData()" class="bg-rose-100 text-rose-600 px-5 py-2 rounded-full hover:bg-rose-200 transition">
+                        <i class="fas fa-undo-alt mr-2"></i> Reset Default
+                    </button>
+                </div>
+                <div id="previewStatus" class="text-sm text-gray-500 mb-4">
+                    <i class="fas fa-info-circle"></i> Click "Generate Preview" to see live preview below.
+                </div>
+                <iframe id="previewIframe" class="preview-iframe"></iframe>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const defaultData = {
+            pages: ['home', 'about', 'services', 'contact'],
+            sections: {
+                home: ['hero', 'features', 'partners', 'about', 'counters', 'services', 'appointment', 'testimonials'],
+                about: ['hero', 'intro', 'features', 'awards', 'team', 'testimonials'],
+                services: ['hero', 'services-grid'],
+                contact: ['hero', 'info-cards', 'contact-form']
+            },
+            content: {
+                home: { hero: { heading: 'Your most trusted health partner', subheading: 'Total health care solution' } },
+                about: { hero: { heading: 'Caring beyond boundaries', subheading: 'About us' } },
+                services: { hero: { heading: 'What We Do', subheading: 'Our services' } },
+                contact: { hero: { heading: 'Get in Touch', subheading: 'Contact us' } }
+            },
+            media: { logos: { main: 'M', text: 'Med Plus' }, heroBanners: ['/images/b_1.jpg', '/images/b_2.jpg', '/images/b_3.jpg'] },
+            theme: { primary: '#0f2b4b', secondary: '#1a3a5e', accent: '#ec4899', text: '#1e293b', heading: '#0f172a', background: '#ffffff', cardBg: '#ffffff', border: '#e2e8f0', buttonBg: '#0f2b4b', buttonText: '#ffffff', hoverBg: '#1a3a5e', gradientStart: '#fce7f3', gradientEnd: '#eef2ff', shadow: '0 8px 30px rgba(0,0,0,0.04)' },
+            header: { logoText: 'Med Plus', menu: ['Home', 'About', 'Services', 'Contact'], cta: 'Book Appointment' },
+            footer: { copyright: 'Med Plus', contact: { phone: '+91 98765 43210', email: 'Support@email.com', address: '123, MG Road, New Delhi' } },
+            global: { siteName: 'Novena · Health & Care' },
+            responsive: { desktop: { fontSize: '16px' } }
+        };
+
+        let appData = {};
+
+        function loadData() {
+            const stored = localStorage.getItem('novena_cms_data');
+            if (stored) {
+                try { appData = JSON.parse(stored); } catch(e) { appData = JSON.parse(JSON.stringify(defaultData)); }
+            } else { appData = JSON.parse(JSON.stringify(defaultData)); }
+            saveData();
+        }
+
+        function saveData() {
+            localStorage.setItem('novena_cms_data', JSON.stringify(appData));
+        }
+
+        function saveAllData() {
+            saveData();
+            alert('All data saved to LocalStorage!');
+        }
+
+        function resetAllData() {
+            if (confirm('Reset all data?')) {
+                appData = JSON.parse(JSON.stringify(defaultData));
+                saveData();
+                generatePreview();
+                alert('Data reset!');
+            }
+        }
+
+        function generatePreview() {
+            const iframe = document.getElementById('previewIframe');
+            if (iframe) {
+                iframe.srcdoc = buildPreviewHTML();
+                document.getElementById('previewStatus').innerHTML = 
+                    `<i class="fas fa-check-circle text-green-500"></i> Preview updated at ${new Date().toLocaleTimeString()}`;
+            }
+        }
+
+        function buildPreviewHTML() {
+            const theme = appData.theme;
+            const header = appData.header;
+            const footer = appData.footer;
+            
+            return `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body { font-family: 'Inter', sans-serif; background: ${theme.background}; color: ${theme.text}; margin: 0; padding: 2rem; }
+                    .container { max-width: 1200px; margin: 0 auto; }
+                    .preview-card { background: ${theme.cardBg}; border: 1px solid ${theme.border}; border-radius: 1.5rem; padding: 1.5rem; box-shadow: ${theme.shadow}; margin-bottom: 1.5rem; }
+                    .text-primary { color: ${theme.primary}; }
+                    .btn { background: ${theme.buttonBg}; color: ${theme.buttonText}; padding: 0.6rem 1.8rem; border-radius: 2rem; border: none; cursor: pointer; }
+                    .btn:hover { background: ${theme.hoverBg}; }
+                    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+                    .card { background: ${theme.cardBg}; border: 1px solid ${theme.border}; border-radius: 1rem; padding: 1.5rem; box-shadow: ${theme.shadow}; }
+                    .badge { background: ${theme.accent}; color: white; padding: 0.2rem 0.8rem; border-radius: 2rem; font-size: 0.7rem; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="preview-card">
+                        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+                            <h2 class="text-primary" style="font-size:1.5rem;font-weight:700;">${header.logoText}</h2>
+                            <nav style="display:flex;gap:1.5rem;flex-wrap:wrap;">
+                                ${header.menu.map(item => `<a href="#" style="color:${theme.text};text-decoration:none;">${item}</a>`).join('')}
+                            </nav>
+                            <button class="btn">${header.cta}</button>
+                        </div>
+                    </div>
+                    
+                    <div class="preview-card">
+                        <h3 style="font-size:1.25rem;font-weight:600;margin-bottom:1rem;">Pages</h3>
+                        <div class="grid">
+                            ${appData.pages.map(page => `
+                                <div class="card">
+                                    <h4 style="font-weight:600;margin-bottom:0.5rem;">${page.charAt(0).toUpperCase()+page.slice(1)}</h4>
+                                    <p style="color:#64748b;font-size:0.875rem;">${appData.sections[page]?.length||0} sections</p>
+                                    <span class="badge">Active</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="preview-card">
+                        <h3 style="font-size:1.25rem;font-weight:600;margin-bottom:1rem;">Theme</h3>
+                        <div style="display:flex;gap:2rem;flex-wrap:wrap;">
+                            <div><span style="font-weight:500;">Primary:</span> ${theme.primary}</div>
+                            <div><span style="font-weight:500;">Accent:</span> ${theme.accent}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="preview-card" style="text-align:center;color:#64748b;font-size:0.875rem;">
+                        <p>&copy; ${new Date().getFullYear()} ${footer.copyright}</p>
+                        <p>${footer.contact.phone} · ${footer.contact.email}</p>
+                        <p>${footer.contact.address}</p>
+                    </div>
+                    
+                    <div style="text-align:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid ${theme.border};font-size:0.75rem;color:#94a3b8;">
+                        Preview from CMS · ${new Date().toLocaleString()}
+                    </div>
+                </div>
+            </body>
+            </html>
+            `;
+        }
+
+        function updateClock() {
+            document.getElementById('liveTime').textContent = new Date().toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        loadData();
+        generatePreview();
+    </script>
+</body>
+</html>

@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin · About Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f4f7fc; margin: 0; height: 100vh; overflow: hidden; }
+        
+        /* Container fills viewport and prevents page scroll */
+        .admin-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Sidebar stays fixed/sticky */
+        .admin-sidebar {
+            background: #0f2b4b;
+            width: 18rem;
+            flex-shrink: 0;
+            height: 100vh;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+        }
+        
+        /* Main content scrolls independently */
+        .admin-main {
+            flex: 1;
+            overflow-y: auto;
+            height: 100vh;
+            padding: 1.5rem 2.5rem;
+        }
+        
+        .admin-sidebar a { transition: all 0.2s; border-left: 3px solid transparent; display: block; padding: 0.75rem 1rem; color: rgba(255,255,255,0.7); text-decoration: none; }
+        .admin-sidebar a:hover, .admin-sidebar a.active { background: #1a3a5e; border-left-color: #ec4899; color: white; }
+        .card-admin { background: white; border-radius: 1.5rem; box-shadow: 0 8px 30px rgba(0,0,0,0.04); padding: 1.5rem; transition: 0.2s; }
+        .badge-soft { background: #f1f5f9; color: #0f2b4b; padding: 0.2rem 0.8rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 500; }
+        .tab-btn { padding: 0.5rem 1.25rem; border-radius: 2rem; font-weight: 500; transition: 0.2s; background: transparent; color: #64748b; border: none; cursor: pointer; }
+        .tab-btn.active { background: #0f2b4b; color: white; }
+        .tab-btn:hover:not(.active) { background: #eef2f6; }
+        input, select, textarea { border-radius: 0.75rem; border: 1px solid #e2e8f0; padding: 0.6rem 1rem; width: 100%; transition: 0.2s; }
+        input:focus, select:focus, textarea:focus { border-color: #0f2b4b; outline: none; box-shadow: 0 0 0 3px rgba(15,43,75,0.08); }
+        label.field-label { display: block; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; color: #64748b; margin-bottom: 0.35rem; }
+        .field { margin-bottom: 0.9rem; }
+        .btn-pink { background: #ec4899; color: white; border-radius: 2rem; padding: 0.55rem 1.4rem; font-weight: 500; border: none; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
+        .btn-pink:hover { background: #db2777; }
+        .btn-ghost { background: white; color: #0f2b4b; border-radius: 2rem; padding: 0.5rem 1.2rem; font-weight: 500; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.2s; font-size: 0.8rem; }
+        .btn-ghost:hover { border-color: #0f2b4b; }
+        .btn-danger { background: #fff1f2; color: #e11d48; border-radius: 2rem; padding: 0.4rem 0.9rem; font-weight: 500; border: none; cursor: pointer; transition: 0.2s; font-size: 0.75rem; }
+        .btn-danger:hover { background: #ffe4e6; }
+        .drag-handle { cursor: grab; color: #94a3b8; }
+        .drag-handle:active { cursor: grabbing; }
+        .sortable-ghost { opacity: 0.35; }
+        .sortable-drag { box-shadow: 0 12px 30px rgba(0,0,0,0.15); }
+        .mini-preview { width: 100%; height: 110px; object-fit: cover; border-radius: 0.6rem; background: #f1f5f9; border: 1px solid #e2e8f0; }
+        .upload-btn { flex-shrink: 0; width: 2.6rem; height: 2.6rem; border-radius: 0.75rem; border: 1px solid #e2e8f0; background: white; color: #0f2b4b; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .upload-btn:hover { border-color: #0f2b4b; background: #f8fafc; }
+        .img-field-row { display: flex; gap: 0.5rem; align-items: stretch; }
+        .img-field-row input[type="text"] { flex: 1; }
+        .order-item { background: white; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 0.9rem 1.1rem; display: flex; align-items: center; gap: 0.9rem; margin-bottom: 0.6rem; }
+        .order-item.locked { background: #f8fafc; }
+        .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: #0f2b4b; color: white; padding: 0.7rem 1.4rem; border-radius: 0.85rem; font-size: 0.85rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 100; opacity: 0; transform: translateY(10px); transition: 0.25s; pointer-events: none; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar - sticky -->
+        <aside class="admin-sidebar text-white p-6">
+            <div class="flex items-center gap-3 pb-6 border-b border-white/10">
+                <div class="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
+                <span class="text-2xl font-bold tracking-tight">Med Plus</span>
+                <span class="ml-auto text-[10px] uppercase bg-pink-600/30 px-2 py-0.5 rounded-full text-pink-200">CMS</span>
+            </div>
+            <nav class="mt-6 space-y-1">
+                <a href="../../index.html"><i class="fas fa-th-large w-5"></i> Dashboard</a>
+                <a href="../home/home.html"><i class="fas fa-home w-5"></i> Home Page</a>
+                <a href="about.html" class="active"><i class="fas fa-info-circle w-5"></i> About Page</a>
+                <a href="../services/services.html"><i class="fas fa-concierge-bell w-5"></i> Services Page</a>
+                <a href="../contact/contact.html"><i class="fas fa-envelope w-5"></i> Contact Page</a>
+                <a href="../theme/theme.html"><i class="fas fa-palette w-5"></i> Theme Manager</a>
+                <a href="../settings/settings.html"><i class="fas fa-cog w-5"></i> Settings</a>
+                <a href="../preview/preview.html"><i class="fas fa-eye w-5"></i> Preview & Save</a>
+            </nav>
+            <div class="pt-6 mt-6 border-t border-white/10 text-xs text-white/40">
+                <i class="fas fa-database mr-1"></i> Local Storage
+            </div>
+        </aside>
+
+        <!-- Main Content - scrollable -->
+        <main class="admin-main">
+            <div class="flex items-center justify-between mb-8 flex-wrap gap-3">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                    <i class="fas fa-info-circle text-pink-600"></i>
+                    About Page Manager
+                </h2>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> <span id="liveTime"></span></span>
+                    <button onclick="resetData()" class="text-sm bg-rose-50 text-rose-600 px-4 py-1.5 rounded-full hover:bg-rose-100 transition">
+                        <i class="fas fa-undo-alt"></i> Reset
+                    </button>
+                    <button onclick="saveData(true)" class="text-sm bg-emerald-50 text-emerald-600 px-4 py-1.5 rounded-full hover:bg-emerald-100 transition">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-admin">
+                <div class="flex items-center justify-between mb-6 flex-wrap gap-2">
+                    <h3 class="font-bold text-lg">About Page Content</h3>
+                    <span class="badge-soft" id="sectionCount">0 sections</span>
+                </div>
+
+                <div class="mb-6 flex flex-wrap gap-2 border-b border-gray-200 pb-4">
+                    <button class="tab-btn active" data-tab="hero" onclick="switchTab('hero')"><i class="fas fa-image mr-1"></i> Hero Banner</button>
+                    <button class="tab-btn" data-tab="philosophy" onclick="switchTab('philosophy')"><i class="fas fa-heart mr-1"></i> Our Philosophy</button>
+                    <button class="tab-btn" data-tab="features" onclick="switchTab('features')"><i class="fas fa-th-large mr-1"></i> Features</button>
+                    <button class="tab-btn" data-tab="team" onclick="switchTab('team')"><i class="fas fa-users mr-1"></i> Team</button>
+                    <button class="tab-btn" data-tab="achievements" onclick="switchTab('achievements')"><i class="fas fa-trophy mr-1"></i> Achievements</button>
+                    <button class="tab-btn" data-tab="order" onclick="switchTab('order')"><i class="fas fa-arrows-alt-v mr-1"></i> Section Order</button>
+                </div>
+
+                <div id="tabContent"></div>
+            </div>
+        </main>
+    </div>
+
+    <div class="toast" id="toast">Saved</div>
+
+    <script>
+        // ============================================================
+        // DATA MODEL — persisted under the shared novena_cms_data key
+        // (matches the key/shape already used by index.html and home.html)
+        // ============================================================
+        const SECTION_META = {
+            hero: { label: 'Hero Banner', icon: 'fa-image', locked: true, lockNote: 'always shown first' },
+            intro: { label: 'Our Philosophy', icon: 'fa-heart', locked: false },
+            features: { label: 'Hy Med Plus Features', icon: 'fa-th-large', locked: false },
+            awards: { label: 'Achievements', icon: 'fa-trophy', locked: false },
+            team: { label: 'Team Section', icon: 'fa-users', locked: false },
+            testimonials: { label: 'Testimonials (fixed content)', icon: 'fa-star', locked: true, lockNote: 'content not editable here' }
+        };
+
+        const defaultAboutContent = {
+            hero: {
+                image: '/images/about-hero.jpg',
+                heading: 'Caring beyond boundaries',
+                subheading: 'About us',
+                paragraph: 'We are a team of dedicated professionals.'
+            },
+            intro: {
+                image: '/images/a_2.avif',
+                heading: 'Personal Care for Your Healthy Living',
+                paragraph: 'Dr. Maya Malhotra is a dedicated healthcare professional with 45 years of experience in patient-centered care.',
+                blocks: []
+            },
+            features: {
+                cards: [
+                    { icon: 'fa-user-md', title: 'Expert Doctors', text: 'Our specialists bring decades of combined experience across every major discipline.' },
+                    { icon: 'fa-hospital', title: 'Modern Facility', text: 'State-of-the-art equipment and a clean, calming environment for every visit.' },
+                    { icon: 'fa-heartbeat', title: 'Patient-First Care', text: 'Every treatment plan is built around what is best for the individual patient.' }
+                ]
+            },
+            awards: {
+                heading: 'Our milestones',
+                items: ['Best Hospital 2023', 'Excellence in Cardiology']
+            },
+            team: {
+                members: [
+                    { name: 'Dr. John Smith', title: 'Cardiologist', description: 'Board-certified cardiologist with 15+ years of experience in interventional cardiology.', image: '/images/dr_1.jpg' },
+                    { name: 'Dr. Sarah Johnson', title: 'Neurologist', description: 'Specialist in neurological disorders with a focus on patient-centered care.', image: '/images/dr_2.jpg' }
+                ]
+            }
+        };
+
+        const defaultOrder = ['hero', 'intro', 'features', 'awards', 'team', 'testimonials'];
+
+        let appData = {};
+        let currentTab = 'hero';
+
+        function uid() { return 'id' + Math.random().toString(36).slice(2, 9); }
+        function ensureIds(list) { (list || []).forEach(item => { if (!item.id) item.id = uid(); }); return list; }
+
+        // Recursively fills in any keys missing from `target` using `source`
+        // as the template — protects against another admin page (e.g. the
+        // Dashboard) having already written a partial `content.about` object
+        // into the same shared localStorage key.
+        function deepMerge(target, source) {
+            Object.keys(source).forEach(key => {
+                const srcVal = source[key];
+                if (Array.isArray(srcVal)) {
+                    if (!Array.isArray(target[key])) target[key] = JSON.parse(JSON.stringify(srcVal));
+                } else if (srcVal && typeof srcVal === 'object') {
+                    if (!target[key] || typeof target[key] !== 'object' || Array.isArray(target[key])) target[key] = {};
+                    deepMerge(target[key], srcVal);
+                } else if (!(key in target)) {
+                    target[key] = srcVal;
+                }
+            });
+            return target;
+        }
+
+        function loadData() {
+            const stored = localStorage.getItem('novena_cms_data');
+            try { appData = stored ? JSON.parse(stored) : {}; } catch (e) { appData = {}; }
+            if (!appData.content || typeof appData.content !== 'object') appData.content = {};
+            if (!appData.content.about || typeof appData.content.about !== 'object') appData.content.about = {};
+            deepMerge(appData.content.about, defaultAboutContent);
+            if (!appData.sections || typeof appData.sections !== 'object') appData.sections = {};
+            if (!Array.isArray(appData.sections.about) || !appData.sections.about.length) appData.sections.about = [...defaultOrder];
+            // make sure every known section key is present in the order list
+            defaultOrder.forEach(key => { if (!appData.sections.about.includes(key)) appData.sections.about.push(key); });
+            ensureIds(appData.content.about.features.cards);
+            ensureIds(appData.content.about.team.members);
+            saveData(false);
+            renderTab();
+        }
+
+        let saveTimer = null;
+        function saveData(showToast) {
+            localStorage.setItem('novena_cms_data', JSON.stringify(appData));
+            document.getElementById('sectionCount').textContent = appData.sections.about.length + ' sections';
+            if (showToast) toast('Saved');
+        }
+        function debounceSave() {
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(() => saveData(false), 500);
+        }
+
+        function toast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            clearTimeout(toast._t);
+            toast._t = setTimeout(() => t.classList.remove('show'), 1600);
+        }
+
+        function resetData() {
+            if (!confirm('Reset the About Page content to defaults? This cannot be undone.')) return;
+            appData.content.about = JSON.parse(JSON.stringify(defaultAboutContent));
+            appData.sections.about = [...defaultOrder];
+            ensureIds(appData.content.about.features.cards);
+            ensureIds(appData.content.about.team.members);
+            saveData(true);
+            renderTab();
+        }
+
+        // ============================================================
+        // IMAGE UPLOAD (reads a local file and stores it as a data URL —
+        // no backend required; everything still lives in localStorage)
+        // ============================================================
+        const MAX_UPLOAD_MB = 3;
+        function readFileAsDataURL(fileInput, cb) {
+            const file = fileInput.files && fileInput.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) { alert('Please choose an image file.'); fileInput.value = ''; return; }
+            if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
+                alert(`That image is larger than ${MAX_UPLOAD_MB}MB. Please choose a smaller file, or paste a hosted image URL instead.`);
+                fileInput.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = e => cb(e.target.result);
+            reader.onerror = () => alert('Could not read that file. Please try again.');
+            reader.readAsDataURL(file);
+            fileInput.value = '';
+        }
+
+        // ============================================================
+        // TABS
+        // ============================================================
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+            renderTab();
+        }
+
+        function renderTab() {
+            const container = document.getElementById('tabContent');
+            try {
+                if (currentTab === 'hero') renderHero(container);
+                else if (currentTab === 'philosophy') renderPhilosophy(container);
+                else if (currentTab === 'features') renderFeatures(container);
+                else if (currentTab === 'team') renderTeam(container);
+                else if (currentTab === 'achievements') renderAchievements(container);
+                else if (currentTab === 'order') renderOrder(container);
+            } catch (e) {
+                console.error('Render failed:', currentTab, e);
+                container.innerHTML = `<p class="text-sm text-rose-500">Something went wrong rendering this tab. Try Reset if the problem continues.</p>`;
+            }
+        }
+
+        // ============================================================
+        // HERO BANNER (always first — image + heading/subheading/text)
+        // ============================================================
+        function renderHero(container) {
+            const hero = appData.content.about.hero;
+            container.innerHTML = `
+                <div class="border rounded-xl p-5 bg-gray-50">
+                    <h5 class="font-semibold text-gray-700 mb-4"><i class="fas fa-image text-pink-500 mr-2"></i>Banner Image</h5>
+                    <img id="heroImgPreview" class="mini-preview mb-2" src="${esc(hero.image)}" onerror="this.src='https://placehold.co/800x300?text=Hero+Banner'">
+                    <div class="img-field-row mb-6">
+                        <input id="heroImgInput" type="text" value="${esc(hero.image)}" placeholder="Image URL, or upload →" oninput="updateHero('image', this.value, true)">
+                        <label class="upload-btn" title="Upload image from your device">
+                            <i class="fas fa-upload"></i>
+                            <input type="file" accept="image/*" class="hidden" onchange="uploadHeroImage(this)">
+                        </label>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="field"><label class="field-label">Heading</label>
+                            <input type="text" value="${esc(hero.heading)}" oninput="updateHero('heading', this.value)"></div>
+                        <div class="field"><label class="field-label">Subheading</label>
+                            <input type="text" value="${esc(hero.subheading)}" oninput="updateHero('subheading', this.value)"></div>
+                        <div class="field md:col-span-2"><label class="field-label">Banner Text</label>
+                            <textarea rows="3" oninput="updateHero('paragraph', this.value)">${esc(hero.paragraph)}</textarea></div>
+                    </div>
+                </div>
+            `;
+        }
+        function updateHero(field, value, isImage) {
+            appData.content.about.hero[field] = value;
+            debounceSave();
+            if (isImage) document.getElementById('heroImgPreview').src = value;
+        }
+        function uploadHeroImage(fileInput) {
+            readFileAsDataURL(fileInput, dataUrl => {
+                appData.content.about.hero.image = dataUrl;
+                debounceSave();
+                document.getElementById('heroImgInput').value = dataUrl;
+                document.getElementById('heroImgPreview').src = dataUrl;
+            });
+        }
+
+        // ============================================================
+        // OUR PHILOSOPHY / INTRODUCTION
+        // ============================================================
+        function renderPhilosophy(container) {
+            const intro = appData.content.about.intro;
+            container.innerHTML = `
+                <div class="border rounded-xl p-5 bg-gray-50">
+                    <h5 class="font-semibold text-gray-700 mb-4"><i class="fas fa-heart text-pink-500 mr-2"></i>Our Philosophy</h5>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div>
+                            <img id="introImgPreview" class="mini-preview mb-2" style="height:180px" src="${esc(intro.image)}" onerror="this.src='https://placehold.co/600x400?text=Philosophy'">
+                            <div class="img-field-row">
+                                <input id="introImgInput" type="text" value="${esc(intro.image)}" placeholder="Image URL, or upload →" oninput="updateIntro('image', this.value, true)">
+                                <label class="upload-btn" title="Upload image from your device">
+                                    <i class="fas fa-upload"></i>
+                                    <input type="file" accept="image/*" class="hidden" onchange="uploadIntroImage(this)">
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field"><label class="field-label">Heading</label>
+                                <input type="text" value="${esc(intro.heading)}" oninput="updateIntro('heading', this.value)"></div>
+                            <div class="field"><label class="field-label">Main Paragraph</label>
+                                <textarea rows="4" oninput="updateIntro('paragraph', this.value)">${esc(intro.paragraph)}</textarea></div>
+                        </div>
+                    </div>
+                    <div class="mt-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="field-label !mb-0">Additional Text Blocks</label>
+                            <button class="btn-ghost" onclick="addIntroBlock()"><i class="fas fa-plus mr-1"></i>Add Block</button>
+                        </div>
+                        <div class="space-y-2">
+                            ${intro.blocks.length ? intro.blocks.map((b, i) => `
+                                <div class="flex items-start gap-2">
+                                    <textarea rows="2" class="flex-1" oninput="updateIntroBlock(${i}, this.value)">${esc(b)}</textarea>
+                                    <button class="btn-danger mt-1" onclick="removeIntroBlock(${i})"><i class="fas fa-trash"></i></button>
+                                </div>
+                            `).join('') : `<p class="text-xs text-gray-400">No additional text blocks yet — use "Add Block" for extra paragraphs (mission, vision, values, etc.).</p>`}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        function updateIntro(field, value, isImage) {
+            appData.content.about.intro[field] = value;
+            debounceSave();
+            if (isImage) document.getElementById('introImgPreview').src = value;
+        }
+        function uploadIntroImage(fileInput) {
+            readFileAsDataURL(fileInput, dataUrl => {
+                appData.content.about.intro.image = dataUrl;
+                debounceSave();
+                document.getElementById('introImgInput').value = dataUrl;
+                document.getElementById('introImgPreview').src = dataUrl;
+            });
+        }
+        function addIntroBlock() {
+            appData.content.about.intro.blocks.push('New paragraph — edit this text.');
+            saveData(true);
+            renderTab();
+        }
+        function updateIntroBlock(i, value) {
+            appData.content.about.intro.blocks[i] = value;
+            debounceSave();
+        }
+        function removeIntroBlock(i) {
+            if (!confirm('Remove this text block?')) return;
+            appData.content.about.intro.blocks.splice(i, 1);
+            saveData(true);
+            renderTab();
+        }
+
+        // ============================================================
+        // HY MED PLUS FEATURES
+        // ============================================================
+        function renderFeatures(container) {
+            const cards = appData.content.about.features.cards;
+            container.innerHTML = `
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400"><i class="fas fa-arrows-alt-v mr-1"></i>Drag the handle to reorder cards</span>
+                    <button class="btn-pink" onclick="addFeature()"><i class="fas fa-plus mr-1"></i>Add Card</button>
+                </div>
+                <div id="featureCardsWrap" class="space-y-3">
+                    ${cards.map((c, i) => `
+                        <div class="border rounded-xl p-4 bg-gray-50 flex items-start gap-3" data-id="${c.id}">
+                            <i class="fas fa-grip-vertical drag-handle mt-3"></i>
+                            <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <div><label class="field-label">Icon (Font Awesome class)</label>
+                                    <input type="text" value="${esc(c.icon)}" placeholder="fa-user-md" oninput="updateFeature(${i},'icon',this.value)"></div>
+                                <div><label class="field-label">Title</label>
+                                    <input type="text" value="${esc(c.title)}" oninput="updateFeature(${i},'title',this.value)"></div>
+                                <div class="flex items-end">
+                                    <button class="btn-danger ml-auto" onclick="removeFeature(${i})"><i class="fas fa-trash mr-1"></i>Remove</button>
+                                </div>
+                                <div class="md:col-span-3"><label class="field-label">Text</label>
+                                    <textarea rows="2" oninput="updateFeature(${i},'text',this.value)">${esc(c.text)}</textarea></div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            new Sortable(document.getElementById('featureCardsWrap'), { handle: '.drag-handle', animation: 150, onEnd: onFeatureReorder });
+        }
+        function updateFeature(i, field, value) {
+            appData.content.about.features.cards[i][field] = value;
+            debounceSave();
+        }
+        function addFeature() {
+            appData.content.about.features.cards.push({ id: uid(), icon: 'fa-star', title: 'New Feature', text: 'Describe this feature.' });
+            saveData(true);
+            renderTab();
+        }
+        function removeFeature(i) {
+            if (!confirm('Remove this feature card?')) return;
+            appData.content.about.features.cards.splice(i, 1);
+            saveData(true);
+            renderTab();
+        }
+        function onFeatureReorder(evt) {
+            const cards = appData.content.about.features.cards;
+            const moved = cards.splice(evt.oldIndex, 1)[0];
+            cards.splice(evt.newIndex, 0, moved);
+            saveData(true);
+            renderTab();
+        }
+
+        // ============================================================
+        // TEAM
+        // ============================================================
+        function renderTeam(container) {
+            const members = appData.content.about.team.members;
+            container.innerHTML = `
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400"><i class="fas fa-arrows-alt-v mr-1"></i>Drag the handle to reorder team members</span>
+                    <button class="btn-pink" onclick="addTeam()"><i class="fas fa-plus mr-1"></i>Add Team Member</button>
+                </div>
+                <div id="teamWrap" class="space-y-3">
+                    ${members.map((m, idx) => `
+                        <div class="border rounded-xl p-4 bg-gray-50 flex items-start gap-3" data-id="${m.id}">
+                            <i class="fas fa-grip-vertical drag-handle mt-3"></i>
+                            <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <img id="teamImgPreview-${idx}" class="mini-preview mb-2" src="${esc(m.image)}" onerror="this.src='https://placehold.co/200x200?text=Team'">
+                                    <div class="img-field-row">
+                                        <input id="teamImgInput-${idx}" type="text" value="${esc(m.image)}" placeholder="Image URL, or upload →" oninput="updateTeam(${idx},'image',this.value,true)">
+                                        <label class="upload-btn" title="Upload photo from your device">
+                                            <i class="fas fa-upload"></i>
+                                            <input type="file" accept="image/*" class="hidden" onchange="uploadTeamImage(${idx}, this)">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div><label class="field-label">Name</label>
+                                            <input type="text" value="${esc(m.name)}" oninput="updateTeam(${idx},'name',this.value)"></div>
+                                        <div><label class="field-label">Designation</label>
+                                            <input type="text" value="${esc(m.title)}" oninput="updateTeam(${idx},'title',this.value)"></div>
+                                    </div>
+                                    <div class="field mt-3"><label class="field-label">Description</label>
+                                        <textarea rows="3" oninput="updateTeam(${idx},'description',this.value)">${esc(m.description)}</textarea></div>
+                                    <button class="btn-danger" onclick="removeTeam(${idx})"><i class="fas fa-trash mr-1"></i>Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            new Sortable(document.getElementById('teamWrap'), { handle: '.drag-handle', animation: 150, onEnd: onTeamReorder });
+        }
+        function updateTeam(index, field, value, isImage) {
+            appData.content.about.team.members[index][field] = value;
+            debounceSave();
+            if (isImage) document.getElementById('teamImgPreview-' + index).src = value;
+        }
+        function uploadTeamImage(index, fileInput) {
+            readFileAsDataURL(fileInput, dataUrl => {
+                appData.content.about.team.members[index].image = dataUrl;
+                debounceSave();
+                document.getElementById('teamImgInput-' + index).value = dataUrl;
+                document.getElementById('teamImgPreview-' + index).src = dataUrl;
+            });
+        }
+        function addTeam() {
+            appData.content.about.team.members.push({ id: uid(), name: 'New Member', title: 'Position', description: 'Short bio goes here.', image: '' });
+            saveData(true);
+            renderTab();
+        }
+        function removeTeam(index) {
+            if (!confirm('Remove this team member?')) return;
+            appData.content.about.team.members.splice(index, 1);
+            saveData(true);
+            renderTab();
+        }
+        function onTeamReorder(evt) {
+            const members = appData.content.about.team.members;
+            const moved = members.splice(evt.oldIndex, 1)[0];
+            members.splice(evt.newIndex, 0, moved);
+            saveData(true);
+            renderTab();
+        }
+
+        // ============================================================
+        // ACHIEVEMENTS — position only, per requirements
+        // ============================================================
+        function renderAchievements(container) {
+            container.innerHTML = `
+                <div class="border rounded-xl p-6 bg-gray-50 flex items-center gap-6 flex-wrap">
+                    <div class="w-16 h-16 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center text-2xl"><i class="fas fa-trophy"></i></div>
+                    <div class="flex-1 min-w-[240px]">
+                        <p class="text-sm text-gray-600">This section only supports repositioning — its milestone content stays as-is. Use the button below to move it above or below other sections.</p>
+                    </div>
+                    <button class="tab-btn active" onclick="switchTab('order')"><i class="fas fa-arrows-alt-v mr-2"></i>Go to Section Order</button>
+                </div>
+            `;
+        }
+
+        // ============================================================
+        // SECTION ORDER (Hero pinned at top, rest draggable)
+        // ============================================================
+        function renderOrder(container) {
+            const order = appData.sections.about.filter(k => k !== 'hero');
+            container.innerHTML = `
+                <p class="text-xs text-gray-400 mb-3"><i class="fas fa-info-circle mr-1"></i>The Hero Banner always stays first. Drag any other section to change where it appears on the page.</p>
+                <div class="order-item locked">
+                    <i class="fas fa-lock text-gray-300"></i>
+                    <div class="w-10 h-10 rounded-xl bg-slate-50 text-slate-500 flex items-center justify-center"><i class="fas fa-image"></i></div>
+                    <div class="flex-1">
+                        <p class="text-sm font-semibold text-gray-700">Hero Banner</p>
+                        <p class="text-xs text-gray-400">Position 1 · always shown first</p>
+                    </div>
+                </div>
+                <div id="orderWrap"></div>
+            `;
+            const wrap = document.getElementById('orderWrap');
+            wrap.innerHTML = order.map((key, i) => {
+                const meta = SECTION_META[key];
+                return `
+                <div class="order-item ${meta.locked ? 'locked' : ''}" data-key="${key}">
+                    <i class="fas fa-grip-vertical drag-handle"></i>
+                    <div class="w-10 h-10 rounded-xl bg-slate-50 text-slate-500 flex items-center justify-center"><i class="fas ${meta.icon}"></i></div>
+                    <div class="flex-1">
+                        <p class="text-sm font-semibold text-gray-700">${meta.label}</p>
+                        <p class="text-xs text-gray-400">Position ${i + 2}${meta.locked ? ' · ' + meta.lockNote : ''}</p>
+                    </div>
+                    ${!meta.locked ? `<button class="btn-ghost" onclick="switchTab('${key === 'awards' ? 'achievements' : (key === 'intro' ? 'philosophy' : key)}')">Edit content</button>` : ''}
+                </div>`;
+            }).join('');
+            new Sortable(wrap, { handle: '.drag-handle', animation: 150, onEnd: onOrderReorder });
+        }
+        function onOrderReorder(evt) {
+            const order = appData.sections.about.filter(k => k !== 'hero');
+            const moved = order.splice(evt.oldIndex, 1)[0];
+            order.splice(evt.newIndex, 0, moved);
+            appData.sections.about = ['hero', ...order];
+            saveData(true);
+            renderTab();
+        }
+
+        // ============================================================
+        // UTIL
+        // ============================================================
+        function esc(str) {
+            if (str === undefined || str === null) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function updateClock() {
+            document.getElementById('liveTime').textContent = new Date().toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        loadData();
+    </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+:root {
+    --primary: #0f2b4b;
+    --secondary: #1a3a5e;
+    --accent: #ec4899;
+    --text: #1e293b;
+    --heading: #0f172a;
+    --background: #ffffff;
+    --card-bg: #ffffff;
+    --border: #e2e8f0;
+    --button-bg: #0f2b4b;
+    --button-text: #ffffff;
+    --hover-bg: #1a3a5e;
+    --shadow: 0 8px 30px rgba(0,0,0,0.04);
+}
+
+/* Theme classes */
+.bg-primary { background: var(--primary); }
+.text-primary { color: var(--primary); }
+.border-primary { border-color: var(--primary); }
+.bg-accent { background: var(--accent); }
+.text-accent { color: var(--accent); }

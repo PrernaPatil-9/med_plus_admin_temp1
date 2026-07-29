@@ -1,0 +1,35 @@
+{
+    "sections": ["hero", "features", "partners", "about", "counters", "services", "appointment", "testimonials"],
+    "content": {
+        "hero": {
+            "heading": "Your most trusted health partner",
+            "subheading": "Total health care solution",
+            "paragraph": "A repudiandae ipsam labore ipsa voluptatum quidem quae laudantium.",
+            "buttonText": "Make Appointment",
+            "buttonLink": "#",
+            "bgImage": "/images/b_1.jpg"
+        },
+        "features": {
+            "cards": [
+                {
+                    "title": "Online Appointment",
+                    "desc": "Get all time support for emergency.",
+                    "icon": "fa-user-md",
+                    "color": "blue"
+                },
+                {
+                    "title": "Working Hours",
+                    "desc": "Sun – Wed 8:00 – 17:00",
+                    "icon": "fa-clock",
+                    "color": "teal"
+                },
+                {
+                    "title": "Emergency Cases",
+                    "desc": "+91 98765 43210",
+                    "icon": "fa-phone-alt",
+                    "color": "rose"
+                }
+            ]
+        }
+    }
+}

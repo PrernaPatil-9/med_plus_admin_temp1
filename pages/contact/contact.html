@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin · Contact Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f4f7fc; margin: 0; height: 100vh; overflow: hidden; }
+        
+        /* Container fills viewport and prevents page scroll */
+        .admin-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Sidebar stays fixed/sticky */
+        .admin-sidebar {
+            background: #0f2b4b;
+            width: 18rem;
+            flex-shrink: 0;
+            height: 100vh;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+        }
+        
+        /* Main content scrolls independently */
+        .admin-main {
+            flex: 1;
+            overflow-y: auto;
+            height: 100vh;
+            padding: 1.5rem 2.5rem;
+        }
+        
+        .admin-sidebar a { transition: all 0.2s; border-left: 3px solid transparent; display: block; padding: 0.75rem 1rem; color: rgba(255,255,255,0.7); text-decoration: none; }
+        .admin-sidebar a:hover, .admin-sidebar a.active { background: #1a3a5e; border-left-color: #ec4899; color: white; }
+        .card-admin { background: white; border-radius: 1.5rem; box-shadow: 0 8px 30px rgba(0,0,0,0.04); padding: 1.5rem; transition: 0.2s; }
+        .badge-soft { background: #f1f5f9; color: #0f2b4b; padding: 0.2rem 0.8rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 500; }
+        .tab-btn { padding: 0.5rem 1.25rem; border-radius: 2rem; font-weight: 500; transition: 0.2s; background: transparent; color: #64748b; border: none; cursor: pointer; }
+        .tab-btn.active { background: #0f2b4b; color: white; }
+        .tab-btn:hover:not(.active) { background: #eef2f6; }
+        input, select, textarea { border-radius: 0.75rem; border: 1px solid #e2e8f0; padding: 0.6rem 1rem; width: 100%; transition: 0.2s; }
+        input:focus, select:focus, textarea:focus { border-color: #0f2b4b; outline: none; box-shadow: 0 0 0 3px rgba(15,43,75,0.08); }
+        label.field-label { display: block; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; color: #64748b; margin-bottom: 0.35rem; }
+        .field { margin-bottom: 0.9rem; }
+        .btn-pink { background: #ec4899; color: white; border-radius: 2rem; padding: 0.55rem 1.4rem; font-weight: 500; border: none; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
+        .btn-pink:hover { background: #db2777; }
+        .btn-danger { background: #fff1f2; color: #e11d48; border-radius: 2rem; padding: 0.4rem 0.9rem; font-weight: 500; border: none; cursor: pointer; transition: 0.2s; font-size: 0.75rem; }
+        .btn-danger:hover { background: #ffe4e6; }
+        .drag-handle { cursor: grab; color: #94a3b8; }
+        .drag-handle:active { cursor: grabbing; }
+        .sortable-ghost { opacity: 0.35; }
+        .sortable-drag { box-shadow: 0 12px 30px rgba(0,0,0,0.15); }
+        .mini-preview { width: 100%; height: 130px; object-fit: cover; border-radius: 0.6rem; background: #f1f5f9; border: 1px solid #e2e8f0; }
+        .upload-btn { flex-shrink: 0; width: 2.6rem; height: 2.6rem; border-radius: 0.75rem; border: 1px solid #e2e8f0; background: white; color: #0f2b4b; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .upload-btn:hover { border-color: #0f2b4b; background: #f8fafc; }
+        .img-field-row { display: flex; gap: 0.5rem; align-items: stretch; }
+        .img-field-row input[type="text"] { flex: 1; }
+        .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: #0f2b4b; color: white; padding: 0.7rem 1.4rem; border-radius: 0.85rem; font-size: 0.85rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 100; opacity: 0; transform: translateY(10px); transition: 0.25s; pointer-events: none; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar - sticky -->
+        <aside class="admin-sidebar text-white p-6">
+            <div class="flex items-center gap-3 pb-6 border-b border-white/10">
+                <div class="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
+                <span class="text-2xl font-bold tracking-tight">Med Plus</span>
+                <span class="ml-auto text-[10px] uppercase bg-pink-600/30 px-2 py-0.5 rounded-full text-pink-200">CMS</span>
+            </div>
+            <nav class="mt-6 space-y-1">
+                <a href="../../index.html"><i class="fas fa-th-large w-5"></i> Dashboard</a>
+                <a href="../home/home.html"><i class="fas fa-home w-5"></i> Home Page</a>
+                <a href="../about/about.html"><i class="fas fa-info-circle w-5"></i> About Page</a>
+                <a href="../services/services.html"><i class="fas fa-concierge-bell w-5"></i> Services Page</a>
+                <a href="contact.html" class="active"><i class="fas fa-envelope w-5"></i> Contact Page</a>
+                <a href="../theme/theme.html"><i class="fas fa-palette w-5"></i> Theme Manager</a>
+                <a href="../settings/settings.html"><i class="fas fa-cog w-5"></i> Settings</a>
+                <a href="../preview/preview.html"><i class="fas fa-eye w-5"></i> Preview & Save</a>
+            </nav>
+            <div class="pt-6 mt-6 border-t border-white/10 text-xs text-white/40">
+                <i class="fas fa-database mr-1"></i> Local Storage
+            </div>
+        </aside>
+
+        <!-- Main Content - scrollable -->
+        <main class="admin-main">
+            <div class="flex items-center justify-between mb-8 flex-wrap gap-3">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                    <i class="fas fa-envelope text-pink-600"></i>
+                    Contact Page Manager
+                </h2>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> <span id="liveTime"></span></span>
+                    <button onclick="resetData()" class="text-sm bg-rose-50 text-rose-600 px-4 py-1.5 rounded-full hover:bg-rose-100 transition">
+                        <i class="fas fa-undo-alt"></i> Reset
+                    </button>
+                    <button onclick="saveData(true)" class="text-sm bg-emerald-50 text-emerald-600 px-4 py-1.5 rounded-full hover:bg-emerald-100 transition">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-admin">
+                <div class="flex items-center justify-between mb-6 flex-wrap gap-2">
+                    <h3 class="font-bold text-lg">Contact Page Content</h3>
+                    <span class="badge-soft" id="sectionCount">0 form fields</span>
+                </div>
+
+                <div class="mb-6 flex flex-wrap gap-2 border-b border-gray-200 pb-4">
+                    <button class="tab-btn active" data-tab="hero" onclick="switchTab('hero')"><i class="fas fa-image mr-1"></i> Hero Banner</button>
+                    <button class="tab-btn" data-tab="content" onclick="switchTab('content')"><i class="fas fa-address-card mr-1"></i> Contact Us Content</button>
+                    <button class="tab-btn" data-tab="form" onclick="switchTab('form')"><i class="fas fa-wpforms mr-1"></i> Contact Form</button>
+                </div>
+
+                <div id="tabContent"></div>
+            </div>
+        </main>
+    </div>
+
+    <div class="toast" id="toast">Saved</div>
+
+    <script>
+        // ============================================================
+        // DATA MODEL — persisted under the shared novena_cms_data key
+        // (matches the key/shape already used by index.html, home.html,
+        // about.html, and services.html)
+        // ============================================================
+        const defaultContactContent = {
+            hero: {
+                image: '/images/b_1.jpg',
+                badge: 'Contact us',
+                heading: 'Get in',
+                headingAccent: 'Touch',
+                subheading: "We're here to help. Reach out to us anytime."
+            },
+            // Shared across the Info Cards row (Call Us / Email Us / Location)
+            // and the left panel of the Contact Us section — both display
+            // the same phone/email/address on the live site.
+            info: {
+                phone: '+91 98765 43210',
+                email: 'contact@mail.com',
+                address: '123, MG Road, New Delhi, India'
+            },
+            // Centered intro above the Contact Us split panel
+            sectionHeader: {
+                badge: 'Get in touch',
+                heading: 'Contact Us',
+                description: "We'd love to hear from you. Send us a message and our healthcare team will get back to you as soon as possible."
+            },
+            // The pink "Visit Our Clinic" panel on the left of the form
+            leftPanel: {
+                heading: 'Visit Our Clinic',
+                description: "We're always happy to welcome you. Visit us during business hours or contact us online for appointments and medical assistance."
+            },
+            form: {
+                fields: [
+                    { label: 'Full Name', type: 'text', placeholder: 'Your Full Name', required: true, options: '' },
+                    { label: 'Email Address', type: 'email', placeholder: 'Your Email Address', required: true, options: '' },
+                    { label: 'Subject', type: 'text', placeholder: 'Subject', required: false, options: '' },
+                    { label: 'Phone Number', type: 'tel', placeholder: 'Phone Number', required: false, options: '' },
+                    { label: 'Message', type: 'textarea', placeholder: 'Write your message...', required: true, options: '' }
+                ]
+            }
+        };
+
+        const defaultOrder = ['hero', 'info-cards', 'contact-form'];
+
+        let appData = {};
+        let currentTab = 'hero';
+
+        function uid() { return 'id' + Math.random().toString(36).slice(2, 9); }
+        function ensureIds(list) { (list || []).forEach(item => { if (!item.id) item.id = uid(); }); return list; }
+
+        // Recursively fills in any keys missing from `target` using `source`
+        // as the template — protects against another admin page (e.g. the
+        // Dashboard) having already written a partial `content.contact`
+        // object into the same shared localStorage key.
+        function deepMerge(target, source) {
+            Object.keys(source).forEach(key => {
+                const srcVal = source[key];
+                if (Array.isArray(srcVal)) {
+                    if (!Array.isArray(target[key])) target[key] = JSON.parse(JSON.stringify(srcVal));
+                } else if (srcVal && typeof srcVal === 'object') {
+                    if (!target[key] || typeof target[key] !== 'object' || Array.isArray(target[key])) target[key] = {};
+                    deepMerge(target[key], srcVal);
+                } else if (!(key in target)) {
+                    target[key] = srcVal;
+                }
+            });
+            return target;
+        }
+
+        function loadData() {
+            const stored = localStorage.getItem('novena_cms_data');
+            try { appData = stored ? JSON.parse(stored) : {}; } catch (e) { appData = {}; }
+            if (!appData.content || typeof appData.content !== 'object') appData.content = {};
+            if (!appData.content.contact || typeof appData.content.contact !== 'object') appData.content.contact = {};
+            deepMerge(appData.content.contact, defaultContactContent);
+            if (!appData.sections || typeof appData.sections !== 'object') appData.sections = {};
+            if (!Array.isArray(appData.sections.contact) || !appData.sections.contact.length) appData.sections.contact = [...defaultOrder];
+            ensureIds(appData.content.contact.form.fields);
+            saveData(false);
+            renderTab();
+        }
+
+        let saveTimer = null;
+        function saveData(showToast) {
+            localStorage.setItem('novena_cms_data', JSON.stringify(appData));
+            document.getElementById('sectionCount').textContent = appData.content.contact.form.fields.length + ' form fields';
+            if (showToast) toast('Saved');
+        }
+        function debounceSave() {
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(() => saveData(false), 500);
+        }
+
+        function toast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            clearTimeout(toast._t);
+            toast._t = setTimeout(() => t.classList.remove('show'), 1600);
+        }
+
+        function resetData() {
+            if (!confirm('Reset the Contact Page content to defaults? This cannot be undone.')) return;
+            appData.content.contact = JSON.parse(JSON.stringify(defaultContactContent));
+            appData.sections.contact = [...defaultOrder];
+            ensureIds(appData.content.contact.form.fields);
+            saveData(true);
+            renderTab();
+        }
+
+        // ============================================================
+        // IMAGE UPLOAD (reads a local file and stores it as a data URL —
+        // no backend required; everything still lives in localStorage)
+        // ============================================================
+        const MAX_UPLOAD_MB = 3;
+        function readFileAsDataURL(fileInput, cb) {
+            const file = fileInput.files && fileInput.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) { alert('Please choose an image file.'); fileInput.value = ''; return; }
+            if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
+                alert(`That image is larger than ${MAX_UPLOAD_MB}MB. Please choose a smaller file, or paste a hosted image URL instead.`);
+                fileInput.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = e => cb(e.target.result);
+            reader.onerror = () => alert('Could not read that file. Please try again.');
+            reader.readAsDataURL(file);
+            fileInput.value = '';
+        }
+
+        // ============================================================
+        // TABS
+        // ============================================================
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+            renderTab();
+        }
+
+        function renderTab() {
+            const container = document.getElementById('tabContent');
+            try {
+                if (currentTab === 'hero') renderHero(container);
+                else if (currentTab === 'content') renderContentTab(container);
+                else if (currentTab === 'form') renderForm(container);
+            } catch (e) {
+                console.error('Render failed:', currentTab, e);
+                container.innerHTML = `<p class="text-sm text-rose-500">Something went wrong rendering this tab. Try Reset if the problem continues.</p>`;
+            }
+        }
+
+        // ============================================================
+        // HERO BANNER
+        // ============================================================
+        function renderHero(container) {
+            const hero = appData.content.contact.hero;
+            container.innerHTML = `
+                <div class="border rounded-xl p-5 bg-gray-50">
+                    <h5 class="font-semibold text-gray-700 mb-4"><i class="fas fa-image text-pink-500 mr-2"></i>Banner Image</h5>
+                    <img id="heroImgPreview" class="mini-preview mb-2" src="${esc(hero.image)}" onerror="this.src='https://placehold.co/900x300?text=Contact+Hero'">
+                    <div class="img-field-row mb-6">
+                        <input id="heroImgInput" type="text" value="${esc(hero.image)}" placeholder="Image URL, or upload →" oninput="updateHero('image', this.value, true)">
+                        <label class="upload-btn" title="Upload image from your device">
+                            <i class="fas fa-upload"></i>
+                            <input type="file" accept="image/*" class="hidden" onchange="uploadHeroImage(this)">
+                        </label>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="field"><label class="field-label">Eyebrow Badge Text</label>
+                            <input type="text" value="${esc(hero.badge)}" oninput="updateHero('badge', this.value)"></div>
+                        <div></div>
+                        <div class="field"><label class="field-label">Heading (line 1)</label>
+                            <input type="text" value="${esc(hero.heading)}" oninput="updateHero('heading', this.value)"></div>
+                        <div class="field"><label class="field-label">Highlighted Word</label>
+                            <input type="text" value="${esc(hero.headingAccent)}" oninput="updateHero('headingAccent', this.value)"></div>
+                        <div class="field md:col-span-2"><label class="field-label">Subheading / Description</label>
+                            <textarea rows="3" oninput="updateHero('subheading', this.value)">${esc(hero.subheading)}</textarea></div>
+                    </div>
+                </div>
+            `;
+        }
+        function updateHero(field, value, isImage) {
+            appData.content.contact.hero[field] = value;
+            debounceSave();
+            if (isImage) document.getElementById('heroImgPreview').src = value;
+        }
+        function uploadHeroImage(fileInput) {
+            readFileAsDataURL(fileInput, dataUrl => {
+                appData.content.contact.hero.image = dataUrl;
+                debounceSave();
+                document.getElementById('heroImgInput').value = dataUrl;
+                document.getElementById('heroImgPreview').src = dataUrl;
+            });
+        }
+
+        // ============================================================
+        // CONTACT US CONTENT (section header + left panel + shared info)
+        // ============================================================
+        function renderContentTab(container) {
+            const c = appData.content.contact;
+            container.innerHTML = `
+                <div class="space-y-5">
+                    <div class="border rounded-xl p-5 bg-gray-50">
+                        <h5 class="font-semibold text-gray-700 mb-3"><i class="fas fa-heading text-pink-500 mr-2"></i>Section Header <span class="text-xs font-normal text-gray-400 normal-case">(centered intro above the form)</span></h5>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div class="field"><label class="field-label">Eyebrow Badge Text</label>
+                                <input type="text" value="${esc(c.sectionHeader.badge)}" oninput="updateNested('sectionHeader','badge',this.value)"></div>
+                            <div class="field"><label class="field-label">Heading</label>
+                                <input type="text" value="${esc(c.sectionHeader.heading)}" oninput="updateNested('sectionHeader','heading',this.value)"></div>
+                            <div class="field md:col-span-2"><label class="field-label">Description</label>
+                                <textarea rows="2" oninput="updateNested('sectionHeader','description',this.value)">${esc(c.sectionHeader.description)}</textarea></div>
+                        </div>
+                    </div>
+
+                    <div class="border rounded-xl p-5 bg-gray-50">
+                        <h5 class="font-semibold text-gray-700 mb-3"><i class="fas fa-map-marked-alt text-pink-500 mr-2"></i>Left Content Area <span class="text-xs font-normal text-gray-400 normal-case">("Visit Our Clinic" panel)</span></h5>
+                        <div class="field"><label class="field-label">Heading</label>
+                            <input type="text" value="${esc(c.leftPanel.heading)}" oninput="updateNested('leftPanel','heading',this.value)"></div>
+                        <div class="field !mb-0"><label class="field-label">Description</label>
+                            <textarea rows="3" oninput="updateNested('leftPanel','description',this.value)">${esc(c.leftPanel.description)}</textarea></div>
+                    </div>
+
+                    <div class="border rounded-xl p-5 bg-gray-50">
+                        <h5 class="font-semibold text-gray-700 mb-3"><i class="fas fa-address-card text-pink-500 mr-2"></i>Contact Details <span class="text-xs font-normal text-gray-400 normal-case">(shown in the info cards and the left panel)</span></h5>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div class="field"><label class="field-label">Phone</label>
+                                <input type="text" value="${esc(c.info.phone)}" oninput="updateNested('info','phone',this.value)"></div>
+                            <div class="field"><label class="field-label">Email</label>
+                                <input type="text" value="${esc(c.info.email)}" oninput="updateNested('info','email',this.value)"></div>
+                            <div class="field md:col-span-2"><label class="field-label">Address</label>
+                                <input type="text" value="${esc(c.info.address)}" oninput="updateNested('info','address',this.value)"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        function updateNested(section, field, value) {
+            appData.content.contact[section][field] = value;
+            debounceSave();
+        }
+
+        // ============================================================
+        // CONTACT FORM BUILDER
+        // ============================================================
+        const FIELD_TYPES = ['text', 'email', 'tel', 'date', 'time', 'select', 'textarea', 'checkbox'];
+        function renderForm(container) {
+            container.innerHTML = `
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400"><i class="fas fa-arrows-alt-v mr-1"></i>Drag the handle to reorder fields</span>
+                    <button class="btn-pink" onclick="addField()"><i class="fas fa-plus mr-1"></i>Add Field</button>
+                </div>
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+                    <div id="fieldsWrap" class="space-y-3"></div>
+                    <div class="xl:sticky xl:top-6">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="badge-soft"><i class="fas fa-eye mr-1"></i>Live Preview</span>
+                            <span class="text-xs text-gray-400">Shown as it will appear on the live page</span>
+                        </div>
+                        <div id="formPreviewWrap" class="rounded-[1.5rem] shadow-lg border border-pink-100/80 overflow-hidden bg-white"></div>
+                    </div>
+                </div>
+            `;
+            renderFields();
+            renderPreview();
+        }
+        function renderFields() {
+            const wrap = document.getElementById('fieldsWrap');
+            const fields = appData.content.contact.form.fields;
+            wrap.innerHTML = fields.map((f, i) => `
+                <div class="card-admin !p-4" data-id="${f.id}">
+                    <div class="flex items-start gap-3">
+                        <i class="fas fa-grip-vertical drag-handle mt-3"></i>
+                        <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-3">
+                            <div class="field !mb-0"><label class="field-label">Field Label</label>
+                                <input type="text" value="${esc(f.label)}" oninput="updateField(${i},'label',this.value)"></div>
+                            <div class="field !mb-0"><label class="field-label">Type</label>
+                                <select onchange="updateField(${i},'type',this.value,true)">
+                                    ${FIELD_TYPES.map(t => `<option value="${t}" ${f.type === t ? 'selected' : ''}>${t}</option>`).join('')}
+                                </select>
+                            </div>
+                            ${f.type !== 'checkbox' ? `<div class="field !mb-0"><label class="field-label">Placeholder</label><input type="text" value="${esc(f.placeholder)}" oninput="updateField(${i},'placeholder',this.value)"></div>` : `<div class="field !mb-0"><label class="field-label">Placeholder</label><input type="text" value="" disabled placeholder="n/a"></div>`}
+                            <div class="field !mb-0 flex items-end gap-2">
+                                <label class="flex items-center gap-2 text-sm text-gray-600 mb-2"><input type="checkbox" style="width:auto" ${f.required ? 'checked' : ''} onchange="updateField(${i},'required',this.checked)"> Required</label>
+                                <button class="btn-danger ml-auto" onclick="removeField(${i})"><i class="fas fa-trash"></i></button>
+                            </div>
+                            ${f.type === 'select' ? `<div class="field !mb-0 md:col-span-4"><label class="field-label">Options (comma separated)</label><input type="text" value="${esc(f.options)}" oninput="updateField(${i},'options',this.value)"></div>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            new Sortable(wrap, { handle: '.drag-handle', animation: 150, onEnd: onFieldReorder });
+        }
+
+        // Renders a non-interactive mock of the real Contact form using the
+        // same look as the live site (rose-tinted inputs, rounded-xl,
+        // pink focus ring) so edits here are easy to sanity-check visually.
+        function renderPreview() {
+            const wrap = document.getElementById('formPreviewWrap');
+            if (!wrap) return;
+            const fields = appData.content.contact.form.fields;
+            const leftPanel = appData.content.contact.leftPanel;
+            const info = appData.content.contact.info;
+
+            const fieldHtml = (f) => {
+                const req = f.required ? '<span class="text-pink-500 ml-0.5">*</span>' : '';
+                const base = 'w-full px-4 py-3 rounded-xl border border-pink-100 bg-rose-50 text-sm text-gray-500 pointer-events-none select-none';
+                let control = '';
+                if (f.type === 'textarea') {
+                    control = `<textarea rows="4" placeholder="${esc(f.placeholder)}" class="${base} resize-none"></textarea>`;
+                } else if (f.type === 'select') {
+                    const opts = (f.options || '').split(',').map(o => o.trim()).filter(Boolean);
+                    control = `<select class="${base}"><option>${esc(f.placeholder || 'Select an option')}</option>${opts.map(o => `<option>${esc(o)}</option>`).join('')}</select>`;
+                } else if (f.type === 'checkbox') {
+                    return `
+                        <div class="sm:col-span-2 flex items-center gap-2 text-sm text-gray-500">
+                            <input type="checkbox" class="pointer-events-none" style="width:auto">
+                            <span>${esc(f.label)}${req}</span>
+                        </div>`;
+                } else {
+                    control = `<input type="${f.type}" placeholder="${esc(f.placeholder)}" class="${base}">`;
+                }
+                return `
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">${esc(f.label)}${req}</label>
+                        ${control}
+                    </div>`;
+            };
+
+            const wideTypes = ['textarea', 'checkbox'];
+            const fieldsMarkup = fields.map(f => `<div class="${wideTypes.includes(f.type) ? 'sm:col-span-2' : ''}">${fieldHtml(f)}</div>`).join('');
+
+            wrap.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-5">
+                    <div class="lg:col-span-2 relative bg-gradient-to-br from-pink-400 via-pink-500 to-rose-400 p-8 flex flex-col justify-between text-white min-h-[20rem] overflow-hidden">
+                        <div class="absolute inset-0 opacity-10"><i class="fas fa-map-marked-alt text-[10rem] absolute -right-6 -bottom-6"></i></div>
+                        <div class="relative z-10">
+                            <h3 class="text-xl font-bold">${esc(leftPanel.heading)}</h3>
+                            <p class="text-pink-50 text-sm mt-2 leading-relaxed">${esc(leftPanel.description)}</p>
+                        </div>
+                        <div class="relative z-10 space-y-3 mt-6 text-sm">
+                            <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"><i class="fas fa-map-pin text-xs"></i></div><p>${esc(info.address)}</p></div>
+                            <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"><i class="fas fa-phone text-xs"></i></div><p>${esc(info.phone)}</p></div>
+                            <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"><i class="fas fa-envelope text-xs"></i></div><p>${esc(info.email)}</p></div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-3 p-6 md:p-8">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">${fieldsMarkup || '<p class="text-sm text-gray-400 sm:col-span-2">No fields yet — use "Add Field" to build the form.</p>'}</div>
+                        <button type="button" class="mt-6 bg-pink-500 text-white px-7 py-3 rounded-full font-semibold shadow-lg shadow-pink-500/20 flex items-center gap-2 pointer-events-none">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateField(i, key, val, rerender) {
+            appData.content.contact.form.fields[i][key] = val;
+            debounceSave();
+            if (rerender) renderFields();
+            renderPreview();
+        }
+        function addField() {
+            appData.content.contact.form.fields.push({ id: uid(), label: 'New Field', type: 'text', placeholder: '', required: false, options: '' });
+            saveData(true);
+            renderFields();
+            renderPreview();
+        }
+        function removeField(i) {
+            if (!confirm('Delete this field?')) return;
+            appData.content.contact.form.fields.splice(i, 1);
+            saveData(true);
+            renderFields();
+            renderPreview();
+        }
+        function onFieldReorder(evt) {
+            const fields = appData.content.contact.form.fields;
+            const moved = fields.splice(evt.oldIndex, 1)[0];
+            fields.splice(evt.newIndex, 0, moved);
+            saveData(true);
+            renderFields();
+            renderPreview();
+        }
+
+        // ============================================================
+        // UTIL
+        // ============================================================
+        function esc(str) {
+            if (str === undefined || str === null) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function updateClock() {
+            document.getElementById('liveTime').textContent = new Date().toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        loadData();
+    </script>
+</body>
+</html>

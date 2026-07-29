@@ -1,0 +1,16 @@
+{
+    "primary": "#0f2b4b",
+    "secondary": "#1a3a5e",
+    "accent": "#ec4899",
+    "text": "#1e293b",
+    "heading": "#0f172a",
+    "background": "#ffffff",
+    "cardBg": "#ffffff",
+    "border": "#e2e8f0",
+    "buttonBg": "#0f2b4b",
+    "buttonText": "#ffffff",
+    "hoverBg": "#1a3a5e",
+    "gradientStart": "#fce7f3",
+    "gradientEnd": "#eef2ff",
+    "shadow": "0 8px 30px rgba(0,0,0,0.04)"
+}

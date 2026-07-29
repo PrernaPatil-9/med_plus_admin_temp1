@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin · Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f4f7fc; }
+        .admin-sidebar { background: #0f2b4b; min-height: 100vh; }
+        .admin-sidebar a { transition: all 0.2s; border-left: 3px solid transparent; display: block; padding: 0.75rem 1rem; color: rgba(255,255,255,0.7); text-decoration: none; }
+        .admin-sidebar a:hover, .admin-sidebar a.active { background: #1a3a5e; border-left-color: #ec4899; color: white; }
+        .card-admin { background: white; border-radius: 1.5rem; box-shadow: 0 8px 30px rgba(0,0,0,0.04); padding: 1.5rem; transition: 0.2s; }
+        .card-admin:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.06); }
+        .badge-soft { background: #f1f5f9; color: #0f2b4b; padding: 0.2rem 0.8rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 500; }
+        .btn-primary { background: #0f2b4b; color: white; border-radius: 2rem; padding: 0.6rem 1.8rem; font-weight: 500; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-primary:hover { background: #1a3a5e; }
+        .btn-pink { background: #ec4899; color: white; border-radius: 2rem; padding: 0.6rem 1.8rem; font-weight: 500; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-pink:hover { background: #db2777; }
+        input, select, textarea { border-radius: 0.75rem; border: 1px solid #e2e8f0; padding: 0.6rem 1rem; width: 100%; transition: 0.2s; }
+        input:focus, select:focus, textarea:focus { border-color: #0f2b4b; outline: none; box-shadow: 0 0 0 3px rgba(15,43,75,0.08); }
+        .chart-container { height: 200px; position: relative; }
+        .stat-trend-up { color: #10b981; }
+        .stat-trend-down { color: #ef4444; }
+        .activity-item { border-left: 3px solid #ec4899; padding-left: 1rem; margin-bottom: 0.75rem; }
+        .activity-item .time { font-size: 0.65rem; color: #94a3b8; }
+        .quick-stat-card { transition: all 0.3s; cursor: default; }
+        .quick-stat-card:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar w-72 flex-shrink-0 text-white p-6">
+            <div class="flex items-center gap-3 pb-6 border-b border-white/10">
+                <div class="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
+                <span class="text-2xl font-bold tracking-tight">Med Plus</span>
+                <span class="ml-auto text-[10px] uppercase bg-pink-600/30 px-2 py-0.5 rounded-full text-pink-200">CMS</span>
+            </div>
+            <nav class="mt-6 space-y-1">
+                <a href="index.html" class="active"><i class="fas fa-th-large w-5"></i> Dashboard</a>
+                <a href="pages/home/home.html"><i class="fas fa-home w-5"></i> Home Page</a>
+                <a href="pages/about/about.html"><i class="fas fa-info-circle w-5"></i> About Page</a>
+                <a href="pages/services/services.html"><i class="fas fa-concierge-bell w-5"></i> Services Page</a>
+                <a href="pages/contact/contact.html"><i class="fas fa-envelope w-5"></i> Contact Page</a>
+                <a href="pages/theme/theme.html"><i class="fas fa-palette w-5"></i> Theme Manager</a>
+                <a href="pages/settings/settings.html"><i class="fas fa-cog w-5"></i> Settings</a>
+                <a href="pages/preview/preview.html"><i class="fas fa-eye w-5"></i> Preview & Save</a>
+            </nav>
+            <div class="pt-6 mt-6 border-t border-white/10 text-xs text-white/40">
+                <i class="fas fa-database mr-1"></i> Local Storage
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                    <i class="fas fa-tachometer-alt text-pink-600"></i>
+                    Dashboard
+                </h2>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> <span id="liveTime"></span></span>
+                    <button onclick="resetAllData()" class="text-sm bg-rose-50 text-rose-600 px-4 py-1.5 rounded-full hover:bg-rose-100 transition">
+                        <i class="fas fa-undo-alt"></i> Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="card-admin quick-stat-card">
+                    <div class="flex items-center justify-between">
+                        <div><p class="text-sm text-gray-500">Pages</p><h3 class="text-2xl font-bold" id="totalPages">4</h3></div>
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600"><i class="fas fa-file-alt text-xl"></i></div>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-400"><i class="fas fa-arrow-up stat-trend-up"></i> <span class="stat-trend-up">+2</span> from last week</div>
+                </div>
+                <div class="card-admin quick-stat-card">
+                    <div class="flex items-center justify-between">
+                        <div><p class="text-sm text-gray-500">Sections</p><h3 class="text-2xl font-bold" id="totalSections">0</h3></div>
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-600"><i class="fas fa-layer-group text-xl"></i></div>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-400"><i class="fas fa-arrow-up stat-trend-up"></i> <span class="stat-trend-up">+8</span> total active</div>
+                </div>
+                <div class="card-admin quick-stat-card">
+                    <div class="flex items-center justify-between">
+                        <div><p class="text-sm text-gray-500">Theme Tokens</p><h3 class="text-2xl font-bold" id="totalTheme">0</h3></div>
+                        <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center text-pink-600"><i class="fas fa-palette text-xl"></i></div>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-400"><i class="fas fa-check-circle text-emerald-500"></i> Fully customizable</div>
+                </div>
+                <div class="card-admin quick-stat-card">
+                    <div class="flex items-center justify-between">
+                        <div><p class="text-sm text-gray-500">Media Assets</p><h3 class="text-2xl font-bold" id="totalMedia">0</h3></div>
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600"><i class="fas fa-image text-xl"></i></div>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-400"><i class="fas fa-arrow-up stat-trend-up"></i> <span class="stat-trend-up">+3</span> new uploads</div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Pie Chart: Content Distribution -->
+                <div class="card-admin">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-semibold text-gray-700"><i class="fas fa-chart-pie text-pink-600 mr-2"></i>Content Distribution</h4>
+                        <span class="badge-soft">by page</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                    <div class="mt-3 flex flex-wrap gap-3 text-xs">
+                        <span><span class="inline-block w-3 h-3 rounded-full bg-blue-500 mr-1"></span> Home</span>
+                        <span><span class="inline-block w-3 h-3 rounded-full bg-purple-500 mr-1"></span> About</span>
+                        <span><span class="inline-block w-3 h-3 rounded-full bg-pink-500 mr-1"></span> Services</span>
+                        <span><span class="inline-block w-3 h-3 rounded-full bg-green-500 mr-1"></span> Contact</span>
+                    </div>
+                </div>
+
+                <!-- Histogram: Section Activity -->
+                <div class="card-admin">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-semibold text-gray-700"><i class="fas fa-chart-bar text-blue-600 mr-2"></i>Sections per Page</h4>
+                        <span class="badge-soft">histogram</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="histogramChart"></canvas>
+                    </div>
+                    <div class="mt-3 text-xs text-gray-400 flex justify-between">
+                        <span>Total: <span id="histTotalSections">0</span> sections</span>
+                        <span>Avg: <span id="histAvgSections">0</span> per page</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions + Activity Feed -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card-admin bg-gradient-to-r from-blue-50 to-indigo-50">
+                    <h4 class="font-semibold text-gray-700 mb-3"><i class="fas fa-edit text-blue-600 mr-2"></i>Quick Edit</h4>
+                    <div class="flex flex-wrap gap-2">
+                        <a href="pages/home/home.html" class="text-sm bg-white px-3 py-1.5 rounded-full border border-gray-200 hover:border-blue-400 transition">Home</a>
+                        <a href="pages/about/about.html" class="text-sm bg-white px-3 py-1.5 rounded-full border border-gray-200 hover:border-blue-400 transition">About</a>
+                        <a href="pages/services/services.html" class="text-sm bg-white px-3 py-1.5 rounded-full border border-gray-200 hover:border-blue-400 transition">Services</a>
+                        <a href="pages/contact/contact.html" class="text-sm bg-white px-3 py-1.5 rounded-full border border-gray-200 hover:border-blue-400 transition">Contact</a>
+                    </div>
+                </div>
+                <div class="card-admin bg-gradient-to-r from-pink-50 to-rose-50">
+                    <h4 class="font-semibold text-gray-700 mb-3"><i class="fas fa-paint-brush text-pink-600 mr-2"></i>Theme</h4>
+                    <div class="flex gap-2">
+                        <a href="pages/theme/theme.html" class="text-sm bg-white px-3 py-1.5 rounded-full border border-gray-200 hover:border-pink-400 transition">
+                            <span class="inline-block w-3 h-3 rounded-full mr-1" style="background:#0f2b4b"></span> Customize
+                        </a>
+                    </div>
+                </div>
+                <div class="card-admin bg-gradient-to-r from-emerald-50 to-teal-50">
+                    <h4 class="font-semibold text-gray-700 mb-3"><i class="fas fa-cog text-emerald-600 mr-2"></i>Actions</h4>
+                    <div class="flex flex-wrap gap-2">
+                        <a href="pages/preview/preview.html" class="text-sm bg-white px-3 py-1.5 rounded-full border border-gray-200 hover:border-emerald-400 transition"><i class="fas fa-eye mr-1"></i> Preview</a>
+                        <button onclick="saveAllData()" class="text-sm bg-white px-3 py-1.5 rounded-full border border-gray-200 hover:border-emerald-400 transition"><i class="fas fa-save mr-1"></i> Save</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Feed & System Status -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div class="card-admin">
+                    <h4 class="font-semibold text-gray-700 mb-4"><i class="fas fa-clock text-gray-500 mr-2"></i>Recent Activity</h4>
+                    <div id="activityFeed">
+                        <div class="activity-item">
+                            <p class="text-sm text-gray-700">📝 Home page content updated</p>
+                            <span class="time"><i class="far fa-clock mr-1"></i> 2 minutes ago</span>
+                        </div>
+                        <div class="activity-item">
+                            <p class="text-sm text-gray-700">🎨 Theme colors modified</p>
+                            <span class="time"><i class="far fa-clock mr-1"></i> 15 minutes ago</span>
+                        </div>
+                        <div class="activity-item">
+                            <p class="text-sm text-gray-700">🖼️ New hero banner uploaded</p>
+                            <span class="time"><i class="far fa-clock mr-1"></i> 1 hour ago</span>
+                        </div>
+                        <div class="activity-item">
+                            <p class="text-sm text-gray-700">📄 About page section reordered</p>
+                            <span class="time"><i class="far fa-clock mr-1"></i> 3 hours ago</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-admin">
+                    <h4 class="font-semibold text-gray-700 mb-4"><i class="fas fa-server text-gray-500 mr-2"></i>System Status</h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                            <span class="text-sm"><i class="fas fa-database text-green-500 mr-2"></i>Local Storage</span>
+                            <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Active</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                            <span class="text-sm"><i class="fas fa-cloud text-blue-500 mr-2"></i>Data Sync</span>
+                            <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full">Offline</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                            <span class="text-sm"><i class="fas fa-shield-alt text-emerald-500 mr-2"></i>Security</span>
+                            <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Protected</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                            <span class="text-sm"><i class="fas fa-upload text-purple-500 mr-2"></i>Backup</span>
+                            <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Auto</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 text-xs text-gray-400 flex items-center justify-between">
+                <span><i class="fas fa-database mr-1"></i> Data stored in LocalStorage</span>
+                <span><i class="fas fa-sync-alt mr-1"></i> Last saved: <span id="lastSaved">Just now</span></span>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // ===== DATA =====
+        const defaultData = {
+            pages: ['home', 'about', 'services', 'contact'],
+            sections: {
+                home: ['hero', 'features', 'partners', 'about', 'counters', 'services', 'appointment', 'testimonials'],
+                about: ['hero', 'intro', 'features', 'awards', 'team', 'testimonials'],
+                services: ['hero', 'services-grid'],
+                contact: ['hero', 'info-cards', 'contact-form']
+            },
+            content: {
+                home: { hero: { heading: 'Your most trusted health partner', subheading: 'Total health care solution' } },
+                about: { hero: { heading: 'Caring beyond boundaries', subheading: 'About us' } },
+                services: { hero: { heading: 'What We Do', subheading: 'Our services' } },
+                contact: { hero: { heading: 'Get in Touch', subheading: 'Contact us' } }
+            },
+            media: { logos: { main: 'M', text: 'Med Plus' }, heroBanners: ['/images/b_1.jpg', '/images/b_2.jpg', '/images/b_3.jpg'] },
+            theme: { primary: '#0f2b4b', secondary: '#1a3a5e', accent: '#ec4899', text: '#1e293b', heading: '#0f172a', background: '#ffffff' },
+            header: { logoText: 'Med Plus', menu: ['Home', 'About', 'Services', 'Contact'], cta: 'Book Appointment' },
+            footer: { copyright: 'Med Plus', contact: { phone: '+91 98765 43210', email: 'Support@email.com', address: '123, MG Road, New Delhi' } },
+            global: { siteName: 'Novena · Health & Care', favicon: '', email: 'contact@mail.com', phone: '+91 98765 43210' },
+            responsive: { desktop: { fontSize: '16px', spacing: '1.5rem' }, tablet: { fontSize: '14px', spacing: '1rem' }, mobile: { fontSize: '12px', spacing: '0.75rem' } }
+        };
+
+        let appData = {};
+        let pieChartInstance = null;
+        let histogramInstance = null;
+
+        function loadData() {
+            const stored = localStorage.getItem('novena_cms_data');
+            if (stored) {
+                try { appData = JSON.parse(stored); } catch(e) { appData = JSON.parse(JSON.stringify(defaultData)); }
+            } else { appData = JSON.parse(JSON.stringify(defaultData)); }
+            saveData();
+            updateStats();
+            updateCharts();
+            updateActivityFeed();
+        }
+
+        function saveData() {
+            localStorage.setItem('novena_cms_data', JSON.stringify(appData));
+            document.getElementById('lastSaved').textContent = new Date().toLocaleTimeString();
+        }
+
+        function saveAllData() {
+            saveData();
+            alert('All data saved to LocalStorage!');
+        }
+
+        function resetAllData() {
+            if (confirm('Reset all data?')) {
+                appData = JSON.parse(JSON.stringify(defaultData));
+                saveData();
+                updateStats();
+                updateCharts();
+                updateActivityFeed();
+                alert('Data reset!');
+            }
+        }
+
+        function updateStats() {
+            const totalSections = Object.values(appData.sections).reduce((a, b) => a + b.length, 0);
+            document.getElementById('totalPages').textContent = appData.pages.length;
+            document.getElementById('totalSections').textContent = totalSections;
+            document.getElementById('totalTheme').textContent = Object.keys(appData.theme).length;
+            document.getElementById('totalMedia').textContent = appData.media.heroBanners.length + 2;
+            document.getElementById('histTotalSections').textContent = totalSections;
+            document.getElementById('histAvgSections').textContent = (totalSections / appData.pages.length).toFixed(1);
+        }
+
+        function updateCharts() {
+            const pageNames = appData.pages.map(p => p.charAt(0).toUpperCase() + p.slice(1));
+            const sectionCounts = appData.pages.map(p => appData.sections[p] ? appData.sections[p].length : 0);
+            
+            // Colors for charts
+            const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981'];
+            
+            // Pie Chart
+            const pieCtx = document.getElementById('pieChart').getContext('2d');
+            if (pieChartInstance) pieChartInstance.destroy();
+            pieChartInstance = new Chart(pieCtx, {
+                type: 'pie',
+                data: {
+                    labels: pageNames,
+                    datasets: [{
+                        data: sectionCounts,
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+
+            // Histogram
+            const histCtx = document.getElementById('histogramChart').getContext('2d');
+            if (histogramInstance) histogramInstance.destroy();
+            histogramInstance = new Chart(histCtx, {
+                type: 'bar',
+                data: {
+                    labels: pageNames,
+                    datasets: [{
+                        label: 'Sections',
+                        data: sectionCounts,
+                        backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981'],
+                        borderRadius: 6,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateActivityFeed() {
+            const activities = [
+                { text: '📝 Home page content updated', time: '2 minutes ago' },
+                { text: '🎨 Theme colors modified', time: '15 minutes ago' },
+                { text: '🖼️ New hero banner uploaded', time: '1 hour ago' },
+                { text: '📄 About page section reordered', time: '3 hours ago' },
+                { text: '💾 Data backup completed', time: '5 hours ago' },
+                { text: '🔗 New partner logo added', time: 'Yesterday' }
+            ];
+            const feed = document.getElementById('activityFeed');
+            feed.innerHTML = activities.map(a => `
+                <div class="activity-item">
+                    <p class="text-sm text-gray-700">${a.text}</p>
+                    <span class="time"><i class="far fa-clock mr-1"></i> ${a.time}</span>
+                </div>
+            `).join('');
+        }
+
+        function updateClock() {
+            document.getElementById('liveTime').textContent = new Date().toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Auto-refresh charts on resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                if (pieChartInstance) pieChartInstance.resize();
+                if (histogramInstance) histogramInstance.resize();
+            }, 200);
+        });
+
+        loadData();
+    </script>
+</body>
+</html>
