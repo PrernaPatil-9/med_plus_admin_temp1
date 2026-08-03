@@ -70,27 +70,149 @@
 </head>
 <body>
     <div class="admin-container">
-        <!-- Sidebar - sticky -->
-        <aside class="admin-sidebar text-white p-6">
-            <div class="flex items-center gap-3 pb-6 border-b border-white/10">
-                <div class="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
-                <span class="text-2xl font-bold tracking-tight">Med Plus</span>
-                <span class="ml-auto text-[10px] uppercase bg-pink-600/30 px-2 py-0.5 rounded-full text-pink-200">CMS</span>
-            </div>
-            <nav class="mt-6 space-y-1">
-                <a href="../../index.html"><i class="fas fa-th-large w-5"></i> Dashboard</a>
-                <a href="../home/home.html"><i class="fas fa-home w-5"></i> Home Page</a>
-                <a href="../about/about.html"><i class="fas fa-info-circle w-5"></i> About Page</a>
-                <a href="../services/services.html"><i class="fas fa-concierge-bell w-5"></i> Services Page</a>
-                <a href="contact.html" class="active"><i class="fas fa-envelope w-5"></i> Contact Page</a>
-                <!-- <a href="../theme/theme.html"><i class="fas fa-palette w-5"></i> Theme Manager</a> -->
-                <a href="../settings/settings.html"><i class="fas fa-cog w-5"></i> Settings</a>
-                <a href="../preview/preview.html"><i class="fas fa-eye w-5"></i> Preview & Save</a>
-            </nav>
-            <div class="pt-6 mt-6 border-t border-white/10 text-xs text-white/40">
-                <i class="fas fa-database mr-1"></i> Local Storage
-            </div>
-        </aside>
+<!-- Sidebar - sticky -->
+<aside class="admin-sidebar text-white p-6">
+  <div class="flex items-center gap-3 pb-6 border-b border-white/10">
+    <div class="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
+    <span class="text-2xl font-bold tracking-tight">Med Plus</span>
+    <span class="ml-auto text-[10px] uppercase bg-pink-600/30 px-2 py-0.5 rounded-full text-pink-200">CMS</span>
+  </div>
+  <nav class="mt-6 space-y-1">
+    <a href="../../index.html"><i class="fas fa-th-large w-5"></i> Dashboard</a>
+    
+    <!-- Home Page with Dropdown - Closed by default -->
+    <div class="admin-dropdown">
+      <a href="home.html" class="block px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition" onclick="toggleAdminDropdown(event)">
+        <span><i class="fas fa-home w-5"></i> Home Page</span>
+        <i class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
+      </a>
+      <div class="admin-dropdown-menu hidden ml-7 mt-1 space-y-0.5">
+        <a href="/pages/home/home.html" class="block px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition">
+          <i class="fas fa-file-alt w-4 mr-2"></i> Home 
+        </a>
+        <a href="/pages/home/home1.html" class="block px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition">
+          <i class="fas fa-file-alt w-4 mr-2"></i> Home 1
+        </a>
+        <a href="/pages/home/home2.html" class="block px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition">
+          <i class="fas fa-file-alt w-4 mr-2"></i> Home 2
+        </a>
+        <a href="/pages/home/home3.html" class="block px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition">
+          <i class="fas fa-file-alt w-4 mr-2"></i> Home 3
+        </a>
+      </div>
+    </div>
+
+    <a href="../about/about.html"><i class="fas fa-info-circle w-5"></i> About Page</a>
+    <a href="../services/services.html"><i class="fas fa-concierge-bell w-5"></i> Services Page</a>
+    <a href="../contact/contact.html" class="block px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition active"><i class="fas fa-envelope w-5"></i> Contact Page</a>
+    <a href="../theme/theme.html"><i class="fas fa-palette w-5"></i> Theme Manager</a>
+    <a href="../settings/settings.html"><i class="fas fa-cog w-5"></i> Settings</a>
+    <!-- <a href="../preview/preview.html"><i class="fas fa-eye w-5"></i> Preview & Save</a> -->
+  </nav>
+  <div class="pt-6 mt-6 border-t border-white/10 text-xs text-white/40">
+    <i class="fas fa-database mr-1"></i> Local Storage
+  </div>
+</aside>
+
+<!-- Admin Dropdown JavaScript -->
+<script>
+function toggleAdminDropdown(event) {
+  event.preventDefault();
+  const parent = event.currentTarget.closest('.admin-dropdown');
+  const menu = parent.querySelector('.admin-dropdown-menu');
+  const icon = parent.querySelector('.fa-chevron-down');
+  
+  menu.classList.toggle('hidden');
+  icon.classList.toggle('rotate-180');
+}
+
+// Keep dropdown closed by default - No auto-expand
+</script>
+
+<style>
+.admin-sidebar {
+  background: linear-gradient(180deg, #0b4f6c 0%, #062a3a 100%);
+  min-height: 100vh;
+  width: 280px;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.admin-sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.admin-sidebar a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+}
+
+.admin-sidebar a.active {
+  background: rgba(236, 72, 153, 0.2);
+  color: white;
+  border-left: 3px solid #ec4899;
+}
+
+.admin-sidebar .admin-dropdown > a {
+  cursor: pointer;
+}
+
+.admin-sidebar .admin-dropdown-menu {
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.admin-sidebar .admin-dropdown-menu a {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.admin-sidebar .admin-dropdown-menu a:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: white;
+}
+
+.admin-sidebar .admin-dropdown-menu a.active {
+  background: rgba(236, 72, 153, 0.15);
+  color: white;
+  border-left: 2px solid #ec4899;
+}
+
+.fa-chevron-down {
+  transition: transform 0.3s ease;
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+/* Scrollbar styling */
+.admin-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.admin-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.admin-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+/* Hide dropdown by default */
+.admin-dropdown-menu.hidden {
+  display: none;
+}
+</style>
 
         <!-- Main Content - scrollable -->
         <main class="admin-main">

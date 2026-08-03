@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · Home 1 Page (Theme 1) – Full Control</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #f4f7fc; margin: 0; height: 100vh; overflow: hidden; }
+    .admin-container { display: flex; height: 100vh; overflow: hidden; }
+    .admin-sidebar {
+      background: linear-gradient(180deg, #0b4f6c 0%, #062a3a 100%);
+      width: 280px;
+      flex-shrink: 0;
+      height: 100vh;
+      overflow-y: auto;
+      position: sticky;
+      top: 0;
+      padding: 1.5rem 1.25rem;
+      color: white;
+    }
+    .admin-sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      color: rgba(255,255,255,0.6);
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+      text-decoration: none;
+    }
+    .admin-sidebar a:hover { background: rgba(255,255,255,0.08); color: white; }
+    .admin-sidebar a.active { background: rgba(236,72,153,0.2); color: white; border-left: 3px solid #ec4899; }
+    .admin-sidebar .admin-dropdown > a { cursor: pointer; }
+    .admin-sidebar .admin-dropdown-menu { overflow: hidden; transition: all 0.3s ease; }
+    .admin-sidebar .admin-dropdown-menu a { padding: 0.5rem 1rem; font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+    .admin-sidebar .admin-dropdown-menu a:hover { background: rgba(255,255,255,0.06); color: white; }
+    .admin-sidebar .admin-dropdown-menu a.active { background: rgba(236,72,153,0.15); color: white; border-left: 2px solid #ec4899; }
+    .fa-chevron-down { transition: transform 0.3s ease; }
+    .rotate-180 { transform: rotate(180deg); }
+    .admin-sidebar::-webkit-scrollbar { width: 4px; }
+    .admin-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+    .admin-main { flex: 1; overflow-y: auto; height: 100vh; padding: 1.5rem 2.5rem; }
+    .card-admin { background: white; border-radius: 1.5rem; box-shadow: 0 8px 30px rgba(0,0,0,0.04); padding: 1.5rem; transition: 0.2s; }
+    .card-admin:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.06); }
+    .badge-soft { background: #f1f5f9; color: #0f2b4b; padding: 0.2rem 0.8rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 500; }
+    .btn-primary { background: #0f2b4b; color: white; border-radius: 2rem; padding: 0.6rem 1.8rem; font-weight: 500; border: none; cursor: pointer; transition: 0.2s; }
+    .btn-primary:hover { background: #1a3a5e; }
+    .btn-pink { background: #ec4899; color: white; border-radius: 2rem; padding: 0.6rem 1.8rem; font-weight: 500; border: none; cursor: pointer; transition: 0.2s; }
+    .btn-pink:hover { background: #db2777; }
+    .btn-ghost { background: white; color: #0f2b4b; border-radius: 2rem; padding: 0.5rem 1.2rem; font-weight: 500; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.2s; font-size: 0.8rem; }
+    .btn-ghost:hover { border-color: #0f2b4b; }
+    .btn-danger { background: #fff1f2; color: #e11d48; border-radius: 2rem; padding: 0.45rem 1rem; font-weight: 500; border: none; cursor: pointer; transition: 0.2s; font-size: 0.75rem; }
+    .btn-danger:hover { background: #ffe4e6; }
+    input, select, textarea { border-radius: 0.75rem; border: 1px solid #e2e8f0; padding: 0.6rem 1rem; width: 100%; transition: 0.2s; font-size: 0.875rem; }
+    input:focus, select:focus, textarea:focus { border-color: #0f2b4b; outline: none; box-shadow: 0 0 0 3px rgba(15,43,75,0.08); }
+    label.field-label { display: block; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; color: #64748b; margin-bottom: 0.35rem; }
+    .field { margin-bottom: 0.9rem; }
+    .subtab-btn { padding: 0.55rem 1.1rem; border-radius: 0.85rem; font-size: 0.83rem; font-weight: 500; color: #475569; cursor: pointer; transition: 0.15s; white-space: nowrap; }
+    .subtab-btn:hover { background: #f1f5f9; }
+    .subtab-btn.active { background: #0f2b4b; color: white; }
+    .drag-handle { cursor: grab; color: #94a3b8; }
+    .drag-handle:active { cursor: grabbing; }
+    .sortable-ghost { opacity: 0.35; }
+    .sortable-drag { box-shadow: 0 12px 30px rgba(0,0,0,0.15); }
+    .mini-preview { width: 100%; height: 90px; object-fit: cover; border-radius: 0.6rem; background: #f1f5f9; border: 1px solid #e2e8f0; }
+    .upload-btn { flex-shrink: 0; width: 2.6rem; height: 2.6rem; border-radius: 0.75rem; border: 1px solid #e2e8f0; background: white; color: #0f2b4b; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+    .upload-btn:hover { border-color: #0f2b4b; background: #f8fafc; }
+    .img-field-row { display: flex; gap: 0.5rem; align-items: stretch; }
+    .img-field-row input[type="text"] { flex: 1; }
+    .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: #0f2b4b; color: white; padding: 0.7rem 1.4rem; border-radius: 0.85rem; font-size: 0.85rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 100; opacity: 0; transform: translateY(10px); transition: 0.25s; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .section-panel { display: none; }
+    .section-panel.active { display: block; }
+    .order-item { background: white; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 0.9rem 1.1rem; display: flex; align-items: center; gap: 0.9rem; margin-bottom: 0.6rem; }
+    .order-item.locked { background: #f8fafc; }
+    .color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.8rem; }
+    .color-item input[type="color"] { width: 100%; height: 2.8rem; border: none; padding: 0; cursor: pointer; border-radius: 0.6rem; }
+    .color-item label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: #64748b; display: block; margin-bottom: 0.2rem; }
+    .header-footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 768px) { .header-footer-grid { grid-template-columns: 1fr; } }
+    /* Live Preview - exact Theme 1 styles */
+    .lp-hero-slide { background-size: cover; background-position: center; padding: 3rem 2rem; border-radius: 1rem; color: white; position: relative; min-height: 250px; }
+    .lp-hero-slide .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); border-radius: 1rem; }
+    .lp-hero-slide .content { position: relative; z-index: 2; }
+    .lp-service-card { background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform .3s, box-shadow .3s; text-align: center; }
+    .lp-service-card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
+    .lp-service-card .icon { width: 70px; height: 70px; background: #f0f8ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 2rem; color: #1089ff; }
+    .lp-feature-card { padding: 1.5rem; border-radius: 1rem; transition: all .3s; border: 1px solid #e2e8f0; }
+    .lp-feature-card:hover { background: white; box-shadow: 0 12px 28px rgba(0,0,0,0.06); }
+    .lp-testimonial { background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: all .3s; }
+    .lp-testimonial:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.08); }
+    .lp-testimonial.dark { background: #1089ff; color: white; }
+    .lp-testimonial.dark p { color: rgba(255,255,255,0.85); }
+    .lp-footer { background: #1a202c; padding: 2rem 1.5rem; border-radius: 1rem; color: #94a3b8; margin-top: 1.5rem; }
+    .lp-footer h4 { color: white; font-weight: 600; margin-bottom: 0.5rem; }
+    .lp-footer a { color: #94a3b8; text-decoration: none; display: block; padding: 0.2rem 0; }
+    .lp-footer a:hover { color: white; }
+    .lp-footer .copyright { text-align: center; border-top: 1px solid #334155; padding-top: 1rem; margin-top: 1rem; font-size: 0.8rem; }
+    .lp-partner { background: white; border-radius: 0.75rem; padding: 1rem; display: flex; align-items: center; justify-content: center; height: 80px; border: 1px solid #e2e8f0; transition: all .3s; }
+    .lp-partner:hover { transform: scale(1.03); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+    .lp-counter { text-align: center; color: white; padding: 1rem; }
+    .lp-counter .number { font-size: 2.5rem; font-weight: 700; }
+    .lp-doctor-card { text-align: center; background: #f8fafc; padding: 1rem; border-radius: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .lp-doctor-card .img { width: 100%; height: 180px; background-size: cover; background-position: top; border-radius: 0.5rem; }
+    .lp-pricing-card { background: #f8fafc; padding: 1.5rem; border-radius: 0.75rem; text-align: center; transition: all .3s; }
+    .lp-pricing-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.08); }
+    .lp-pricing-card.active { background: #1089ff; color: white; }
+    .lp-pricing-card.active .text-gray-500 { color: rgba(255,255,255,0.7); }
+    .lp-pricing-card.active .text-primary { color: white; }
+    .lp-pricing-card.active .border-primary { border-color: white; }
+    .lp-gallery-img { height: 150px; background-size: cover; background-position: center; border-radius: 0.5rem; transition: all .3s; cursor: pointer; }
+    .lp-gallery-img:hover { transform: scale(1.02); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+    .lp-blog-card { background: #f8fafc; border-radius: 0.75rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all .3s; }
+    .lp-blog-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.08); }
+    .lp-blog-card .img { height: 140px; background-size: cover; background-position: center; }
+  </style>
+</head>
+<body>
+<div class="admin-container">
+<!-- Sidebar - sticky -->
+<aside class="admin-sidebar text-white p-6">
+  <div class="flex items-center gap-3 pb-6 border-b border-white/10">
+    <div class="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
+    <span class="text-2xl font-bold tracking-tight">Med Plus</span>
+    <span class="ml-auto text-[10px] uppercase bg-pink-600/30 px-2 py-0.5 rounded-full text-pink-200">CMS</span>
+  </div>
+  <nav class="mt-6 space-y-1">
+    <a href="../../index.html"><i class="fas fa-th-large w-5"></i> Dashboard</a>
+    
+    <!-- Home Page with Dropdown - Closed by default -->
+    <div class="admin-dropdown">
+      <a href="home.html" class="active flex items-center justify-between" onclick="toggleAdminDropdown(event)">
+        <span><i class="fas fa-home w-5"></i> Home Page</span>
+        <i class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
+      </a>
+      <div class="admin-dropdown-menu hidden ml-7 mt-1 space-y-0.5">
+        <a href="home.html" class="block px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition">
+          <i class="fas fa-file-alt w-4 mr-2"></i> Home 
+        </a>
+        <a href="home1.html" class="block px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition active">
+          <i class="fas fa-file-alt w-4 mr-2"></i> Home 1
+        </a>
+        <a href="home2.html" class="block px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition">
+          <i class="fas fa-file-alt w-4 mr-2"></i> Home 2
+        </a>
+        <a href="home3.html" class="block px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition">
+          <i class="fas fa-file-alt w-4 mr-2"></i> Home 3
+        </a>
+      </div>
+    </div>
+
+    <a href="../about/about.html"><i class="fas fa-info-circle w-5"></i> About Page</a>
+    <a href="../services/services.html"><i class="fas fa-concierge-bell w-5"></i> Services Page</a>
+    <a href="../contact/contact.html"><i class="fas fa-envelope w-5"></i> Contact Page</a>
+    <a href="../theme/theme.html"><i class="fas fa-palette w-5"></i> Theme Manager</a>
+    <a href="../settings/settings.html"><i class="fas fa-cog w-5"></i> Settings</a>
+    <!-- <a href="../preview/preview.html"><i class="fas fa-eye w-5"></i> Preview & Save</a> -->
+  </nav>
+  <div class="pt-6 mt-6 border-t border-white/10 text-xs text-white/40">
+    <i class="fas fa-database mr-1"></i> Local Storage
+  </div>
+</aside>
+
+<!-- Admin Dropdown JavaScript -->
+<script>
+function toggleAdminDropdown(event) {
+  event.preventDefault();
+  const parent = event.currentTarget.closest('.admin-dropdown');
+  const menu = parent.querySelector('.admin-dropdown-menu');
+  const icon = parent.querySelector('.fa-chevron-down');
+  
+  menu.classList.toggle('hidden');
+  icon.classList.toggle('rotate-180');
+}
+
+// Keep dropdown closed by default - No auto-expand
+</script>
+
+<style>
+.admin-sidebar {
+  background: linear-gradient(180deg, #0b4f6c 0%, #062a3a 100%);
+  min-height: 100vh;
+  width: 280px;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.admin-sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.admin-sidebar a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+}
+
+.admin-sidebar a.active {
+  background: rgba(236, 72, 153, 0.2);
+  color: white;
+  border-left: 3px solid #ec4899;
+}
+
+.admin-sidebar .admin-dropdown > a {
+  cursor: pointer;
+}
+
+.admin-sidebar .admin-dropdown-menu {
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.admin-sidebar .admin-dropdown-menu a {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.admin-sidebar .admin-dropdown-menu a:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: white;
+}
+
+.admin-sidebar .admin-dropdown-menu a.active {
+  background: rgba(236, 72, 153, 0.15);
+  color: white;
+  border-left: 2px solid #ec4899;
+}
+
+.fa-chevron-down {
+  transition: transform 0.3s ease;
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+/* Scrollbar styling */
+.admin-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.admin-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.admin-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+/* Hide dropdown by default */
+.admin-dropdown-menu.hidden {
+  display: none;
+}
+</style>
+
+  <!-- MAIN CONTENT -->
+  <main class="admin-main">
+    <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+          <i class="fas fa-home text-pink-600"></i> Home Page (Theme 1) – Full Control
+        </h2>
+        <p class="text-sm text-gray-400 mt-1">Manage Hero, Features, Partners, About, Counters, Services, Doctors, Pricing, Gallery, Blog, Quote Form, Header, Footer & Theme.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="text-xs text-gray-400"><i class="fas fa-sync-alt mr-1"></i>Saved <span id="lastSavedTime">just now</span></span>
+        <a href="#" class="btn-ghost"><i class="fas fa-eye mr-1"></i> Preview</a>
+        <button onclick="resetHomeData()" class="btn-ghost text-rose-600"><i class="fas fa-undo-alt mr-1"></i> Reset</button>
+        <button onclick="saveAll(true)" class="btn-pink"><i class="fas fa-save mr-1"></i> Save Changes</button>
+      </div>
+    </div>
+
+    <!-- Sub-tabs -->
+    <div class="card-admin !p-3 mb-6 flex items-center gap-1 overflow-x-auto flex-wrap">
+      <div class="subtab-btn active" data-tab="hero" onclick="switchTab('hero')"><i class="fas fa-images mr-1.5"></i>Hero</div>
+      <div class="subtab-btn" data-tab="features" onclick="switchTab('features')"><i class="fas fa-th-large mr-1.5"></i>Features</div>
+      <div class="subtab-btn" data-tab="partners" onclick="switchTab('partners')"><i class="fas fa-handshake mr-1.5"></i>Partners</div>
+      <div class="subtab-btn" data-tab="about" onclick="switchTab('about')"><i class="fas fa-info-circle mr-1.5"></i>About</div>
+      <div class="subtab-btn" data-tab="counters" onclick="switchTab('counters')"><i class="fas fa-sort-numeric-up mr-1.5"></i>Counters</div>
+      <div class="subtab-btn" data-tab="services" onclick="switchTab('services')"><i class="fas fa-briefcase-medical mr-1.5"></i>Services</div>
+      <div class="subtab-btn" data-tab="doctors" onclick="switchTab('doctors')"><i class="fas fa-user-md mr-1.5"></i>Doctors</div>
+      <div class="subtab-btn" data-tab="pricing" onclick="switchTab('pricing')"><i class="fas fa-tag mr-1.5"></i>Pricing</div>
+      <div class="subtab-btn" data-tab="gallery" onclick="switchTab('gallery')"><i class="fas fa-images mr-1.5"></i>Gallery</div>
+      <div class="subtab-btn" data-tab="blog" onclick="switchTab('blog')"><i class="fas fa-newspaper mr-1.5"></i>Blog</div>
+      <div class="subtab-btn" data-tab="quote" onclick="switchTab('quote')"><i class="fas fa-pen mr-1.5"></i>Quote Form</div>
+      <div class="subtab-btn" data-tab="theme" onclick="switchTab('theme')"><i class="fas fa-palette mr-1.5"></i>Theme</div>
+      <div class="subtab-btn" data-tab="header" onclick="switchTab('header')"><i class="fas fa-heading mr-1.5"></i>Header</div>
+      <div class="subtab-btn" data-tab="footer" onclick="switchTab('footer')"><i class="fas fa-copyright mr-1.5"></i>Footer</div>
+      <div class="subtab-btn" data-tab="order" onclick="switchTab('order')"><i class="fas fa-arrows-alt-v mr-1.5"></i>Order</div>
+      <div class="subtab-btn" data-tab="preview" onclick="switchTab('preview')"><i class="fas fa-eye mr-1.5"></i>Live Preview</div>
+    </div>
+
+    <!-- HERO -->
+    <div class="section-panel active" id="panel-hero">
+      <div class="flex items-center justify-between mb-4"><h3 class="font-semibold text-gray-700 text-lg">Hero Banner Slider <span class="badge-soft ml-1">3 slides</span></h3></div>
+      <div id="heroBannersWrap" class="grid grid-cols-1 xl:grid-cols-3 gap-5"></div>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="section-panel" id="panel-features">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-semibold text-gray-700 text-lg">Features Section <span class="badge-soft ml-1">3 cards</span></h3>
+        <span class="text-xs text-gray-400"><i class="fas fa-arrows-alt-v mr-1"></i>Drag to reorder</span>
+      </div>
+      <div id="featuresWrap" class="space-y-4"></div>
+    </div>
+
+    <!-- PARTNERS -->
+    <div class="section-panel" id="panel-partners">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <h3 class="font-semibold text-gray-700 text-lg">Partners Section</h3>
+        <button class="btn-pink !py-2 !px-4 text-sm" onclick="addPartner()"><i class="fas fa-plus mr-1"></i>Add Logo</button>
+      </div>
+      <div id="partnersWrap" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="section-panel" id="panel-about">
+      <h3 class="font-semibold text-gray-700 text-lg mb-4">About Section</h3>
+      <div class="card-admin grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+          <div class="field"><label class="field-label">Image 1</label>
+            <div class="img-field-row"><input id="aboutImg1" oninput="onAboutInput('image1', this.value)"><label class="upload-btn"><i class="fas fa-upload"></i><input type="file" accept="image/*" class="hidden" onchange="uploadAboutImage('image1', this)"></label></div>
+            <img id="aboutImg1Preview" class="mini-preview mt-2" src="">
+          </div>
+          <div class="field"><label class="field-label">Image 2</label>
+            <div class="img-field-row"><input id="aboutImg2" oninput="onAboutInput('image2', this.value)"><label class="upload-btn"><i class="fas fa-upload"></i><input type="file" accept="image/*" class="hidden" onchange="uploadAboutImage('image2', this)"></label></div>
+            <img id="aboutImg2Preview" class="mini-preview mt-2" src="">
+          </div>
+          <div class="field"><label class="field-label">Main Image</label>
+            <div class="img-field-row"><input id="aboutMainImg" oninput="onAboutInput('mainImage', this.value)"><label class="upload-btn"><i class="fas fa-upload"></i><input type="file" accept="image/*" class="hidden" onchange="uploadAboutImage('mainImage', this)"></label></div>
+            <img id="aboutMainPreview" class="mini-preview mt-2" src="">
+          </div>
+        </div>
+        <div>
+          <div class="field"><label class="field-label">Heading</label><input id="aboutHeading" oninput="onAboutInput('heading', this.value)"></div>
+          <div class="field"><label class="field-label">Heading Accent</label><input id="aboutHeadingAccent" oninput="onAboutInput('headingAccent', this.value)"></div>
+          <div class="field"><label class="field-label">Body Text</label><textarea id="aboutText" rows="3" oninput="onAboutInput('text', this.value)"></textarea></div>
+          <div class="field"><label class="field-label">Button Label</label><input id="aboutButton" oninput="onAboutInput('buttonText', this.value)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COUNTERS -->
+    <div class="section-panel" id="panel-counters">
+      <h3 class="font-semibold text-gray-700 text-lg mb-4">Counters Section</h3>
+      <div class="card-admin grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div><label class="field-label">Label 1</label><input id="counterLabel1" oninput="onCounterInput('label1', this.value)"><label class="field-label mt-2">Value 1</label><input id="counterValue1" oninput="onCounterInput('value1', this.value)"></div>
+        <div><label class="field-label">Label 2</label><input id="counterLabel2" oninput="onCounterInput('label2', this.value)"><label class="field-label mt-2">Value 2</label><input id="counterValue2" oninput="onCounterInput('value2', this.value)"></div>
+        <div><label class="field-label">Label 3</label><input id="counterLabel3" oninput="onCounterInput('label3', this.value)"><label class="field-label mt-2">Value 3</label><input id="counterValue3" oninput="onCounterInput('value3', this.value)"></div>
+        <div><label class="field-label">Label 4</label><input id="counterLabel4" oninput="onCounterInput('label4', this.value)"><label class="field-label mt-2">Value 4</label><input id="counterValue4" oninput="onCounterInput('value4', this.value)"></div>
+      </div>
+    </div>
+
+    <!-- SERVICES -->
+    <div class="section-panel" id="panel-services">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <h3 class="font-semibold text-gray-700 text-lg">Services</h3>
+        <button class="btn-pink !py-2 !px-4 text-sm" onclick="addService()"><i class="fas fa-plus mr-1"></i>Add Service</button>
+      </div>
+      <div id="servicesWrap" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </div>
+
+    <!-- DOCTORS -->
+    <div class="section-panel" id="panel-doctors">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <h3 class="font-semibold text-gray-700 text-lg">Doctors</h3>
+        <button class="btn-pink !py-2 !px-4 text-sm" onclick="addDoctor()"><i class="fas fa-plus mr-1"></i>Add Doctor</button>
+      </div>
+      <div id="doctorsWrap" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+    </div>
+
+    <!-- PRICING -->
+    <div class="section-panel" id="panel-pricing">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <h3 class="font-semibold text-gray-700 text-lg">Pricing</h3>
+        <button class="btn-pink !py-2 !px-4 text-sm" onclick="addPricing()"><i class="fas fa-plus mr-1"></i>Add Plan</button>
+      </div>
+      <div id="pricingWrap" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+    </div>
+
+    <!-- GALLERY -->
+    <div class="section-panel" id="panel-gallery">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <h3 class="font-semibold text-gray-700 text-lg">Gallery</h3>
+        <button class="btn-pink !py-2 !px-4 text-sm" onclick="addGallery()"><i class="fas fa-plus mr-1"></i>Add Image</button>
+      </div>
+      <div id="galleryWrap" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+    </div>
+
+    <!-- BLOG -->
+    <div class="section-panel" id="panel-blog">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <h3 class="font-semibold text-gray-700 text-lg">Latest Blog</h3>
+        <button class="btn-pink !py-2 !px-4 text-sm" onclick="addBlog()"><i class="fas fa-plus mr-1"></i>Add Post</button>
+      </div>
+      <div id="blogWrap" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- QUOTE FORM -->
+    <div class="section-panel" id="panel-quote">
+      <h3 class="font-semibold text-gray-700 text-lg mb-4">Quote Form Fields</h3>
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <span class="text-xs text-gray-400"><i class="fas fa-arrows-alt-v mr-1"></i>Drag to reorder</span>
+        <button class="btn-pink !py-2 !px-4 text-sm" onclick="addQuoteField()"><i class="fas fa-plus mr-1"></i>Add Field</button>
+      </div>
+      <div id="quoteFieldsWrap" class="space-y-3"></div>
+    </div>
+
+    <!-- THEME -->
+    <div class="section-panel" id="panel-theme">
+      <h3 class="font-semibold text-gray-700 text-lg mb-4">Global Theme Colors</h3>
+      <div class="card-admin"><div id="themeColorsWrap" class="color-grid"></div></div>
+    </div>
+
+    <!-- HEADER -->
+    <div class="section-panel" id="panel-header">
+      <h3 class="font-semibold text-gray-700 text-lg mb-4">Header Management</h3>
+      <div class="card-admin header-footer-grid">
+        <div>
+          <div class="field"><label class="field-label">Logo Text</label><input id="headerLogo" oninput="onHeaderInput('logo', this.value)"></div>
+          <div class="field"><label class="field-label">Logo Image URL</label>
+            <div class="img-field-row"><input id="headerLogoImg" oninput="onHeaderInput('logoImage', this.value)"><label class="upload-btn"><i class="fas fa-upload"></i><input type="file" accept="image/*" class="hidden" onchange="uploadHeaderLogo(this)"></label></div>
+          </div>
+          <div class="field"><label class="field-label">Phone</label><input id="headerPhone" oninput="onHeaderInput('phone', this.value)"></div>
+          <div class="field"><label class="field-label">Email</label><input id="headerEmail" oninput="onHeaderInput('email', this.value)"></div>
+        </div>
+        <div>
+          <div class="field"><label class="field-label">Nav Links (comma)</label><input id="headerNav" oninput="onHeaderInput('navLinks', this.value)" placeholder="Home, About, Services, Doctors, Blog, Contact"></div>
+          <div class="field"><label class="field-label">CTA Text</label><input id="headerCta" oninput="onHeaderInput('ctaText', this.value)"></div>
+          <div class="field"><label class="field-label">CTA Link</label><input id="headerCtaLink" oninput="onHeaderInput('ctaLink', this.value)"></div>
+          <div class="field"><label class="field-label">Social Links (icon|url comma)</label><input id="headerSocial" oninput="onHeaderInput('social', this.value)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="section-panel" id="panel-footer">
+      <h3 class="font-semibold text-gray-700 text-lg mb-4">Footer Management</h3>
+      <div class="card-admin header-footer-grid">
+        <div>
+          <div class="field"><label class="field-label">Brand Name</label><input id="footerBrand" oninput="onFooterInput('brand', this.value)"></div>
+          <div class="field"><label class="field-label">Description</label><input id="footerDesc" oninput="onFooterInput('description', this.value)"></div>
+          <div class="field"><label class="field-label">Address</label><input id="footerAddress" oninput="onFooterInput('address', this.value)"></div>
+          <div class="field"><label class="field-label">Phone</label><input id="footerPhone" oninput="onFooterInput('phone', this.value)"></div>
+          <div class="field"><label class="field-label">Email</label><input id="footerEmail" oninput="onFooterInput('email', this.value)"></div>
+        </div>
+        <div>
+          <div class="field"><label class="field-label">Quick Links (label|url comma)</label><input id="footerQuickLinks" oninput="onFooterInput('quickLinks', this.value)"></div>
+          <div class="field"><label class="field-label">Social (icon|url comma)</label><input id="footerSocial" oninput="onFooterInput('social', this.value)"></div>
+          <div class="field"><label class="field-label">Copyright</label><input id="footerCopyright" oninput="onFooterInput('copyright', this.value)"></div>
+          <div class="field"><label class="field-label">Recent Blog (label|url|date comma)</label><input id="footerBlog" oninput="onFooterInput('blog', this.value)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDER -->
+    <div class="section-panel" id="panel-order">
+      <h3 class="font-semibold text-gray-700 text-lg mb-4">Section Order (drag to reorder)</h3>
+      <div class="card-admin"><div id="orderWrap"></div></div>
+    </div>
+
+    <!-- LIVE PREVIEW -->
+    <div class="section-panel" id="panel-preview">
+      <h3 class="font-semibold text-gray-700 text-lg mb-4">Live Preview – Home Page (Theme 1)</h3>
+      <div class="card-admin">
+        <div id="livePreviewContainer" style="max-width:1200px;margin:0 auto;background:#ffffff;border-radius:1rem;overflow:hidden;padding:0.5rem;"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+<div class="toast" id="toast">Saved</div>
+
+<script>
+  // ======================= DATA MODEL =======================
+  const STORAGE_KEY = 'novena_cms_data';
+  const defaultHome = {
+    hero: { banners: [
+      { image: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=1200&h=700&fit=crop', badge: 'Total health care solution', heading: 'Modern Healthcare in a Calm', headingAccent: 'and Relaxed Environment', subheading: 'Expert medical care with a personal touch, serving India with pride.', buttonText: 'Make an Appointment' },
+      { image: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=1200&h=700&fit=crop', badge: 'Expert medical care', heading: 'Achieve Your Desired', headingAccent: 'Perfect Health', subheading: 'State-of-the-art medical technology at affordable Indian prices.', buttonText: 'Make an Appointment' },
+      { image: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=1200&h=700&fit=crop', badge: '24/7 Emergency', heading: 'We care', headingAccent: 'about your health', subheading: 'Get all time support for emergency. We have introduced the principle of family medicine.', buttonText: 'Contact Now' }
+    ] },
+    features: { cards: [
+      { type: 'text', icon: 'fa-user-md', label: '24 Hours Service', title: 'Online Appointment', text: 'Get all time support for emergency. We have introduced the principle of family medicine.', bg: '#dbeafe', border: '#93c5fd' },
+      { type: 'hours', icon: 'fa-clock', label: 'Timing Schedule', title: 'Working Hours', bg: '#ccfbf1', border: '#5eead4', hours: [ { day: 'Monday - Friday', time: '9:00 - 20:00' }, { day: 'Saturday', time: '10:00 - 17:00' }, { day: 'Sunday', time: '10:00 - 14:00' } ] },
+      { type: 'phone', icon: 'fa-phone-alt', label: 'Emergency Cases', title: '+91 98765 43210', text: '24/7 emergency medical care available across India', bg: '#ffe4e6', border: '#fda4af' }
+    ] },
+    partners: { logos: [
+      { id: 'p1', img: 'https://via.placeholder.com/150x60/1089ff/ffffff?text=Partner+1', alt: 'Partner 1' },
+      { id: 'p2', img: 'https://via.placeholder.com/150x60/0a7ae0/ffffff?text=Partner+2', alt: 'Partner 2' },
+      { id: 'p3', img: 'https://via.placeholder.com/150x60/1089ff/ffffff?text=Partner+3', alt: 'Partner 3' },
+      { id: 'p4', img: 'https://via.placeholder.com/150x60/0a7ae0/ffffff?text=Partner+4', alt: 'Partner 4' },
+      { id: 'p5', img: 'https://via.placeholder.com/150x60/1089ff/ffffff?text=Partner+5', alt: 'Partner 5' },
+      { id: 'p6', img: 'https://via.placeholder.com/150x60/0a7ae0/ffffff?text=Partner+6', alt: 'Partner 6' }
+    ] },
+    about: { image1: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&h=500&fit=crop', image2: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=600&h=400&fit=crop', mainImage: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&h=500&fit=crop', heading: 'MedPlus with a personal touch', headingAccent: 'Serving India with compassionate care', text: 'Serving India with compassionate, affordable, and world-class medical care.', buttonText: 'About Us' },
+    counters: { label1: 'Years of Experience', value1: '14', label2: 'Qualified Doctors', value2: '1500', label3: 'Happy Patients', value3: '4200', label4: 'Patients Per Year', value4: '320' },
+    services: { cards: [
+      { id: 's1', icon: 'fa-heartbeat', title: 'Cardiology', text: 'Expert heart care with advanced diagnostic and treatment options.' },
+      { id: 's2', icon: 'fa-bone', title: 'Orthopedics', text: 'Comprehensive bone and joint care for all ages.' },
+      { id: 's3', icon: 'fa-brain', title: 'Neurology', text: 'State-of-the-art neurological care and treatments.' },
+      { id: 's4', icon: 'fa-child', title: 'Pediatrics', text: 'Compassionate and expert care for children.' }
+    ] },
+    doctors: { cards: [
+      { id: 'd1', name: 'Dr. Arjun Mehta', specialty: 'Chief Cardiologist', image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=300&h=250&fit=crop&crop=face', bio: 'MD, DM - 15 years of experience' },
+      { id: 'd2', name: 'Dr. Priya Sharma', specialty: 'Orthopedic Surgeon', image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=300&h=250&fit=crop&crop=face', bio: 'MS, MCh - 12 years of experience' },
+      { id: 'd3', name: 'Dr. Vikram Reddy', specialty: 'Neurosurgeon', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&h=250&fit=crop&crop=face', bio: 'MBBS, MCh - 10 years of experience' },
+      { id: 'd4', name: 'Dr. Neha Patel', specialty: 'Pediatrician', image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=300&h=250&fit=crop&crop=face', bio: 'MD, DCH - 8 years of experience' }
+    ] },
+    pricing: { cards: [
+      { id: 'p1', title: 'Basic', price: '₹999', period: '/ session', features: 'General Checkup, Basic Consultation, Lab Tests, Prescription, Follow-up', active: false },
+      { id: 'p2', title: 'Standard', price: '₹1,499', period: '/ session', features: 'General Checkup, Specialist Consultation, Lab Tests, Prescription, Follow-up', active: false },
+      { id: 'p3', title: 'Premium', price: '₹2,499', period: '/ session', features: 'General Checkup, Specialist Consultation, Advanced Lab Tests, Prescription, Priority Follow-up', active: true },
+      { id: 'p4', title: 'Platinum', price: '₹4,999', period: '/ session', features: 'General Checkup, Specialist Consultation, Advanced Lab Tests, Prescription, 24/7 Support', active: false }
+    ] },
+    gallery: { images: [] },
+    blog: { posts: [] },
+    quote: { fields: [
+      { id: 'qf1', label: 'Full Name', type: 'text', placeholder: 'Full Name', required: true },
+      { id: 'qf2', label: 'Email', type: 'email', placeholder: 'Email', required: true },
+      { id: 'qf3', label: 'Phone', type: 'tel', placeholder: 'Phone', required: true },
+      { id: 'qf4', label: 'City', type: 'text', placeholder: 'City', required: false },
+      { id: 'qf5', label: 'Message', type: 'textarea', placeholder: 'Message', required: false }
+    ] },
+    theme: { primary: '#1089ff', secondary: '#0a6edb', accent: '#1089ff', buttonBg: '#1089ff', buttonHover: '#0a6edb', headingColor: '#1a202c', textColor: '#4a5568', linkColor: '#1089ff', bgColor: '#ffffff', cardBg: '#f8fafc', borderColor: '#e2e8f0', headerBg: 'transparent', footerBg: '#1a202c' },
+    header: { logo: 'MedPlus', logoImage: '', phone: '+91 98765 43210', email: 'info@medplus.in', navLinks: 'Home, About, Services, Doctors, Blog, Contact', ctaText: 'Make an Appointment', ctaLink: '#', social: 'fa-twitter|#, fa-facebook-f|#, fa-instagram|#, fa-youtube|#' },
+    footer: { brand: 'MedPlus', description: 'Your trusted medical care partner across India. We\'re committed to your well-being.', address: '#45, 3rd Floor, MG Road, Bengaluru, Karnataka 560001', phone: '+91 98765 43210', email: 'info@medplus.in', quickLinks: 'About|#, Services|#, Doctors|#, Blog|#, Contact|#', social: 'fa-twitter|#, fa-facebook-f|#, fa-instagram|#, fa-youtube|#', copyright: 'Copyright © 2025 MedPlus India | All rights reserved | Made with ❤️ in India', blog: 'Top 10 Health Tips|#|Jan 15, 2025, Understanding Orthopedics|#|Jan 10, 2025' }
+  };
+  const defaultOrder = ['hero', 'features', 'partners', 'about', 'counters', 'services', 'doctors', 'pricing', 'gallery', 'blog', 'quote'];
+
+  let appData = {};
+  function uid() { return 'id' + Math.random().toString(36).slice(2, 9); }
+  function deepMerge(target, source) {
+    Object.keys(source).forEach(k => {
+      if (Array.isArray(source[k])) { if (!Array.isArray(target[k])) target[k] = []; source[k].forEach((item, idx) => { if (!target[k][idx]) target[k][idx] = {}; if (typeof item === 'object') deepMerge(target[k][idx], item); else target[k][idx] = item; }); }
+      else if (source[k] && typeof source[k] === 'object') { if (!target[k] || typeof target[k] !== 'object') target[k] = {}; deepMerge(target[k], source[k]); }
+      else if (!(k in target)) target[k] = source[k];
+    });
+    return target;
+  }
+  function loadData() {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    try { appData = stored ? JSON.parse(stored) : {}; } catch(e) { appData = {}; }
+    if (!appData.content) appData.content = {};
+    if (!appData.content.home1) appData.content.home1 = {};
+    deepMerge(appData.content.home1, defaultHome);
+    if (!appData.sectionOrder) appData.sectionOrder = {};
+    if (!Array.isArray(appData.sectionOrder.home1) || !appData.sectionOrder.home1.length) appData.sectionOrder.home1 = [...defaultOrder];
+    ['services.cards','partners.logos','doctors.cards','pricing.cards','gallery.images','blog.posts','quote.fields','features.cards'].forEach(path => {
+      const parts = path.split('.'); let obj = appData.content.home1; parts.forEach(p => obj = obj[p]);
+      if (Array.isArray(obj)) obj.forEach(item => { if (!item.id) item.id = uid(); });
+    });
+    save(false);
+  }
+  function save(showToast = true) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    document.getElementById('lastSavedTime').textContent = new Date().toLocaleTimeString();
+    if (showToast) toast('Saved');
+    renderLivePreview();
+  }
+  let saveTimer = null;
+  function debounceSave() { clearTimeout(saveTimer); saveTimer = setTimeout(() => save(false), 500); }
+  function saveAll() { save(true); }
+  function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 1600); }
+  function resetHomeData() { if (!confirm('Reset Theme 1 to default?')) return; appData.content.home1 = JSON.parse(JSON.stringify(defaultHome)); appData.sectionOrder.home1 = [...defaultOrder]; save(true); renderAll(); }
+
+  // ======================= IMAGE UPLOAD =======================
+  function readFileAsDataURL(fileInput, cb) {
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { alert('Please choose an image file.'); fileInput.value = ''; return; }
+    if (file.size > 3 * 1024 * 1024) { alert('File >3MB, please choose smaller.'); fileInput.value = ''; return; }
+    const reader = new FileReader();
+    reader.onload = e => cb(e.target.result);
+    reader.onerror = () => alert('Could not read file.');
+    reader.readAsDataURL(file);
+    fileInput.value = '';
+  }
+  function uploadAboutImage(key, fileInput) {
+    readFileAsDataURL(fileInput, dataUrl => {
+      onAboutInput(key, dataUrl);
+      const previewMap = { image1: 'aboutImg1Preview', image2: 'aboutImg2Preview', mainImage: 'aboutMainPreview' };
+      document.getElementById(previewMap[key]).src = dataUrl;
+    });
+  }
+  function uploadHeaderLogo(fileInput) {
+    readFileAsDataURL(fileInput, dataUrl => { appData.content.home1.header.logoImage = dataUrl; debounceSave(); renderHeader(); });
+  }
+  function uploadHeroImage(i, fileInput) {
+    readFileAsDataURL(fileInput, dataUrl => { appData.content.home1.hero.banners[i].image = dataUrl; debounceSave(); renderHero(); });
+  }
+  function uploadPartnerImage(i, fileInput) {
+    readFileAsDataURL(fileInput, dataUrl => { appData.content.home1.partners.logos[i].img = dataUrl; debounceSave(); renderPartners(); });
+  }
+  function uploadDoctorImage(i, fileInput) {
+    readFileAsDataURL(fileInput, dataUrl => { appData.content.home1.doctors.cards[i].image = dataUrl; debounceSave(); renderDoctors(); });
+  }
+  function uploadGalleryImage(i, fileInput) {
+    readFileAsDataURL(fileInput, dataUrl => { appData.content.home1.gallery.images[i].url = dataUrl; debounceSave(); renderGallery(); });
+  }
+  function uploadBlogImage(i, fileInput) {
+    readFileAsDataURL(fileInput, dataUrl => { appData.content.home1.blog.posts[i].image = dataUrl; debounceSave(); renderBlog(); });
+  }
+
+  // ======================= RENDER FUNCTIONS =======================
+  function renderHero() {
+    const wrap = document.getElementById('heroBannersWrap');
+    const banners = appData.content.home1.hero.banners;
+    wrap.innerHTML = banners.map((b, i) => `
+      <div class="card-admin">
+        <div class="flex items-center justify-between mb-3"><span class="badge-soft">Slide ${i+1}</span></div>
+        <img class="mini-preview mb-3" style="height:140px" src="${esc(b.image)}" onerror="this.src='https://placehold.co/600x300?text=Image'">
+        <div class="field"><label class="field-label">Image URL</label>
+          <div class="img-field-row"><input value="${esc(b.image)}" oninput="onHeroInput(${i},'image',this.value)"><label class="upload-btn"><i class="fas fa-upload"></i><input type="file" accept="image/*" class="hidden" onchange="uploadHeroImage(${i}, this)"></label></div>
+        </div>
+        <div class="field"><label class="field-label">Badge</label><input value="${esc(b.badge)}" oninput="onHeroInput(${i},'badge',this.value)"></div>
+        <div class="grid grid-cols-2 gap-2"><div class="field"><label class="field-label">Heading</label><input value="${esc(b.heading)}" oninput="onHeroInput(${i},'heading',this.value)"></div><div class="field"><label class="field-label">Highlight</label><input value="${esc(b.headingAccent)}" oninput="onHeroInput(${i},'headingAccent',this.value)"></div></div>
+        <div class="field"><label class="field-label">Subheading</label><textarea rows="2" oninput="onHeroInput(${i},'subheading',this.value)">${esc(b.subheading)}</textarea></div>
+        <div class="field"><label class="field-label">Button Text</label><input value="${esc(b.buttonText)}" oninput="onHeroInput(${i},'buttonText',this.value)"></div>
+      </div>
+    `).join('');
+  }
+  function onHeroInput(i, key, val) { appData.content.home1.hero.banners[i][key] = val; debounceSave(); }
+
+  function renderFeatures() {
+    const wrap = document.getElementById('featuresWrap');
+    const cards = appData.content.home1.features.cards;
+    const colorPresets = ['#dbeafe', '#ccfbf1', '#ffe4e6', '#fef9c3', '#ede9fe', '#dcfce7'];
+    wrap.innerHTML = cards.map((c, i) => `
+      <div class="card-admin" data-id="${c.id}">
+        <div class="flex items-start gap-4">
+          <i class="fas fa-grip-vertical drag-handle mt-2"></i>
+          <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <div class="field"><label class="field-label">Icon</label><input value="${esc(c.icon)}" oninput="onFeatureInput(${i},'icon',this.value)"></div>
+              <div class="field"><label class="field-label">Label</label><input value="${esc(c.label)}" oninput="onFeatureInput(${i},'label',this.value)"></div>
+              <div class="field"><label class="field-label">Title</label><input value="${esc(c.title)}" oninput="onFeatureInput(${i},'title',this.value)"></div>
+              ${c.type !== 'hours' ? `<div class="field"><label class="field-label">Text</label><textarea rows="2" oninput="onFeatureInput(${i},'text',this.value)">${esc(c.text||'')}</textarea></div>` :
+              `<div class="field"><label class="field-label">Schedule</label>${c.hours.map((h, hi) => `<div class="flex gap-2"><input class="flex-1" value="${esc(h.day)}" oninput="onFeatureHourInput(${i},${hi},'day',this.value)"><input class="flex-1" value="${esc(h.time)}" oninput="onFeatureHourInput(${i},${hi},'time',this.value)"></div>`).join('')}</div>`}
+            </div>
+            <div>
+              <p class="field-label">Background</p>
+              <div class="flex items-center gap-2 mb-4">${colorPresets.map(hex => `<span class="swatch ${c.bg===hex?'selected':''}" style="background:${hex}" onclick="onFeatureInput(${i},'bg','${hex}',true)"></span>`).join('')}<input type="color" value="${c.bg}" oninput="onFeatureInput(${i},'bg',this.value,true)"></div>
+              <p class="field-label">Border</p><input type="color" value="${c.border}" oninput="onFeatureInput(${i},'border',this.value,true)">
+            </div>
+          </div>
+          <button class="btn-danger" onclick="removeFeature(${i})"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+    `).join('');
+    new Sortable(wrap, { handle: '.drag-handle', animation: 150, onEnd: () => { save(true); renderFeatures(); } });
+  }
+  function onFeatureInput(i, key, val, rerender) { appData.content.home1.features.cards[i][key] = val; debounceSave(); if(rerender) renderFeatures(); }
+  function onFeatureHourInput(i, hi, key, val) { appData.content.home1.features.cards[i].hours[hi][key] = val; debounceSave(); }
+  function removeFeature(i) { if(!confirm('Remove?')) return; appData.content.home1.features.cards.splice(i,1); save(true); renderFeatures(); }
+
+  function renderPartners() {
+    const wrap = document.getElementById('partnersWrap');
+    const logos = appData.content.home1.partners.logos;
+    wrap.innerHTML = logos.map((l, i) => `
+      <div class="card-admin !p-3" data-id="${l.id}">
+        <div class="flex items-center gap-2"><i class="fas fa-grip-vertical drag-handle"></i><button class="btn-danger !px-2 !py-1" onclick="removePartner(${i})"><i class="fas fa-trash"></i></button></div>
+        <img class="mini-preview" src="${esc(l.img)}" onerror="this.src='https://placehold.co/200x80?text=Logo'">
+        <div class="field !mb-0"><label class="field-label">Image URL</label>
+          <div class="img-field-row"><input value="${esc(l.img)}" oninput="onPartnerInput(${i},'img',this.value)"><label class="upload-btn"><i class="fas fa-upload"></i><input type="file" accept="image/*" class="hidden" onchange="uploadPartnerImage(${i}, this)"></label></div>
+        </div>
+        <div class="field !mb-0"><label class="field-label">Alt</label><input value="${esc(l.alt)}" oninput="onPartnerInput(${i},'alt',this.value)"></div>
+      </div>
+    `).join('');
+    new Sortable(wrap, { handle: '.drag-handle', animation: 150, onEnd: () => { save(true); renderPartners(); } });
+  }
+  function onPartnerInput(i, key, val) { appData.content.home1.partners.logos[i][key] = val; debounceSave(); }
+  function addPartner() { appData.content.home1.partners.logos.push({ id: uid(), img: '', alt: 'Partner' }); save(true); renderPartners(); }
+  function removePartner(i) { if(!confirm('Remove?')) return; appData.content.home1.partners.logos.splice(i,1); save(true); renderPartners(); }
+
+  function renderAbout() {
+    const a = appData.content.home1.about;
+    document.getElementById('aboutImg1').value = a.image1 || '';
+    document.getElementById('aboutImg1Preview').src = a.image1 || 'https://placehold.co/600x300?text=About';
+    document.getElementById('aboutImg2').value = a.image2 || '';
+    document.getElementById('aboutImg2Preview').src = a.image2 || 'https://placehold.co/600x300?text=About';
+    document.getElementById('aboutMainImg').value = a.mainImage || '';
+    document.getElementById('aboutMainPreview').src = a.mainImage || 'https://placehold.co/600x300?text=About';
+    document.getElementById('aboutHeading').value = a.heading || '';
+    document.getElementById('aboutHeadingAccent').value = a.headingAccent || '';
+    document.getElementById('aboutText').value = a.text || '';
+    document.getElementById('aboutButton').value = a.buttonText || '';
+  }
+  function onAboutInput(key, val) { appData.content.home1.about[key] = val; debounceSave(); renderAbout(); }
+
+  function renderCounters() {
+    const c = appData.content.home1.counters;
+    document.getElementById('counterLabel1').value = c.label1 || '';
+    document.getElementById('counterValue1').value = c.value1 || '';
+    document.getElementById('counterLabel2').value = c.label2 || '';
+    document.getElementById('counterValue2').value = c.value2 || '';
+    document.getElementById('counterLabel3').value = c.label3 || '';
+    document.getElementById('counterValue3').value = c.value3 || '';
+    document.getElementById('counterLabel4').value = c.label4 || '';
+    document.getElementById('counterValue4').value = c.value4 || '';
+  }
+  function onCounterInput(key, val) { appData.content.home1.counters[key] = val; debounceSave(); }
+
+  function renderServices() {
+    const wrap = document.getElementById('servicesWrap');
+    const cards = appData.content.home1.services.cards;
+    wrap.innerHTML = cards.map((c, i) => `
+      <div class="card-admin" data-id="${c.id}">
+        <div class="flex items-center gap-2"><i class="fas fa-grip-vertical drag-handle"></i><span class="text-xs text-gray-400 flex-1">${c.title || 'Service'}</span><button class="btn-danger" onclick="removeService(${i})"><i class="fas fa-trash"></i></button></div>
+        <div class="field"><label class="field-label">Icon</label><input value="${esc(c.icon)}" oninput="onServiceInput(${i},'icon',this.value)"></div>
+        <div class="field"><label class="field-label">Title</label><input value="${esc(c.title)}" oninput="onServiceInput(${i},'title',this.value)"></div>
+        <div class="field"><label class="field-label">Text</label><textarea rows="2" oninput="onServiceInput(${i},'text',this.value)">${esc(c.text)}</textarea></div>
+      </div>
+    `).join('');
+    new Sortable(wrap, { handle: '.drag-handle', animation: 150, onEnd: () => { save(true); renderServices(); } });
+  }
+  function onServiceInput(i, key, val) { appData.content.home1.services.cards[i][key] = val; debounceSave(); }
+  function addService() { appData.content.home1.services.cards.push({ id: uid(), icon: 'fa-stethoscope', title: 'New Service', text: 'Description' }); save(true); renderServices(); }
+  function removeService(i) { if(!confirm('Remove?')) return; appData.content.home1.services.cards.splice(i,1); save(true); renderServices(); }
+
+  function renderDoctors() {
+    const wrap = document.getElementById('doctorsWrap');
+    const cards = appData.content.home1.doctors.cards;
+    wrap.innerHTML = cards.map((c, i) => `
+      <div class="card-admin" data-id="${c.id}">
+        <div class="flex items-center gap-2"><i class="fas fa-grip-vertical drag-handle"></i><span class="text-xs text-gray-400 flex-1">${c.name || 'Doctor'}</span><button class="btn-danger" onclick="removeDoctor(${i})"><i class="fas fa-trash"></i></button></div>
+        <div class="field"><label class="field-label">Name</label><input value="${esc(c.name)}" oninput="onDoctorInput(${i},'name',this.value)"></div>
+        <div class="field"><label class="field-label">Specialty</label><input value="${esc(c.specialty)}" oninput="onDoctorInput(${i},'specialty',this.value)"></div>
+        <div class="field"><label class="field-label">Bio</label><input value="${esc(c.bio)}" oninput="onDoctorInput(${i},'bio',this.value)"></div>
+        <div class="field"><label class="field-label">Image URL</label>
+          <div class="img-field-row"><input value="${esc(c.image)}" oninput="onDoctorInput(${i},'image',this.value)"><label class="upload-btn"><i class="fas fa-upload"></i><input type="file" accept="image/*" class="hidden" onchange="uploadDoctorImage(${i}, this)"></label></div>
+        </div>
+      </div>
+    `).join('');
+    new Sortable(wrap, { handle: '.drag-handle', animation: 150, onEnd: () => { save(true); renderDoctors(); } });
+  }
+  function onDoctorInput(i, key, val) { appData.content.home1.doctors.cards[i][key] = val; debounceSave(); }
+  function addDoctor() { appData.content.home1.doctors.cards.push({ id: uid(), name: 'New Doctor', specialty: 'Specialty', image: '', bio: '' }); save(true); renderDoctors(); }
+  function removeDoctor(i) { if(!confirm('Remove?')) return; appData.content.home1.doctors.cards.splice(i,1); save(true); renderDoctors(); }
+
+  function renderPricing() {
+    const wrap = document.getElementById('pricingWrap');
+    const cards = appData.content.home1.pricing.cards;
+    wrap.innerHTML = cards.map((c, i) => `
+      <div class="card-admin" data-id="${c.id}">
+        <div class="flex items-center gap-2"><i class="fas fa-grip-vertical drag-handle"></i><span class="text-xs text-gray-400 flex-1">${c.title || 'Plan'}</span><button class="btn-danger" onclick="removePricing(${i})"><i class="fas fa-trash"></i></button></div>
+        <div class="field"><label class="field-label">Title</label><input value="${esc(c.title)}" oninput="onPricingInput(${i},'title',this.value)"></div>
+        <div class="field"><label class="field-label">Price</label><input value="${esc(c.price)}" oninput="onPricingInput(${i},'price',this.value)"></div>
+        <div class="field"><label class="field-label">Period</label><input value="${esc(c.period)}" oninput="onPricingInput(${i},'period',this.value)"></div>
+        <div class="field"><label class="field-label">Features (comma)</label><input value="${esc(c.features)}" oninput="onPricingInput(${i},'features',this.value)"></div>
+        <div class="field flex items-center gap-2"><label class="field-label mb-0">Active (highlight)</label><input type="checkbox" style="width:auto" ${c.active?'checked':''} onchange="onPricingInput(${i},'active',this.checked)"></div>
+      </div>
+    `).join('');
+    new Sortable(wrap, { handle: '.drag-handle', animation: 150, onEnd: () => { save(true); renderPricing(); } });
+  }
+  function onPricingInput(i, key, val) { appData.content.home1.pricing.cards[i][key] = val; debounceSave(); }
+  function addPricing() { appData.content.home1.pricing.cards.push({ id: uid(), title: 'New Plan', price: '₹0', period: '/ session', features: 'Feature 1, Feature 2', active: false }); save(true); renderPricing(); }
+  function removePricing(i) { if(!confirm('Remove?')) return; appData.content.home1.pricing.cards.splice(i,1); save(true); renderPricing(); }
+
+  function renderGallery() {
+    const wrap = document.getElementById('galleryWrap');
+    const images = appData.content.home1.gallery.images;
+    wrap.innerHTML = images.map((img, i) => `
+      <div class="card-admin !p-2" data-id="${img.id}">
+        <div class="flex items-center gap-1"><i class="fas fa-grip-vertical drag-handle"></i><button class="btn-danger !px-2 !py-1" onclick="removeGallery(${i})"><i class="fas fa-trash"></i></button></div>
+        <img class="mini-preview" src="${esc(img.url)}" onerror="this.src='https://placehold.co/200x150?text=Image'">
+        <div class="img-field-row mt-1"><input class="text-xs" value="${esc(img.url)}" placeholder="Image URL" oninput="onGalleryInput(${i},'url',this.value)"><label class="upload-btn"><i class="fas fa-upload"></i><input type="file" accept="image/*" class="hidden" onchange="uploadGalleryImage(${i}, this)"></label></div>
+      </div>
+    `).join('');
+    new Sortable(wrap, { handle: '.drag-handle', animation: 150, onEnd: () => { save(true); renderGallery(); } });
+  }
+  function onGalleryInput(i, key, val) { appData.content.home1.gallery.images[i][key] = val; debounceSave(); }
+  function addGallery() { appData.content.home1.gallery.images.push({ id: uid(), url: '' }); save(true); renderGallery(); }
+  function removeGallery(i) { if(!confirm('Remove?')) return; appData.content.home1.gallery.images.splice(i,1); save(true); renderGallery(); }
+
+  function renderBlog() {
+    const wrap = document.getElementById('blogWrap');
+    const posts = appData.content.home1.blog.posts;
+    wrap.innerHTML = posts.map((p, i) => `
+      <div class="card-admin" data-id="${p.id}">
+        <div class="flex items-center gap-2"><i class="fas fa-grip-vertical drag-handle"></i><span class="text-xs text-gray-400 flex-1">${p.title || 'Post'}</span><button class="btn-danger" onclick="removeBlog(${i})"><i class="fas fa-trash"></i></button></div>
+        <div class="field"><label class="field-label">Image URL</label>
+          <div class="img-field-row"><input value="${esc(p.image)}" oninput="onBlogInput(${i},'image',this.value)"><label class="upload-btn"><i class="fas fa-upload"></i><input type="file" accept="image/*" class="hidden" onchange="uploadBlogImage(${i}, this)"></label></div>
+        </div>
+        <div class="field"><label class="field-label">Title</label><input value="${esc(p.title)}" oninput="onBlogInput(${i},'title',this.value)"></div>
+        <div class="field"><label class="field-label">Date</label><input value="${esc(p.date)}" oninput="onBlogInput(${i},'date',this.value)"></div>
+        <div class="field"><label class="field-label">Author</label><input value="${esc(p.author)}" oninput="onBlogInput(${i},'author',this.value)"></div>
+        <div class="field"><label class="field-label">Comments</label><input value="${esc(p.comments)}" oninput="onBlogInput(${i},'comments',this.value)"></div>
+      </div>
+    `).join('');
+    new Sortable(wrap, { handle: '.drag-handle', animation: 150, onEnd: () => { save(true); renderBlog(); } });
+  }
+  function onBlogInput(i, key, val) { appData.content.home1.blog.posts[i][key] = val; debounceSave(); }
+  function addBlog() { appData.content.home1.blog.posts.push({ id: uid(), title: 'New Post', image: '', date: 'Jan 1, 2025', author: 'Dr. Name', comments: '0' }); save(true); renderBlog(); }
+  function removeBlog(i) { if(!confirm('Remove?')) return; appData.content.home1.blog.posts.splice(i,1); save(true); renderBlog(); }
+
+  function renderQuoteFields() {
+    const wrap = document.getElementById('quoteFieldsWrap');
+    const fields = appData.content.home1.quote.fields;
+    wrap.innerHTML = fields.map((f, i) => `
+      <div class="card-admin !p-3" data-id="${f.id}">
+        <div class="flex items-start gap-2">
+          <i class="fas fa-grip-vertical drag-handle mt-2"></i>
+          <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-2">
+            <div class="field !mb-0"><label class="field-label">Label</label><input value="${esc(f.label)}" oninput="onQuoteFieldInput(${i},'label',this.value)"></div>
+            <div class="field !mb-0"><label class="field-label">Type</label>
+              <select onchange="onQuoteFieldInput(${i},'type',this.value)">${['text','email','tel','textarea','select'].map(t => `<option value="${t}" ${f.type===t?'selected':''}>${t}</option>`).join('')}</select>
+            </div>
+            <div class="field !mb-0"><label class="field-label">Placeholder</label><input value="${esc(f.placeholder)}" oninput="onQuoteFieldInput(${i},'placeholder',this.value)"></div>
+            <div class="field !mb-0 flex items-end gap-2"><label class="flex items-center gap-1 text-sm"><input type="checkbox" style="width:auto" ${f.required?'checked':''} onchange="onQuoteFieldInput(${i},'required',this.checked)"> Required</label><button class="btn-danger" onclick="removeQuoteField(${i})"><i class="fas fa-trash"></i></button></div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+    new Sortable(wrap, { handle: '.drag-handle', animation: 150, onEnd: () => { save(true); renderQuoteFields(); } });
+  }
+  function onQuoteFieldInput(i, key, val) { appData.content.home1.quote.fields[i][key] = val; debounceSave(); }
+  function addQuoteField() { appData.content.home1.quote.fields.push({ id: uid(), label: 'New Field', type: 'text', placeholder: '', required: false }); save(true); renderQuoteFields(); }
+  function removeQuoteField(i) { if(!confirm('Remove?')) return; appData.content.home1.quote.fields.splice(i,1); save(true); renderQuoteFields(); }
+
+  function renderTheme() {
+    const wrap = document.getElementById('themeColorsWrap');
+    const t = appData.content.home1.theme;
+    const keys = [
+      { key: 'primary', label: 'Primary' }, { key: 'secondary', label: 'Secondary' }, { key: 'accent', label: 'Accent' },
+      { key: 'buttonBg', label: 'Button BG' }, { key: 'buttonHover', label: 'Button Hover' },
+      { key: 'headingColor', label: 'Heading' }, { key: 'textColor', label: 'Text' }, { key: 'linkColor', label: 'Link' },
+      { key: 'bgColor', label: 'Background' }, { key: 'cardBg', label: 'Card BG' }, { key: 'borderColor', label: 'Border' },
+      { key: 'headerBg', label: 'Header BG' }, { key: 'footerBg', label: 'Footer BG' }
+    ];
+    wrap.innerHTML = keys.map(k => `
+      <div class="color-item"><label>${k.label}</label><input type="color" value="${t[k.key] || '#000000'}" oninput="onThemeInput('${k.key}', this.value)"></div>
+    `).join('');
+  }
+  function onThemeInput(key, val) { appData.content.home1.theme[key] = val; debounceSave(); }
+
+  function renderHeader() {
+    const h = appData.content.home1.header;
+    document.getElementById('headerLogo').value = h.logo || '';
+    document.getElementById('headerLogoImg').value = h.logoImage || '';
+    document.getElementById('headerPhone').value = h.phone || '';
+    document.getElementById('headerEmail').value = h.email || '';
+    document.getElementById('headerNav').value = h.navLinks || '';
+    document.getElementById('headerCta').value = h.ctaText || '';
+    document.getElementById('headerCtaLink').value = h.ctaLink || '#';
+    document.getElementById('headerSocial').value = h.social || '';
+  }
+  function onHeaderInput(key, val) { appData.content.home1.header[key] = val; debounceSave(); }
+
+  function renderFooter() {
+    const f = appData.content.home1.footer;
+    document.getElementById('footerBrand').value = f.brand || '';
+    document.getElementById('footerDesc').value = f.description || '';
+    document.getElementById('footerAddress').value = f.address || '';
+    document.getElementById('footerPhone').value = f.phone || '';
+    document.getElementById('footerEmail').value = f.email || '';
+    document.getElementById('footerQuickLinks').value = f.quickLinks || '';
+    document.getElementById('footerSocial').value = f.social || '';
+    document.getElementById('footerCopyright').value = f.copyright || '';
+    document.getElementById('footerBlog').value = f.blog || '';
+  }
+  function onFooterInput(key, val) { appData.content.home1.footer[key] = val; debounceSave(); }
+
+  function renderOrder() {
+    const wrap = document.getElementById('orderWrap');
+    const order = appData.sectionOrder.home1;
+    const labels = { hero: 'Hero', features: 'Features', partners: 'Partners', about: 'About', counters: 'Counters', services: 'Services', doctors: 'Doctors', pricing: 'Pricing', gallery: 'Gallery', blog: 'Blog', quote: 'Quote Form' };
+    wrap.innerHTML = order.map(key => `
+      <div class="order-item" data-key="${key}"><i class="fas fa-grip-vertical drag-handle"></i><span class="flex-1">${labels[key] || key}</span><span class="text-xs text-gray-400">${order.indexOf(key)+1}</span></div>
+    `).join('');
+    new Sortable(wrap, { handle: '.drag-handle', animation: 150, onEnd: (evt) => { const moved = order.splice(evt.oldIndex,1)[0]; order.splice(evt.newIndex,0,moved); save(true); renderOrder(); } });
+  }
+
+  // ======================= LIVE PREVIEW - exact Theme 1 =======================
+  function renderLivePreview() {
+    const container = document.getElementById('livePreviewContainer');
+    if (!container) return;
+    const data = appData.content.home1;
+    const order = appData.sectionOrder.home1;
+    const t = data.theme;
+
+    let html = `
+    <style>
+      .lp-ff { font-family: 'Open Sans', sans-serif; }
+      .lp-hero-slide { background-size: cover; background-position: center; padding: 3rem 2rem; border-radius: 1rem; color: white; position: relative; min-height: 280px; }
+      .lp-hero-slide .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); border-radius: 1rem; }
+      .lp-hero-slide .content { position: relative; z-index: 2; text-align: center; max-width: 600px; margin: 0 auto; }
+      .lp-service-card { background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform .3s, box-shadow .3s; text-align: center; }
+      .lp-service-card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
+      .lp-service-card .icon { width: 70px; height: 70px; background: #f0f8ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 2rem; color: ${t.primary || '#1089ff'}; }
+      .lp-feature-card { padding: 1.5rem; border-radius: 1rem; transition: all .3s; border: 1px solid #e2e8f0; }
+      .lp-feature-card:hover { background: white; box-shadow: 0 12px 28px rgba(0,0,0,0.06); }
+      .lp-testimonial { background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: all .3s; text-align: center; }
+      .lp-testimonial:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.08); }
+      .lp-testimonial.dark { background: ${t.primary || '#1089ff'}; color: white; }
+      .lp-testimonial.dark p { color: rgba(255,255,255,0.85); }
+      .lp-footer { background: ${t.footerBg || '#1a202c'}; padding: 2rem 1.5rem; border-radius: 1rem; color: #94a3b8; margin-top: 1.5rem; }
+      .lp-footer h4 { color: white; font-weight: 600; margin-bottom: 0.5rem; }
+      .lp-footer a { color: #94a3b8; text-decoration: none; display: block; padding: 0.2rem 0; }
+      .lp-footer a:hover { color: white; }
+      .lp-footer .copyright { text-align: center; border-top: 1px solid #334155; padding-top: 1rem; margin-top: 1rem; font-size: 0.8rem; }
+      .lp-partner { background: white; border-radius: 0.75rem; padding: 1rem; display: flex; align-items: center; justify-content: center; height: 80px; border: 1px solid #e2e8f0; transition: all .3s; }
+      .lp-partner:hover { transform: scale(1.03); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+      .lp-counter { text-align: center; color: white; padding: 1rem; }
+      .lp-counter .number { font-size: 2.5rem; font-weight: 700; }
+      .lp-doctor-card { text-align: center; background: #f8fafc; padding: 1rem; border-radius: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+      .lp-doctor-card .img { width: 100%; height: 160px; background-size: cover; background-position: top; border-radius: 0.5rem; }
+      .lp-pricing-card { background: #f8fafc; padding: 1.5rem; border-radius: 0.75rem; text-align: center; transition: all .3s; }
+      .lp-pricing-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.08); }
+      .lp-pricing-card.active { background: ${t.primary || '#1089ff'}; color: white; }
+      .lp-pricing-card.active .text-gray-500 { color: rgba(255,255,255,0.7); }
+      .lp-pricing-card.active .text-primary { color: white; }
+      .lp-pricing-card.active .border-primary { border-color: white; }
+      .lp-gallery-img { height: 140px; background-size: cover; background-position: center; border-radius: 0.5rem; transition: all .3s; cursor: pointer; }
+      .lp-gallery-img:hover { transform: scale(1.02); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+      .lp-blog-card { background: #f8fafc; border-radius: 0.75rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all .3s; }
+      .lp-blog-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.08); }
+      .lp-blog-card .img { height: 140px; background-size: cover; background-position: center; }
+      .lp-color-1 { background: ${t.primary || '#1089ff'}; }
+      .lp-color-2 { background: ${t.secondary || '#0a7ae0'}; }
+      .lp-color-3 { background: ${t.buttonHover || '#0668c7'}; }
+      .lp-text-primary { color: ${t.primary || '#1089ff'}; }
+      .lp-bg-primary { background: ${t.primary || '#1089ff'}; }
+      .lp-border-primary { border-color: ${t.primary || '#1089ff'}; }
+      .lp-bg-primary\/80 { background: ${t.primary || '#1089ff'}cc; }
+    </style>
+    <div style="background:${t.bgColor || '#ffffff'}; color:${t.textColor || '#4a5568'}; padding:0.5rem; border-radius:1rem; font-family:'Open Sans',sans-serif;">
+    `;
+
+    // Header (transparent style)
+    html += `
+    <div style="background:${t.headerBg === 'transparent' ? 'transparent' : (t.headerBg || '#1a202c')}; padding:0.8rem 1.5rem; border-radius:0.5rem; color:${t.headerBg === 'transparent' ? 'white' : 'white'}; display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:0.5rem; ${t.headerBg === 'transparent' ? '' : 'background:'+t.headerBg};">
+      <span style="font-weight:700;font-size:1.4rem;color:${t.headerBg === 'transparent' ? 'white' : 'white'};">${data.header.logo || 'MedPlus'}<span style="color:${t.primary || '#1089ff'};">+</span></span>
+      <div style="display:flex;gap:1rem;font-size:0.8rem;flex-wrap:wrap;">${(data.header.navLinks || 'Home, About, Services, Doctors, Blog, Contact').split(',').map(l => `<a href="#" style="color:${t.headerBg === 'transparent' ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.8)'};text-decoration:none;padding:0.2rem 0.3rem;">${l.trim()}</a>`).join('')}</div>
+      <span style="background:${t.primary || '#1089ff'};color:white;padding:0.4rem 1.2rem;border-radius:2rem;font-size:0.7rem;font-weight:600;cursor:pointer;">${data.header.ctaText || 'Make an Appointment'}</span>
+    </div>
+    `;
+
+    order.forEach(key => {
+      if (key === 'hero') {
+        const b = data.hero.banners[0] || {};
+        html += `
+        <div class="lp-hero-slide" style="background-image:url('${b.image || ''}'); margin-bottom:1.5rem;">
+          <div class="overlay"></div>
+          <div class="content">
+            <h1 style="font-size:2.2rem;font-weight:700;margin:0.2rem 0;">${b.heading || 'Modern Healthcare in a Calm'}<br><span style="color:${t.primary || '#1089ff'};">${b.headingAccent || 'and Relaxed Environment'}</span></h1>
+            <p style="max-width:500px;margin:0 auto;opacity:0.8;font-size:1rem;">${b.subheading || 'Expert medical care with a personal touch, serving India with pride.'}</p>
+            <a href="#" style="display:inline-block;background:${t.primary || '#1089ff'};color:white;padding:0.6rem 1.8rem;border-radius:2rem;font-weight:600;text-decoration:none;margin-top:0.8rem;">${b.buttonText || 'Make an Appointment'}</a>
+          </div>
+        </div>
+        `;
+      } else if (key === 'features') {
+        html += `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem;">`;
+        data.features.cards.forEach(c => {
+          html += `
+          <div class="lp-feature-card" style="background:${c.bg || '#f8fafc'};border-color:${c.border || '#e2e8f0'};">
+            <div style="width:50px;height:50px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:${t.primary || '#1089ff'};margin-bottom:0.5rem;"><i class="fas ${c.icon}"></i></div>
+            <span style="font-size:0.6rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:${t.primary || '#1089ff'};">${c.label}</span>
+            <h4 style="font-weight:700;font-size:1rem;margin:0.2rem 0;">${c.title}</h4>
+            ${c.type !== 'hours' ? `<p style="font-size:0.8rem;color:#64748b;">${c.text || ''}</p>` : `<div style="font-size:0.8rem;">${c.hours.map(h => `<div style="display:flex;justify-content:space-between;"><span>${h.day}</span><span>${h.time}</span></div>`).join('')}</div>`}
+            ${c.type === 'text' ? `<a href="#" style="display:inline-block;background:${t.primary || '#1089ff'};color:white;padding:0.3rem 1rem;border-radius:2rem;font-size:0.7rem;margin-top:0.5rem;text-decoration:none;">Make Appointment</a>` : ''}
+            ${c.type === 'phone' ? `<div style="font-size:1.2rem;font-weight:700;color:${t.primary || '#1089ff'};margin-top:0.3rem;">${c.title}</div>` : ''}
+          </div>
+          `;
+        });
+        html += `</div>`;
+      } else if (key === 'partners') {
+        html += `
+        <div style="padding:1.5rem;border-radius:1rem;margin-bottom:1.5rem;background:#f8f9fc;">
+          <h3 style="text-align:center;font-size:1.2rem;font-weight:600;margin-bottom:1rem;">Partners who <span style="color:${t.primary || '#1089ff'};">support us</span></h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1rem;">${data.partners.logos.slice(0,6).map(p => `<div class="lp-partner"><img src="${p.img}" alt="${p.alt}" style="max-height:40px;width:auto;max-width:100%;"></div>`).join('')}</div>
+        </div>
+        `;
+      } else if (key === 'about') {
+        html += `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;padding:1.5rem;border-radius:1rem;margin-bottom:1.5rem;background:#f8fafc;align-items:center;">
+          <div>
+            <img src="${data.about.mainImage || data.about.image1}" style="border-radius:0.75rem;width:100%;height:200px;object-fit:cover;box-shadow:0 4px 12px rgba(0,0,0,0.08);" onerror="this.src='https://placehold.co/400x300?text=About'">
+            <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
+              <img src="${data.about.image1}" style="border-radius:0.5rem;width:50%;height:80px;object-fit:cover;" onerror="this.src='https://placehold.co/200x100?text=About'">
+              <img src="${data.about.image2}" style="border-radius:0.5rem;width:50%;height:80px;object-fit:cover;" onerror="this.src='https://placehold.co/200x100?text=About'">
+            </div>
+          </div>
+          <div>
+            <h3 style="font-size:1.8rem;font-weight:700;line-height:1.2;">${data.about.heading}<br><span style="color:${t.primary || '#1089ff'};">${data.about.headingAccent}</span></h3>
+            <div style="width:50px;height:3px;background:${t.primary || '#1089ff'};margin:0.5rem 0;"></div>
+            <p style="font-size:0.9rem;color:#64748b;">${data.about.text}</p>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.8rem;">
+              <div style="display:flex;align-items:center;gap:0.5rem;"><span style="background:${t.primary || '#1089ff'};color:white;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;"><i class="fas fa-check"></i></span><span style="font-weight:600;">Well Experienced Doctors</span></div>
+              <div style="display:flex;align-items:center;gap:0.5rem;"><span style="background:${t.primary || '#1089ff'};color:white;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;"><i class="fas fa-check"></i></span><span style="font-weight:600;">High Technology Facilities</span></div>
+              <div style="display:flex;align-items:center;gap:0.5rem;"><span style="background:${t.primary || '#1089ff'};color:white;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;"><i class="fas fa-check"></i></span><span style="font-weight:600;">Comfortable Clinics</span></div>
+            </div>
+            <a href="#" style="display:inline-block;background:${t.primary || '#1089ff'};color:white;padding:0.4rem 1.5rem;border-radius:2rem;font-weight:600;text-decoration:none;margin-top:0.8rem;">${data.about.buttonText || 'About Us'}</a>
+          </div>
+        </div>
+        `;
+      } else if (key === 'counters') {
+        const c = data.counters;
+        html += `
+        <div style="background:${t.primary || '#1089ff'};padding:1.5rem;border-radius:1rem;margin-bottom:1.5rem;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;">
+          ${[{label:c.label1,val:c.value1},{label:c.label2,val:c.value2},{label:c.label3,val:c.value3},{label:c.label4,val:c.value4}].map(item => `
+            <div class="lp-counter"><div class="number">${item.val}+</div><div style="font-size:0.8rem;opacity:0.8;">${item.label}</div></div>
+          `).join('')}
+        </div>
+        `;
+      } else if (key === 'services') {
+        html += `
+        <div style="background:linear-gradient(135deg, #f8f9fc 0%, #eef2f7 100%);padding:1.5rem;border-radius:1rem;margin-bottom:1.5rem;">
+          <div style="text-align:center;margin-bottom:1rem;">
+            <h2 style="font-size:1.8rem;font-weight:700;margin:0.2rem 0;">Our Service Keeps you <span style="color:${t.primary || '#1089ff'};">Smile</span></h2>
+            <p style="color:#64748b;">Comprehensive medical care services at affordable prices.</p>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem;">${data.services.cards.slice(0,4).map(s => `
+            <div class="lp-service-card">
+              <div class="icon"><i class="fas ${s.icon}"></i></div>
+              <h4 style="font-weight:700;margin:0.2rem 0;">${s.title}</h4>
+              <p style="font-size:0.8rem;color:#64748b;">${s.text}</p>
+            </div>
+          `).join('')}</div>
+        </div>
+        `;
+      } else if (key === 'doctors') {
+        html += `
+        <div style="padding:1.5rem;border-radius:1rem;margin-bottom:1.5rem;background:#ffffff;">
+          <div style="text-align:center;margin-bottom:1rem;">
+            <h2 style="font-size:1.5rem;font-weight:700;">Meet Our Experience <span style="color:${t.primary || '#1089ff'};">Doctors</span></h2>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;">${data.doctors.cards.slice(0,4).map(d => `
+            <div class="lp-doctor-card">
+              <div class="img" style="background-image:url('${d.image || 'https://placehold.co/300x250?text=Doctor'}');"></div>
+              <h4 style="font-weight:700;margin:0.5rem 0 0.1rem;">${d.name}</h4>
+              <span style="color:${t.primary || '#1089ff'};font-size:0.8rem;">${d.specialty}</span>
+              <p style="font-size:0.7rem;color:#64748b;">${d.bio}</p>
+            </div>
+          `).join('')}</div>
+        </div>
+        `;
+      } else if (key === 'pricing') {
+        html += `
+        <div style="padding:1.5rem;border-radius:1rem;margin-bottom:1.5rem;background:#ffffff;">
+          <div style="text-align:center;margin-bottom:1rem;">
+            <h2 style="font-size:1.5rem;font-weight:700;">Our Best <span style="color:${t.primary || '#1089ff'};">Pricing</span></h2>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;">${data.pricing.cards.map(p => `
+            <div class="lp-pricing-card ${p.active ? 'active' : ''}">
+              <h3 style="font-size:1.2rem;font-weight:700;">${p.title}</h3>
+              <div style="font-size:1.8rem;font-weight:700;color:${p.active ? 'white' : (t.primary || '#1089ff')};">${p.price}</div>
+              <div style="font-size:0.8rem;color:${p.active ? 'rgba(255,255,255,0.7)' : '#94a3b8'};">${p.period}</div>
+              <ul style="font-size:0.7rem;list-style:none;padding:0;margin:0.5rem 0;color:${p.active ? 'rgba(255,255,255,0.8)' : '#64748b'};">
+                ${p.features.split(',').map(f => `<li>• ${f.trim()}</li>`).join('')}
+              </ul>
+              <a href="#" style="display:inline-block;border:2px solid ${p.active ? 'white' : (t.primary || '#1089ff')};color:${p.active ? 'white' : (t.primary || '#1089ff')};padding:0.3rem 1.2rem;border-radius:2rem;font-weight:600;text-decoration:none;font-size:0.8rem;">Order now</a>
+            </div>
+          `).join('')}</div>
+        </div>
+        `;
+      } else if (key === 'gallery') {
+        const images = data.gallery.images;
+        if (images.length) {
+          html += `
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;margin-bottom:1.5rem;">
+            ${images.slice(0,4).map(img => `<div class="lp-gallery-img" style="background-image:url('${img.url || 'https://placehold.co/400x300?text=Gallery'}');"></div>`).join('')}
+          </div>
+          `;
+        }
+      } else if (key === 'blog') {
+        const posts = data.blog.posts;
+        if (posts.length) {
+          html += `
+          <div style="padding:1.5rem;border-radius:1rem;margin-bottom:1.5rem;background:#ffffff;">
+            <div style="text-align:center;margin-bottom:1rem;">
+              <h2 style="font-size:1.5rem;font-weight:700;">Latest <span style="color:${t.primary || '#1089ff'};">Blog</span></h2>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;">${posts.slice(0,3).map(p => `
+              <div class="lp-blog-card">
+                <div class="img" style="background-image:url('${p.image || 'https://placehold.co/600x300?text=Blog'}');"></div>
+                <div style="padding:0.8rem;">
+                  <div style="font-size:0.7rem;color:#94a3b8;">${p.date || ''} • ${p.author || ''}</div>
+                  <h4 style="font-weight:700;font-size:0.9rem;margin:0.2rem 0;">${p.title}</h4>
+                  <a href="#" style="color:${t.primary || '#1089ff'};font-weight:500;font-size:0.8rem;text-decoration:none;">Read More <i class="fas fa-arrow-right" style="font-size:0.6rem;"></i></a>
+                </div>
+              </div>
+            `).join('')}</div>
+          </div>
+          `;
+        }
+      } else if (key === 'quote') {
+        html += `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;padding:1.5rem;border-radius:1rem;margin-bottom:1.5rem;background:${t.primary || '#1089ff'};color:white;">
+          <div>
+            <h3 style="font-size:1.5rem;font-weight:700;">MedPlus Procedure &amp; High Quality Services</h3>
+            <p style="opacity:0.9;">Our commitment to excellence and patient satisfaction across India.</p>
+            <ul style="list-style:none;padding:0;margin-top:0.5rem;">
+              <li><i class="fas fa-check" style="margin-right:0.5rem;"></i> Advanced medical technology</li>
+              <li><i class="fas fa-check" style="margin-right:0.5rem;"></i> Highly experienced specialists</li>
+              <li><i class="fas fa-check" style="margin-right:0.5rem;"></i> Affordable treatment plans</li>
+            </ul>
+          </div>
+          <div style="background:white;border-radius:1rem;padding:1.2rem;color:#1a202c;">
+            <h4 style="font-weight:700;font-size:1.1rem;margin:0 0 0.5rem;">Get a Free Quote</h4>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">${data.quote.fields.map(f => `
+              <div style="${f.type === 'textarea' ? 'grid-column:span 2;' : ''}">
+                <label style="font-size:0.6rem;font-weight:600;color:#64748b;">${f.label}${f.required ? ' *' : ''}</label>
+                ${f.type === 'textarea' ? `<textarea style="width:100%;padding:0.4rem;border:1px solid #e2e8f0;border-radius:0.5rem;font-size:0.8rem;min-height:60px;" placeholder="${f.placeholder}"></textarea>` :
+                  `<input type="${f.type}" style="width:100%;padding:0.4rem;border:1px solid #e2e8f0;border-radius:0.5rem;font-size:0.8rem;" placeholder="${f.placeholder}">`}
+              </div>
+            `).join('')}</div>
+            <button style="background:${t.primary || '#1089ff'};color:white;padding:0.5rem;border:none;border-radius:0.5rem;font-weight:600;width:100%;margin-top:0.5rem;cursor:pointer;">Get a Quote</button>
+          </div>
+        </div>
+        `;
+      }
+    });
+
+    // Testimonials
+    html += `
+    <div style="background:linear-gradient(135deg, #f8f9fc 0%, #eef2f7 100%);padding:1.5rem;border-radius:1rem;margin-bottom:1.5rem;">
+      <div style="text-align:center;margin-bottom:1rem;">
+        <h2 style="font-size:1.5rem;font-weight:700;">Testimony</h2>
+        <span style="color:${t.primary || '#1089ff'};">Our Happy Patients Say</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;">
+        <div class="lp-testimonial">
+          <div style="width:70px;height:70px;border-radius:50%;background:url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face') center/cover;margin:0 auto 0.5rem;position:relative;">
+            <span style="position:absolute;bottom:-5px;right:-5px;background:${t.primary || '#1089ff'};color:white;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;"><i class="fas fa-quote-left"></i></span>
+          </div>
+          <p style="font-size:0.85rem;color:#64748b;line-height:1.6;">MedPlus gave me the care I always wanted. The team is professional and the prices are very reasonable!</p>
+          <h4 style="font-weight:700;margin:0.5rem 0 0.1rem;">Rahul Gupta</h4>
+          <span style="color:${t.primary || '#1089ff'};font-size:0.8rem;">Software Engineer, Mumbai</span>
+        </div>
+        <div class="lp-testimonial dark" style="background:${t.primary || '#1089ff'};">
+          <div style="width:70px;height:70px;border-radius:50%;background:url('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face') center/cover;margin:0 auto 0.5rem;position:relative;">
+            <span style="position:absolute;bottom:-5px;right:-5px;background:${t.primary || '#1089ff'};color:white;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;"><i class="fas fa-quote-left"></i></span>
+          </div>
+          <p style="font-size:0.85rem;line-height:1.6;">Excellent service! The staff is friendly and the facilities are top-notch. Highly recommend MedPlus.</p>
+          <h4 style="font-weight:700;margin:0.5rem 0 0.1rem;color:white;">Priya Singh</h4>
+          <span style="color:rgba(255,255,255,0.8);font-size:0.8rem;">Teacher, Delhi</span>
+        </div>
+        <div class="lp-testimonial">
+          <div style="width:70px;height:70px;border-radius:50%;background:url('https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face') center/cover;margin:0 auto 0.5rem;position:relative;">
+            <span style="position:absolute;bottom:-5px;right:-5px;background:${t.primary || '#1089ff'};color:white;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;"><i class="fas fa-quote-left"></i></span>
+          </div>
+          <p style="font-size:0.85rem;color:#64748b;line-height:1.6;">My kids love visiting MedPlus! The pediatrician is amazing and the environment is very child-friendly.</p>
+          <h4 style="font-weight:700;margin:0.5rem 0 0.1rem;">Amit Kumar</h4>
+          <span style="color:${t.primary || '#1089ff'};font-size:0.8rem;">Business Owner, Bangalore</span>
+        </div>
+      </div>
+    </div>
+    `;
+
+    // Footer
+    html += `
+    <div class="lp-footer">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1.2rem;">
+        <div>
+          <h4>${data.footer.brand || 'MedPlus'}</h4>
+          <p style="font-size:0.8rem;opacity:0.8;">${data.footer.description || 'Your trusted medical care partner.'}</p>
+          <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">${(data.footer.social || 'fa-twitter|#').split(',').slice(0,4).map(s => { const [icon,url] = s.split('|'); return `<a href="${url||'#'}" style="width:32px;height:32px;background:rgba(255,255,255,0.08);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;text-decoration:none;font-size:0.8rem;"><i class="fab ${icon}"></i></a>`; }).join('')}</div>
+        </div>
+        <div><h4>Quick Links</h4>${(data.footer.quickLinks || 'About|#').split(',').slice(0,5).map(l => { const [label,url] = l.split('|'); return `<a href="${url||'#'}">${label||'Link'}</a>`; }).join('')}</div>
+        <div><h4>Recent Blog</h4>${(data.footer.blog || 'Top 10 Health Tips|#|Jan 15, 2025').split(',').slice(0,3).map(l => { const parts = l.split('|'); return `<a href="${parts[1]||'#'}">${parts[0]||'Post'}</a>`; }).join('')}</div>
+        <div><h4>Office</h4><p style="font-size:0.8rem;opacity:0.8;">${data.footer.address || '123 Health St'}</p><p style="font-size:0.8rem;opacity:0.8;"><i class="fas fa-phone" style="color:${t.primary || '#1089ff'};width:16px;"></i> ${data.footer.phone || '+91 98765 43210'}</p><p style="font-size:0.8rem;opacity:0.8;"><i class="fas fa-envelope" style="color:${t.primary || '#1089ff'};width:16px;"></i> ${data.footer.email || 'info@medplus.in'}</p></div>
+      </div>
+      <div class="copyright">${data.footer.copyright || '© 2025 MedPlus India | All rights reserved'}</div>
+    </div>
+    `;
+
+    html += `</div>`;
+    container.innerHTML = html;
+  }
+
+  // ======================= UTILITIES =======================
+  function esc(str) { return String(str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function switchTab(tab) {
+    document.querySelectorAll('.subtab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    document.querySelectorAll('.section-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tab));
+    if (tab === 'preview') renderLivePreview();
+  }
+  function toggleAdminDropdown(e) {
+    e.preventDefault(); const parent = e.currentTarget.closest('.admin-dropdown'); const menu = parent.querySelector('.admin-dropdown-menu'); const icon = parent.querySelector('.fa-chevron-down'); menu.classList.toggle('hidden'); icon.classList.toggle('rotate-180');
+  }
+  function renderAll() {
+    renderHero(); renderFeatures(); renderPartners(); renderAbout(); renderCounters(); renderServices(); renderDoctors(); renderPricing(); renderGallery(); renderBlog(); renderQuoteFields(); renderTheme(); renderHeader(); renderFooter(); renderOrder();
+    renderLivePreview();
+  }
+  loadData(); renderAll();
+</script>
+</body>
+</html>

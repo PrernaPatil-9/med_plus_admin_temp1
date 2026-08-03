@@ -12,14 +12,14 @@
     <style>
         * { font-family: 'Inter', sans-serif; }
         body { background: #f4f7fc; margin: 0; height: 100vh; overflow: hidden; }
-        
+
         /* Container fills viewport and prevents page scroll */
         .admin-container {
             display: flex;
             height: 100vh;
             overflow: hidden;
         }
-        
+
         /* Sidebar stays fixed/sticky */
         .admin-sidebar {
             background: #0f2b4b;
@@ -30,7 +30,7 @@
             position: sticky;
             top: 0;
         }
-        
+
         /* Main content scrolls independently */
         .admin-main {
             flex: 1;
@@ -38,178 +38,650 @@
             height: 100vh;
             padding: 1.5rem 2.5rem;
         }
-        
+
         .admin-sidebar a { transition: all 0.2s; border-left: 3px solid transparent; display: block; padding: 0.75rem 1rem; color: rgba(255,255,255,0.7); text-decoration: none; }
         .admin-sidebar a:hover, .admin-sidebar a.active { background: #1a3a5e; border-left-color: #ec4899; color: white; }
         .card-admin { background: white; border-radius: 1.5rem; box-shadow: 0 8px 30px rgba(0,0,0,0.04); padding: 1.5rem; transition: 0.2s; }
-        input[type="color"] { width: 50px; height: 40px; padding: 2px; border-radius: 0.5rem; border: 1px solid #e2e8f0; cursor: pointer; }
-        input[type="text"] { border-radius: 0.75rem; border: 1px solid #e2e8f0; padding: 0.6rem 1rem; width: 100%; transition: 0.2s; }
+        input[type="color"] { width: 42px; height: 38px; padding: 2px; border-radius: 0.5rem; border: 1px solid #e2e8f0; cursor: pointer; flex-shrink: 0; }
+        input[type="text"] { border-radius: 0.75rem; border: 1px solid #e2e8f0; padding: 0.55rem 0.85rem; width: 100%; transition: 0.2s; font-size: 0.8rem; }
         input:focus { border-color: #0f2b4b; outline: none; box-shadow: 0 0 0 3px rgba(15,43,75,0.08); }
         .theme-preview-box { width: 100px; height: 60px; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 0.75rem; }
+
+        /* ---- Theme Manager additions (scoped, follows existing admin visual language) ---- */
+        .site-card { cursor:pointer; border:2px solid #e2e8f0; border-radius:1.25rem; padding:1.1rem; background:#fff; transition:.2s; position:relative; }
+        .site-card:hover { border-color:#c7d2e0; transform:translateY(-2px); }
+        .site-card.selected { border-color:#0f2b4b; box-shadow:0 10px 25px rgba(15,43,75,0.12); }
+        .site-card.selected::after { content:'\f00c'; font-family:'Font Awesome 6 Free'; font-weight:900; position:absolute; top:0.7rem; right:0.7rem; width:22px; height:22px; background:#0f2b4b; color:#fff; border-radius:9999px; display:flex; align-items:center; justify-content:center; font-size:0.6rem; }
+        .swatch-strip { display:flex; border-radius:0.6rem; overflow:hidden; height:14px; margin-top:0.7rem; }
+        .swatch-strip span { flex:1; }
+
+        .tm-tabbtn { padding:0.55rem 1rem; border-radius:9999px; font-size:0.8rem; font-weight:500; color:#64748b; background:#f1f5f9; transition:.15s; white-space:nowrap; }
+        .tm-tabbtn.active { background:#0f2b4b; color:#fff; }
+
+        .token-row { display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0; border-bottom:1px dashed #eef1f6; }
+        .token-row:last-child { border-bottom:none; }
+        .token-label { flex:0 0 128px; font-size:0.74rem; font-weight:600; color:#475569; }
+
+        .preset-chip { border:1px solid #e2e8f0; border-radius:1rem; padding:0.85rem 1rem; background:#fff; }
+        .preset-chip.is-default { border-color:#0f2b4b; background:#f6f8fc; }
+
+        .dirty-dot { width:8px; height:8px; border-radius:9999px; background:#f59e0b; display:inline-block; }
+
+        .tm-preview-scroll { max-height: 640px; overflow-y:auto; border-radius:1rem; }
+        .tm-preview-scroll::-webkit-scrollbar{ width:6px; }
+        .tm-preview-scroll::-webkit-scrollbar-thumb{ background:#e2e8f0; border-radius:10px; }
+
+        .toast { position:fixed; bottom:1.5rem; right:1.5rem; background:#0f2b4b; color:#fff; padding:0.8rem 1.2rem; border-radius:0.85rem; box-shadow:0 10px 30px rgba(0,0,0,0.2); font-size:0.85rem; z-index:9999; opacity:0; transform:translateY(10px); transition:.25s; pointer-events:none; }
+        .toast.show { opacity:1; transform:translateY(0); }
     </style>
 </head>
 <body>
     <div class="admin-container">
-        <!-- Sidebar - sticky -->
-        <aside class="admin-sidebar text-white p-6">
-            <div class="flex items-center gap-3 pb-6 border-b border-white/10">
-                <div class="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
-                <span class="text-2xl font-bold tracking-tight">Med Plus</span>
-                <span class="ml-auto text-[10px] uppercase bg-pink-600/30 px-2 py-0.5 rounded-full text-pink-200">CMS</span>
-            </div>
-            <nav class="mt-6 space-y-1">
-                <a href="../../index.html"><i class="fas fa-th-large w-5"></i> Dashboard</a>
-                <a href="../home/home.html"><i class="fas fa-home w-5"></i> Home Page</a>
-                <a href="../about/about.html"><i class="fas fa-info-circle w-5"></i> About Page</a>
-                <a href="../services/services.html"><i class="fas fa-concierge-bell w-5"></i> Services Page</a>
-                <a href="../contact/contact.html"><i class="fas fa-envelope w-5"></i> Contact Page</a>
-                <a href="theme.html" class="active"><i class="fas fa-palette w-5"></i> Theme Manager</a>
-                <a href="../settings/settings.html"><i class="fas fa-cog w-5"></i> Settings</a>
-                <a href="../preview/preview.html"><i class="fas fa-eye w-5"></i> Preview & Save</a>
-            </nav>
-            <div class="pt-6 mt-6 border-t border-white/10 text-xs text-white/40">
-                <i class="fas fa-database mr-1"></i> Local Storage
-            </div>
-        </aside>
+<!-- Sidebar - sticky -->
+<aside class="admin-sidebar text-white p-6">
+  <div class="flex items-center gap-3 pb-6 border-b border-white/10">
+    <div class="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
+    <span class="text-2xl font-bold tracking-tight">Med Plus</span>
+    <span class="ml-auto text-[10px] uppercase bg-pink-600/30 px-2 py-0.5 rounded-full text-pink-200">CMS</span>
+  </div>
+  <nav class="mt-6 space-y-1">
+    <a href="../../index.html"><i class="fas fa-th-large w-5"></i> Dashboard</a>
+
+    <!-- Home Page with Dropdown - Closed by default -->
+    <div class="admin-dropdown">
+      <a href="home.html" class="block px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition" onclick="toggleAdminDropdown(event)">
+        <span><i class="fas fa-home w-5"></i> Home Page</span>
+        <i class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
+      </a>
+      <div class="admin-dropdown-menu hidden ml-7 mt-1 space-y-0.5">
+        <a href="/pages/home/home.html" class="block px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition">
+          <i class="fas fa-file-alt w-4 mr-2"></i> Home
+        </a>
+        <a href="/pages/home/home1.html" class="block px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition">
+          <i class="fas fa-file-alt w-4 mr-2"></i> Home 1
+        </a>
+        <a href="/pages/home/home2.html" class="block px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition">
+          <i class="fas fa-file-alt w-4 mr-2"></i> Home 2
+        </a>
+        <a href="/pages/home/home3.html" class="block px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition">
+          <i class="fas fa-file-alt w-4 mr-2"></i> Home 3
+        </a>
+      </div>
+    </div>
+
+    <a href="../about/about.html"><i class="fas fa-info-circle w-5"></i> About Page</a>
+    <a href="../services/services.html"><i class="fas fa-concierge-bell w-5"></i> Services Page</a>
+    <a href="../contact/contact.html"><i class="fas fa-envelope w-5"></i> Contact Page</a>
+    <a href="../theme/theme.html" class="block px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition active" ><i class="fas fa-palette w-5"></i> Theme Manager</a>
+    <a href="../settings/settings.html"><i class="fas fa-cog w-5"></i> Settings</a>
+    <!-- <a href="../preview/preview.html"><i class="fas fa-eye w-5"></i> Preview & Save</a> -->
+  </nav>
+  <div class="pt-6 mt-6 border-t border-white/10 text-xs text-white/40">
+    <i class="fas fa-database mr-1"></i> Local Storage
+  </div>
+</aside>
+
+<!-- Admin Dropdown JavaScript -->
+<script>
+function toggleAdminDropdown(event) {
+  event.preventDefault();
+  const parent = event.currentTarget.closest('.admin-dropdown');
+  const menu = parent.querySelector('.admin-dropdown-menu');
+  const icon = parent.querySelector('.fa-chevron-down');
+
+  menu.classList.toggle('hidden');
+  icon.classList.toggle('rotate-180');
+}
+
+// Keep dropdown closed by default - No auto-expand
+</script>
+
+<style>
+.admin-sidebar {
+  background: linear-gradient(180deg, #0b4f6c 0%, #062a3a 100%);
+  min-height: 100vh;
+  width: 280px;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.admin-sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.admin-sidebar a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+}
+
+.admin-sidebar a.active {
+  background: rgba(236, 72, 153, 0.2);
+  color: white;
+  border-left: 3px solid #ec4899;
+}
+
+.admin-sidebar .admin-dropdown > a {
+  cursor: pointer;
+}
+
+.admin-sidebar .admin-dropdown-menu {
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.admin-sidebar .admin-dropdown-menu a {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.admin-sidebar .admin-dropdown-menu a:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: white;
+}
+
+.admin-sidebar .admin-dropdown-menu a.active {
+  background: rgba(236, 72, 153, 0.15);
+  color: white;
+  border-left: 2px solid #ec4899;
+}
+
+.fa-chevron-down {
+  transition: transform 0.3s ease;
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+/* Scrollbar styling */
+.admin-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.admin-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.admin-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+/* Hide dropdown by default */
+.admin-dropdown-menu.hidden {
+  display: none;
+}
+</style>
 
         <!-- Main Content - scrollable -->
         <main class="admin-main">
-            <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center justify-between mb-6">
                 <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
                     <i class="fas fa-palette text-pink-600"></i>
                     Theme Manager
                 </h2>
                 <div class="flex items-center gap-3">
+                    <span id="dirtyIndicator" class="hidden text-xs text-amber-600 items-center gap-1.5"><span class="dirty-dot"></span> Unsaved changes</span>
                     <span class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> <span id="liveTime"></span></span>
-                    <button onclick="saveData()" class="text-sm bg-emerald-50 text-emerald-600 px-4 py-1.5 rounded-full hover:bg-emerald-100 transition">
+                    <button onclick="saveCurrentTheme()" class="text-sm bg-emerald-50 text-emerald-600 px-4 py-1.5 rounded-full hover:bg-emerald-100 transition">
                         <i class="fas fa-save"></i> Save
                     </button>
                 </div>
             </div>
 
-            <div class="card-admin" id="themeContainer"></div>
+            <!-- 1. Website Selection -->
+            <div class="card-admin mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-lg">Select a Website</h3>
+                    <span class="text-xs text-gray-400">4 websites managed from this panel</span>
+                </div>
+                <div id="siteGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+            </div>
+
+            <!-- 2-6. Theme editor + live preview -->
+            <div class="grid grid-cols-1 xl:grid-cols-5 gap-6 items-start">
+
+                <!-- Left: editor -->
+                <div class="xl:col-span-3 space-y-6">
+
+                    <div class="card-admin">
+                        <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                            <h3 class="font-bold text-lg" id="editorSiteTitle">Theme Customization</h3>
+                            <div class="flex gap-2">
+                                <button onclick="restoreSavedTheme()" class="text-sm bg-slate-50 text-slate-600 px-3 py-1.5 rounded-full hover:bg-slate-100 transition">
+                                    <i class="fas fa-rotate-left mr-1"></i> Restore Saved
+                                </button>
+                                <button onclick="resetToDefault()" class="text-sm bg-rose-50 text-rose-600 px-3 py-1.5 rounded-full hover:bg-rose-100 transition">
+                                    <i class="fas fa-arrow-rotate-right mr-1"></i> Reset Default
+                                </button>
+                                <button onclick="exportTheme()" class="text-sm bg-blue-50 text-blue-600 px-3 py-1.5 rounded-full hover:bg-blue-100 transition">
+                                    <i class="fas fa-download mr-1"></i> Export
+                                </button>
+                                <button onclick="importTheme()" class="text-sm bg-green-50 text-green-600 px-3 py-1.5 rounded-full hover:bg-green-100 transition">
+                                    <i class="fas fa-upload mr-1"></i> Import
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- token group tabs -->
+                        <div id="groupTabs" class="flex flex-wrap gap-2 mb-5"></div>
+
+                        <div id="groupPanel"></div>
+
+                        <div class="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400 flex justify-between">
+                            <span><i class="fas fa-info-circle mr-1"></i> Changes preview instantly. Click Save to apply them to the live site.</span>
+                            <span id="tokenCount">0 tokens</span>
+                        </div>
+                    </div>
+
+                    <!-- 6. Theme presets -->
+                    <div class="card-admin">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-lg">Theme Presets</h3>
+                            <button onclick="createPresetFromCurrent()" class="text-sm bg-pink-50 text-pink-600 px-3 py-1.5 rounded-full hover:bg-pink-100 transition">
+                                <i class="fas fa-plus mr-1"></i> Save Current as Preset
+                            </button>
+                        </div>
+                        <div id="presetList" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                        <p id="presetEmpty" class="hidden text-sm text-gray-400 text-center py-6">No presets yet for this website. Save your current theme as the first one.</p>
+                    </div>
+                </div>
+
+                <!-- Right: live preview -->
+                <div class="xl:col-span-2">
+                    <div class="card-admin xl:sticky xl:top-2">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-lg flex items-center gap-2"><i class="fas fa-eye text-pink-600"></i> Live Preview</h3>
+                            <span id="previewSiteBadge" class="text-xs bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full"></span>
+                        </div>
+                        <div class="tm-preview-scroll border border-gray-100">
+                            <div id="livePreviewRoot"></div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-3"><i class="fas fa-circle-info mr-1"></i> Preview reflects only the currently selected website and updates as you edit.</p>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
+    <div id="toast" class="toast"></div>
+
     <script>
-        const defaultData = {
-            theme: {
-                primary: '#0f2b4b',
-                secondary: '#1a3a5e',
-                accent: '#ec4899',
-                text: '#1e293b',
-                heading: '#0f172a',
-                background: '#ffffff',
-                cardBg: '#ffffff',
-                border: '#e2e8f0',
-                buttonBg: '#0f2b4b',
-                buttonText: '#ffffff',
-                hoverBg: '#1a3a5e',
-                gradientStart: '#fce7f3',
-                gradientEnd: '#eef2ff',
-                shadow: '0 8px 30px rgba(0,0,0,0.04)'
-            }
+        /* =========================================================
+           THEME MANAGER — multi-website theme engine
+           Storage key kept separate from other admin modules so this
+           does not disturb any existing single-theme data.
+        ========================================================== */
+        const STORAGE_KEY = 'admin_theme_manager_v2';
+
+        const WEBSITES = [
+            { id:'site1', name:'Med Plus Classic', tag:'Home', icon:'fa-hospital' },
+            { id:'site2', name:'MedPlus India', tag:'Regional Site', icon:'fa-map-location-dot' },
+            { id:'site3', name:'Med Plus Redesign', tag:'Home 2', icon:'fa-heart-pulse' },
+            { id:'site4', name:'Dente Dental Studio', tag:'Dental Clinic', icon:'fa-tooth' },
+        ];
+
+        const DEFAULT_THEMES = {
+            site1: {
+                primary:'#1e3a6f', secondary:'#14305a', accent:'#db2777',
+                background:'#ffffff', sectionBg:'#f8f9fc', cardBg:'#ffffff', headerBg:'#ffffff', footerBg:'#111827',
+                h1:'#0f172a', h2:'#0f172a', h3:'#1f2937', h4:'#1f2937', h5:'#374151', h6:'#374151',
+                bodyText:'#4b5563', link:'#1e3a6f', linkHover:'#14305a',
+                buttonBg:'#db2777', buttonText:'#ffffff', buttonHover:'#be185d',
+                border:'#e5e7eb', icon:'#1e3a6f',
+                success:'#10b981', warning:'#f59e0b', error:'#ef4444',
+                gradientStart:'#fce7f3', gradientEnd:'#eef2ff',
+                shadow:'rgba(15,23,42,0.08)'
+            },
+            site2: {
+                primary:'#1089ff', secondary:'#0a6edb', accent:'#0a7ae0',
+                background:'#ffffff', sectionBg:'#f9fafb', cardBg:'#ffffff', headerBg:'#ffffff', footerBg:'#111827',
+                h1:'#1f2937', h2:'#1f2937', h3:'#1f2937', h4:'#374151', h5:'#374151', h6:'#4b5563',
+                bodyText:'#4b5563', link:'#1089ff', linkHover:'#0a6edb',
+                buttonBg:'#1089ff', buttonText:'#ffffff', buttonHover:'#0a6edb',
+                border:'#e5e7eb', icon:'#1089ff',
+                success:'#10b981', warning:'#f59e0b', error:'#ef4444',
+                gradientStart:'#1089ff', gradientEnd:'#0668c7',
+                shadow:'rgba(16,137,255,0.15)'
+            },
+            site3: {
+                primary:'#0b4f6c', secondary:'#093b52', accent:'#00a8b5',
+                background:'#ffffff', sectionBg:'#f8f9fc', cardBg:'#ffffff', headerBg:'#ffffff', footerBg:'#062a3a',
+                h1:'#12303f', h2:'#12303f', h3:'#12303f', h4:'#1e4356', h5:'#1e4356', h6:'#2d5567',
+                bodyText:'#3f5b68', link:'#0b4f6c', linkHover:'#00838f',
+                buttonBg:'#0b4f6c', buttonText:'#ffffff', buttonHover:'#093b52',
+                border:'#dbeafe', icon:'#0b4f6c',
+                success:'#10b981', warning:'#f59e0b', error:'#ef4444',
+                gradientStart:'#0b4f6c', gradientEnd:'#00a8b5',
+                shadow:'rgba(11,79,108,0.18)'
+            },
+            site4: {
+                primary:'#5D8BA1', secondary:'#7CAE8D', accent:'#A88BBD',
+                background:'#FBFAF7', sectionBg:'#CFE4ED', cardBg:'#FBFAF7', headerBg:'#FBFAF7', footerBg:'#5D8BA1',
+                h1:'#2B2F33', h2:'#2B2F33', h3:'#2B2F33', h4:'#2B2F33', h5:'#40454a', h6:'#40454a',
+                bodyText:'#697075', link:'#5D8BA1', linkHover:'#2B2F33',
+                buttonBg:'#2B2F33', buttonText:'#FBFAF7', buttonHover:'#5D8BA1',
+                border:'#dedcd7', icon:'#5D8BA1',
+                success:'#7CAE8D', warning:'#A88BBD', error:'#c96b6b',
+                gradientStart:'#CFE4ED', gradientEnd:'#EBE0F1',
+                shadow:'rgba(43,47,51,0.12)'
+            },
         };
 
-        let appData = {};
+        const TOKEN_GROUPS = [
+            { key:'brand', title:'Brand Colors', icon:'fa-swatchbook', tokens:['primary','secondary','accent'] },
+            { key:'bg', title:'Backgrounds', icon:'fa-layer-group', tokens:['background','sectionBg','cardBg','headerBg','footerBg'] },
+            { key:'type', title:'Typography', icon:'fa-heading', tokens:['h1','h2','h3','h4','h5','h6','bodyText'] },
+            { key:'links', title:'Links', icon:'fa-link', tokens:['link','linkHover'] },
+            { key:'buttons', title:'Buttons', icon:'fa-square', tokens:['buttonBg','buttonText','buttonHover'] },
+            { key:'ui', title:'UI Elements', icon:'fa-border-style', tokens:['border','icon','shadow'] },
+            { key:'status', title:'Status Colors', icon:'fa-circle-exclamation', tokens:['success','warning','error'] },
+            { key:'gradient', title:'Gradient', icon:'fa-fill-drip', tokens:['gradientStart','gradientEnd'] },
+        ];
 
-        function loadData() {
-            const stored = localStorage.getItem('novena_cms_data');
-            if (stored) {
-                try { appData = JSON.parse(stored); } catch(e) { appData = JSON.parse(JSON.stringify(defaultData)); }
-            } else { appData = JSON.parse(JSON.stringify(defaultData)); }
-            if (!appData.theme) appData.theme = defaultData.theme;
-            saveData();
-            renderTheme();
+        const TOKEN_LABELS = {
+            primary:'Primary', secondary:'Secondary', accent:'Accent',
+            background:'Page Background', sectionBg:'Section Background', cardBg:'Card Background', headerBg:'Header Background', footerBg:'Footer Background',
+            h1:'Heading H1', h2:'Heading H2', h3:'Heading H3', h4:'Heading H4', h5:'Heading H5', h6:'Heading H6', bodyText:'Body Text',
+            link:'Link', linkHover:'Link Hover',
+            buttonBg:'Button Background', buttonText:'Button Text', buttonHover:'Button Hover',
+            border:'Border', icon:'Icon', shadow:'Shadow',
+            success:'Success', warning:'Warning', error:'Error',
+            gradientStart:'Gradient Start', gradientEnd:'Gradient End',
+        };
+
+        let state = null;          // full persisted state
+        let currentGroup = 'brand';
+
+        /* ---------- persistence ---------- */
+        function freshState() {
+            const sites = {};
+            WEBSITES.forEach(w => {
+                const def = JSON.parse(JSON.stringify(DEFAULT_THEMES[w.id]));
+                sites[w.id] = {
+                    defaultTheme: def,
+                    theme: JSON.parse(JSON.stringify(def)),
+                    savedTheme: JSON.parse(JSON.stringify(def)),
+                    presets: {},
+                    defaultPreset: null,
+                };
+            });
+            return { currentSiteId: WEBSITES[0].id, sites };
         }
 
-        function saveData() {
-            localStorage.setItem('novena_cms_data', JSON.stringify(appData));
+        function loadState() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    // guard against missing sites if WEBSITES ever changes
+                    const fresh = freshState();
+                    WEBSITES.forEach(w => {
+                        if (!parsed.sites || !parsed.sites[w.id]) {
+                            parsed.sites = parsed.sites || {};
+                            parsed.sites[w.id] = fresh.sites[w.id];
+                        } else {
+                            parsed.sites[w.id].defaultTheme = fresh.sites[w.id].defaultTheme;
+                        }
+                    });
+                    state = parsed;
+                    return;
+                } catch (e) { /* fall through to fresh */ }
+            }
+            state = freshState();
+            persist();
         }
 
-        function renderTheme() {
-            const container = document.getElementById('themeContainer');
-            const theme = appData.theme;
-            
-            let html = `
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="font-bold text-lg">Theme Customization</h3>
-                    <div class="flex gap-2">
-                        <button onclick="exportTheme()" class="text-sm bg-blue-50 text-blue-600 px-3 py-1 rounded-full hover:bg-blue-100 transition">
-                            <i class="fas fa-download mr-1"></i> Export
-                        </button>
-                        <button onclick="importTheme()" class="text-sm bg-green-50 text-green-600 px-3 py-1 rounded-full hover:bg-green-100 transition">
-                            <i class="fas fa-upload mr-1"></i> Import
-                        </button>
+        function persist() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+
+        function currentSite() { return state.sites[state.currentSiteId]; }
+        function currentMeta() { return WEBSITES.find(w => w.id === state.currentSiteId); }
+
+        function isDirty() {
+            const s = currentSite();
+            return JSON.stringify(s.theme) !== JSON.stringify(s.savedTheme);
+        }
+
+        /* ---------- toast ---------- */
+        let toastTimer;
+        function toast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+        }
+
+        /* ---------- website selection ---------- */
+        function renderSiteGrid() {
+            const grid = document.getElementById('siteGrid');
+            grid.innerHTML = WEBSITES.map(w => {
+                const t = state.sites[w.id].theme;
+                const selected = w.id === state.currentSiteId;
+                return `
+                    <div class="site-card ${selected ? 'selected' : ''}" onclick="selectSite('${w.id}')">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-lg" style="background:${t.primary}">
+                            <i class="fas ${w.icon}"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mt-3 text-sm">${w.name}</h4>
+                        <p class="text-xs text-gray-400">${w.tag}</p>
+                        <div class="swatch-strip">
+                            <span style="background:${t.primary}"></span>
+                            <span style="background:${t.secondary}"></span>
+                            <span style="background:${t.accent}"></span>
+                            <span style="background:${t.buttonBg}"></span>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    ${renderColorGroup('Primary Colors', ['primary', 'secondary', 'accent'], theme)}
-                    ${renderColorGroup('Text Colors', ['text', 'heading', 'background'], theme)}
-                    ${renderColorGroup('UI Elements', ['cardBg', 'border', 'shadow'], theme)}
-                    ${renderColorGroup('Buttons', ['buttonBg', 'buttonText', 'hoverBg'], theme)}
-                    ${renderColorGroup('Gradients', ['gradientStart', 'gradientEnd'], theme)}
-                </div>
-                
-                <div class="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                    <h5 class="font-semibold text-gray-700 mb-3">Live Preview</h5>
-                    <div class="flex flex-wrap gap-4">
-                        <div class="theme-preview-box" style="background:${theme.primary}; color:${theme.buttonText}">Primary</div>
-                        <div class="theme-preview-box" style="background:${theme.secondary}; color:${theme.buttonText}">Secondary</div>
-                        <div class="theme-preview-box" style="background:${theme.accent}; color:${theme.buttonText}">Accent</div>
-                        <div class="theme-preview-box border" style="background:${theme.background}; color:${theme.text}">Background</div>
-                        <div class="theme-preview-box" style="background:${theme.buttonBg}; color:${theme.buttonText}">Button</div>
-                    </div>
-                </div>
-                
-                <div class="mt-4 text-xs text-gray-400 flex justify-between">
-                    <span><i class="fas fa-info-circle mr-1"></i> Theme tokens as CSS variables</span>
-                    <span>${Object.keys(theme).length} tokens</span>
-                </div>
-            `;
-            
-            container.innerHTML = html;
+                `;
+            }).join('');
         }
 
-        function renderColorGroup(title, keys, theme) {
-            let html = `
-                <div class="border rounded-xl p-4 bg-gray-50">
-                    <h5 class="font-semibold text-gray-700 mb-3">${title}</h5>
-                    <div class="space-y-3">
-            `;
-            
-            keys.forEach(key => {
-                if (theme[key] !== undefined) {
-                    html += `
-                        <div>
-                            <label class="block text-xs font-medium text-gray-500 capitalize">${key.replace(/([A-Z])/g, ' $1')}</label>
-                            <div class="flex items-center gap-2">
-                                <input type="color" value="${theme[key]}" onchange="updateTheme('${key}', this.value)" />
-                                <input type="text" value="${theme[key]}" onchange="updateTheme('${key}', this.value)" class="flex-1 text-sm" />
+        function selectSite(id) {
+            if (isDirty()) {
+                const proceed = confirm('You have unsaved changes for the current website. Switch anyway? (Unsaved edits will be kept in memory but not applied until you return and Save.)');
+                if (!proceed) return;
+            }
+            state.currentSiteId = id;
+            persist();
+            renderAll();
+        }
+
+        /* ---------- token editor ---------- */
+        function renderGroupTabs() {
+            const wrap = document.getElementById('groupTabs');
+            wrap.innerHTML = TOKEN_GROUPS.map(g => `
+                <button class="tm-tabbtn ${g.key === currentGroup ? 'active' : ''}" onclick="switchGroup('${g.key}')">
+                    <i class="fas ${g.icon} mr-1.5"></i>${g.title}
+                </button>
+            `).join('');
+        }
+
+        function switchGroup(key) {
+            currentGroup = key;
+            renderGroupTabs();
+            renderGroupPanel();
+        }
+
+        function renderGroupPanel() {
+            const group = TOKEN_GROUPS.find(g => g.key === currentGroup);
+            const theme = currentSite().theme;
+            const panel = document.getElementById('groupPanel');
+            panel.innerHTML = group.tokens.map(tok => {
+                const val = theme[tok];
+                const isColorSafe = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(val);
+                return `
+                    <div class="token-row">
+                        <span class="token-label">${TOKEN_LABELS[tok]}</span>
+                        ${isColorSafe
+                            ? `<input type="color" id="c-${tok}" value="${val}" oninput="updateToken('${tok}', this.value)" />`
+                            : `<div class="w-[42px] h-[38px] rounded-lg border border-gray-200 flex-shrink-0" style="background:${val}"></div>`
+                        }
+                        <input type="text" id="t-${tok}" value="${val}" oninput="updateToken('${tok}', this.value)" placeholder="#RRGGBB or css color" />
+                    </div>
+                `;
+            }).join('');
+
+            let total = 0;
+            TOKEN_GROUPS.forEach(g => total += g.tokens.length);
+            document.getElementById('tokenCount').textContent = total + ' tokens';
+        }
+
+        function updateToken(tok, value) {
+            const theme = currentSite().theme;
+            theme[tok] = value;
+
+            const colorInput = document.getElementById('c-' + tok);
+            const textInput = document.getElementById('t-' + tok);
+            if (colorInput && colorInput.value !== value && /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value)) colorInput.value = value;
+            if (textInput && textInput.value !== value) textInput.value = value;
+
+            applyPreviewVars();
+            refreshSiteCardSwatches();
+            updateDirtyIndicator();
+        }
+
+        function refreshSiteCardSwatches() {
+            // cheap partial refresh so selecting sites doesn't require a full grid re-render each keystroke
+            renderSiteGrid();
+        }
+
+        function updateDirtyIndicator() {
+            document.getElementById('dirtyIndicator').classList.toggle('hidden', !isDirty());
+            document.getElementById('dirtyIndicator').classList.toggle('flex', isDirty());
+        }
+
+        /* ---------- live preview ---------- */
+        function renderPreviewShell() {
+            document.getElementById('livePreviewRoot').innerHTML = `
+                <div id="pv-root">
+                    <header id="pv-header" style="padding:14px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--pv-border);">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <div style="width:28px;height:28px;border-radius:8px;background:var(--pv-primary);display:flex;align-items:center;justify-content:center;color:var(--pv-buttonText);font-size:12px;"><i class="fas fa-heart-pulse"></i></div>
+                            <span style="font-weight:700; font-size:14px; color:var(--pv-h1);" id="pv-brandname"></span>
+                        </div>
+                        <div style="display:flex; gap:14px; font-size:11px; color:var(--pv-body);">
+                            <span>Home</span><span>Services</span><span>Contact</span>
+                        </div>
+                    </header>
+
+                    <section id="pv-hero" style="padding:28px 16px; background:linear-gradient(120deg, var(--pv-gradstart), var(--pv-gradend));">
+                        <span style="display:inline-block; font-size:10px; letter-spacing:.06em; text-transform:uppercase; font-weight:700; background:rgba(255,255,255,.5); color:var(--pv-h1); padding:3px 10px; border-radius:9999px;">Live Preview</span>
+                        <h1 style="font-size:22px; font-weight:700; color:var(--pv-h1); margin:10px 0 6px;">Care that fits your theme</h1>
+                        <p style="font-size:12px; color:var(--pv-body); max-width:320px; margin-bottom:14px;">This block previews your Heading, body text and gradient tokens in real time.</p>
+                        <button style="background:var(--pv-buttonbg); color:var(--pv-buttontext); border:none; padding:9px 18px; border-radius:9999px; font-size:12px; font-weight:600; box-shadow:0 8px 18px var(--pv-shadow);">Book an appointment</button>
+                    </section>
+
+                    <section style="padding:20px 16px; background:var(--pv-sectionbg);">
+                        <h2 style="font-size:15px; font-weight:700; color:var(--pv-h2); margin-bottom:3px;">Our services</h2>
+                        <h6 style="font-size:11px; color:var(--pv-h6); margin-bottom:12px; font-weight:600;">A quick look at card &amp; icon styling</h6>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                            <div style="background:var(--pv-cardbg); border:1px solid var(--pv-border); border-radius:14px; padding:12px; box-shadow:0 8px 20px var(--pv-shadow);">
+                                <div style="width:30px;height:30px;border-radius:9999px;background:var(--pv-accent);color:var(--pv-buttontext);display:flex;align-items:center;justify-content:center;font-size:12px;margin-bottom:8px;"><i class="fas fa-flask"></i></div>
+                                <h3 style="font-size:12px; font-weight:700; color:var(--pv-h3); margin-bottom:3px;">Laboratory</h3>
+                                <p style="font-size:10.5px; color:var(--pv-body); margin-bottom:6px;">Card background &amp; border tokens.</p>
+                                <a style="font-size:10.5px; color:var(--pv-link); font-weight:600;">Learn more →</a>
+                            </div>
+                            <div style="background:var(--pv-cardbg); border:1px solid var(--pv-border); border-radius:14px; padding:12px; box-shadow:0 8px 20px var(--pv-shadow);">
+                                <div style="width:30px;height:30px;border-radius:9999px;background:var(--pv-secondary);color:var(--pv-buttontext);display:flex;align-items:center;justify-content:center;font-size:12px;margin-bottom:8px;"><i class="fas fa-heartbeat"></i></div>
+                                <h3 style="font-size:12px; font-weight:700; color:var(--pv-h3); margin-bottom:3px;">Cardiology</h3>
+                                <p style="font-size:10.5px; color:var(--pv-body); margin-bottom:6px;">Icon &amp; heading tokens.</p>
+                                <a style="font-size:10.5px; color:var(--pv-linkhover); font-weight:600;">Learn more →</a>
                             </div>
                         </div>
-                    `;
-                }
-            });
-            
-            html += `</div></div>`;
-            return html;
+                        <div style="display:flex; gap:8px; margin-top:12px;">
+                            <span style="font-size:10px; padding:4px 9px; border-radius:9999px; background:var(--pv-success); color:#fff;">Success</span>
+                            <span style="font-size:10px; padding:4px 9px; border-radius:9999px; background:var(--pv-warning); color:#fff;">Warning</span>
+                            <span style="font-size:10px; padding:4px 9px; border-radius:9999px; background:var(--pv-error); color:#fff;">Error</span>
+                        </div>
+                    </section>
+
+                    <section style="padding:18px 16px; background:var(--pv-bg);">
+                        <h4 style="font-size:13px; font-weight:700; color:var(--pv-h4); margin-bottom:4px;">A note on body copy</h4>
+                        <p style="font-size:11px; color:var(--pv-body); line-height:1.6;">Body text, link and heading colors all update live as you edit tokens on the left — nothing here requires a page refresh.
+                            <a style="color:var(--pv-link); font-weight:600;">Read more</a>.
+                        </p>
+                    </section>
+
+                    <footer id="pv-footer" style="padding:18px 16px; background:var(--pv-footerbg);">
+                        <p style="font-size:11px; color:rgba(255,255,255,.85); margin-bottom:8px; font-weight:600;" id="pv-footer-brand"></p>
+                        <p style="font-size:10px; color:rgba(255,255,255,.6);">© 2026 · Footer background token preview</p>
+                    </footer>
+                </div>
+            `;
+            document.getElementById('pv-brandname').textContent = currentMeta().name;
+            document.getElementById('pv-footer-brand').textContent = currentMeta().name;
         }
 
-        function updateTheme(key, value) {
-            appData.theme[key] = value;
-            saveData();
-            renderTheme();
+        function applyPreviewVars() {
+            const t = currentSite().theme;
+            const root = document.getElementById('pv-root');
+            if (!root) return;
+            const map = {
+                '--pv-primary': t.primary, '--pv-secondary': t.secondary, '--pv-accent': t.accent,
+                '--pv-bg': t.background, '--pv-sectionbg': t.sectionBg, '--pv-cardbg': t.cardBg,
+                '--pv-headerbg': t.headerBg, '--pv-footerbg': t.footerBg,
+                '--pv-h1': t.h1, '--pv-h2': t.h2, '--pv-h3': t.h3, '--pv-h4': t.h4, '--pv-h5': t.h5, '--pv-h6': t.h6,
+                '--pv-body': t.bodyText, '--pv-link': t.link, '--pv-linkhover': t.linkHover,
+                '--pv-buttonbg': t.buttonBg, '--pv-buttontext': t.buttonText, '--pv-buttonhover': t.buttonHover,
+                '--pv-border': t.border, '--pv-icon': t.icon, '--pv-shadow': t.shadow,
+                '--pv-success': t.success, '--pv-warning': t.warning, '--pv-error': t.error,
+                '--pv-gradstart': t.gradientStart, '--pv-gradend': t.gradientEnd,
+            };
+            Object.entries(map).forEach(([k, v]) => root.style.setProperty(k, v));
+            document.getElementById('pv-header').style.background = t.headerBg;
+            document.getElementById('previewSiteBadge').textContent = currentMeta().name;
+        }
+
+        /* ---------- save / restore / reset ---------- */
+        function saveCurrentTheme() {
+            const s = currentSite();
+            s.savedTheme = JSON.parse(JSON.stringify(s.theme));
+            persist();
+            updateDirtyIndicator();
+            renderSiteGrid();
+            toast('Theme saved & applied to ' + currentMeta().name);
+        }
+
+        function restoreSavedTheme() {
+            const s = currentSite();
+            s.theme = JSON.parse(JSON.stringify(s.savedTheme));
+            persist();
+            renderGroupPanel();
+            applyPreviewVars();
+            updateDirtyIndicator();
+            renderSiteGrid();
+            toast('Restored last saved theme');
+        }
+
+        function resetToDefault() {
+            if (!confirm('Reset ' + currentMeta().name + ' theme to its default colors? Click Save afterwards to make it permanent.')) return;
+            const s = currentSite();
+            s.theme = JSON.parse(JSON.stringify(s.defaultTheme));
+            persist();
+            renderGroupPanel();
+            applyPreviewVars();
+            updateDirtyIndicator();
+            renderSiteGrid();
+            toast('Reset to default colors (not yet saved)');
         }
 
         function exportTheme() {
-            const json = JSON.stringify(appData.theme, null, 2);
+            const json = JSON.stringify(currentSite().theme, null, 2);
             const blob = new Blob([json], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `theme-${new Date().toISOString().slice(0,10)}.json`;
+            a.download = `theme-${state.currentSiteId}-${new Date().toISOString().slice(0,10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
         }
@@ -223,11 +695,14 @@
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     try {
-                        const theme = JSON.parse(event.target.result);
-                        appData.theme = { ...appData.theme, ...theme };
-                        saveData();
-                        renderTheme();
-                        alert('Theme imported successfully!');
+                        const incoming = JSON.parse(event.target.result);
+                        currentSite().theme = { ...currentSite().theme, ...incoming };
+                        persist();
+                        renderGroupPanel();
+                        applyPreviewVars();
+                        updateDirtyIndicator();
+                        renderSiteGrid();
+                        toast('Theme imported — review and Save to apply');
                     } catch (err) {
                         alert('Invalid theme file.');
                     }
@@ -237,13 +712,122 @@
             input.click();
         }
 
+        /* ---------- presets ---------- */
+        function createPresetFromCurrent() {
+            const name = prompt('Name this preset (e.g. "Autumn", "Dark Launch"):');
+            if (!name) return;
+            const s = currentSite();
+            if (s.presets[name] && !confirm('A preset with this name already exists. Overwrite it?')) return;
+            s.presets[name] = JSON.parse(JSON.stringify(s.theme));
+            persist();
+            renderPresetList();
+            toast('Preset "' + name + '" saved');
+        }
+
+        function applyPresetToCurrent(name) {
+            const s = currentSite();
+            if (!s.presets[name]) return;
+            s.theme = JSON.parse(JSON.stringify(s.presets[name]));
+            persist();
+            renderGroupPanel();
+            applyPreviewVars();
+            updateDirtyIndicator();
+            renderSiteGrid();
+            toast('Applied preset "' + name + '" — click Save to publish it');
+        }
+
+        function updatePresetFromCurrent(name) {
+            const s = currentSite();
+            if (!s.presets[name]) return;
+            if (!confirm('Update preset "' + name + '" with the current editor values?')) return;
+            s.presets[name] = JSON.parse(JSON.stringify(s.theme));
+            persist();
+            renderPresetList();
+            toast('Preset "' + name + '" updated');
+        }
+
+        function renamePreset(oldName) {
+            const newName = prompt('Rename preset:', oldName);
+            if (!newName || newName === oldName) return;
+            const s = currentSite();
+            if (s.presets[newName]) { alert('A preset with that name already exists.'); return; }
+            s.presets[newName] = s.presets[oldName];
+            delete s.presets[oldName];
+            if (s.defaultPreset === oldName) s.defaultPreset = newName;
+            persist();
+            renderPresetList();
+        }
+
+        function deletePreset(name) {
+            const s = currentSite();
+            if (!confirm('Delete preset "' + name + '"? This cannot be undone.')) return;
+            delete s.presets[name];
+            if (s.defaultPreset === name) s.defaultPreset = null;
+            persist();
+            renderPresetList();
+            toast('Preset "' + name + '" deleted');
+        }
+
+        function setDefaultPreset(name) {
+            const s = currentSite();
+            s.defaultPreset = (s.defaultPreset === name) ? null : name;
+            persist();
+            renderPresetList();
+        }
+
+        function renderPresetList() {
+            const s = currentSite();
+            const names = Object.keys(s.presets);
+            const list = document.getElementById('presetList');
+            const empty = document.getElementById('presetEmpty');
+            empty.classList.toggle('hidden', names.length > 0);
+            list.innerHTML = names.map(name => {
+                const t = s.presets[name];
+                const isDefault = s.defaultPreset === name;
+                return `
+                    <div class="preset-chip ${isDefault ? 'is-default' : ''}">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-semibold text-gray-700 truncate">${name}</span>
+                            ${isDefault ? '<span class="text-[10px] bg-[#0f2b4b] text-white px-2 py-0.5 rounded-full">Default</span>' : ''}
+                        </div>
+                        <div class="swatch-strip mb-3">
+                            <span style="background:${t.primary}"></span>
+                            <span style="background:${t.secondary}"></span>
+                            <span style="background:${t.accent}"></span>
+                            <span style="background:${t.buttonBg}"></span>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 text-xs">
+                            <button onclick="applyPresetToCurrent('${name.replace(/'/g, "\\'")}')" class="bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full hover:bg-blue-100 transition"><i class="fas fa-wand-magic-sparkles mr-1"></i>Apply</button>
+                            <button onclick="updatePresetFromCurrent('${name.replace(/'/g, "\\'")}')" class="bg-slate-50 text-slate-600 px-2.5 py-1 rounded-full hover:bg-slate-100 transition"><i class="fas fa-arrows-rotate mr-1"></i>Update</button>
+                            <button onclick="renamePreset('${name.replace(/'/g, "\\'")}')" class="bg-amber-50 text-amber-600 px-2.5 py-1 rounded-full hover:bg-amber-100 transition"><i class="fas fa-pen mr-1"></i>Rename</button>
+                            <button onclick="setDefaultPreset('${name.replace(/'/g, "\\'")}')" class="bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-full hover:bg-indigo-100 transition"><i class="fas fa-star mr-1"></i>${isDefault ? 'Unset' : 'Set Default'}</button>
+                            <button onclick="deletePreset('${name.replace(/'/g, "\\'")}')" class="bg-rose-50 text-rose-600 px-2.5 py-1 rounded-full hover:bg-rose-100 transition"><i class="fas fa-trash mr-1"></i>Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        /* ---------- master render ---------- */
+        function renderAll() {
+            document.getElementById('editorSiteTitle').textContent = 'Theme Customization — ' + currentMeta().name;
+            renderSiteGrid();
+            renderGroupTabs();
+            renderGroupPanel();
+            renderPreviewShell();
+            applyPreviewVars();
+            renderPresetList();
+            updateDirtyIndicator();
+        }
+
         function updateClock() {
             document.getElementById('liveTime').textContent = new Date().toLocaleTimeString();
         }
         setInterval(updateClock, 1000);
         updateClock();
 
-        loadData();
+        loadState();
+        renderAll();
     </script>
 </body>
 </html>
